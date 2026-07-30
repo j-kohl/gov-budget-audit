@@ -38,9 +38,9 @@ const lastLapsed = lapsed.at(-1);
     <span class="muted">${latest[FED]} · dépenses réelles</span>
   </div>
   <div class="card">
-    <h2>Crédits du Québec</h2>
+    <h2>Dépenses du Québec</h2>
     <span class="big">${moneyShort(total(QC))}</span>
-    <span class="muted">${latest[QC]} · montants autorisés</span>
+    <span class="muted">${latest[QC]} · Comptes publics</span>
   </div>
   <div class="card">
     <h2>Transferts fédéraux</h2>
@@ -89,7 +89,7 @@ resize((width) => Plot.plot({
 ```js
 resize((width) => Plot.plot({
   width, height: 420, marginLeft: 230,
-  x: {label: "Crédits", tickFormat: moneyShort, grid: true},
+  x: {label: "Dépenses", tickFormat: moneyShort, grid: true},
   y: {label: null},
   marks: [
     Plot.barX(progs(QC, "programme").slice(0, 15), {
@@ -138,6 +138,39 @@ Les deux vues se recoupent : la Sécurité de la vieillesse figure à 60,6 G$ da
 les crédits **et** dans les transferts, parce que ce sont deux découpages du
 même argent — l'un par autorisation parlementaire, l'autre par programme de
 transfert. Il ne faut pas les additionner.
+
+</div>
+
+### Québec — qui reçoit les transferts
+
+Le Québec ne nomme pas ses programmes de transfert un par un ; il publie les
+montants par **type de bénéficiaire**. Les deux premiers postes disent
+l'essentiel du modèle québécois.
+
+```js
+Plot.plot({
+  width,
+  height: 280,
+  marginLeft: 250,
+  x: {label: "Transferts versés", tickFormat: moneyShort, grid: true},
+  y: {label: null},
+  marks: [
+    Plot.barX(progs(QC, "transfer").slice(0, 10), {
+      x: "amount", y: (d) => truncate(d.programme, 44), sort: {y: "-x"},
+      fill: "#efb118", tip: {format: {x: money}, channels: {Portefeuille: "organization"}}
+    }),
+    Plot.ruleX([0])
+  ]
+})
+```
+
+<div class="note">
+
+Les établissements de santé et les institutions d'enseignement reçoivent à eux
+seuls la majeure partie des transferts québécois. C'est la raison pour laquelle
+la rémunération du Québec paraît si faible en comparaison de celle du fédéral :
+le personnel des réseaux est payé par ces organismes, à même les transferts, et
+non par le gouvernement directement.
 
 </div>
 
@@ -227,7 +260,7 @@ resize((width) => Plot.plot({
 ```js
 resize((width) => Plot.plot({
   width, height: 340, marginLeft: 180,
-  x: {label: "Crédits", tickFormat: moneyShort, grid: true},
+  x: {label: "Dépenses", tickFormat: moneyShort, grid: true},
   y: {label: null},
   marks: [
     Plot.barX(orgs.filter((d) => d.jurisdiction === QC), {
@@ -275,7 +308,7 @@ resize((width) => Plot.plot({
 ```js
 resize((width) => Plot.plot({
   width, height: 260, marginLeft: 110,
-  x: {label: "Crédits", tickFormat: moneyShort, grid: true},
+  x: {label: "Dépenses", tickFormat: moneyShort, grid: true},
   y: {label: null},
   marks: [
     Plot.barX(current.filter((d) => d.jurisdiction === QC), {
@@ -295,11 +328,12 @@ resize((width) => Plot.plot({
 
 <div class="warn">
 
-**Les deux colonnes ne s'additionnent pas.** Le fédéral publie des dépenses
-réelles, le Québec des crédits autorisés. Et les transferts fédéraux versés au
-Québec figurent dans les deux : comme dépense fédérale, puis comme revenu
-finançant la dépense québécoise. Les additionner compterait la santé et la
-péréquation deux fois.
+**Les deux colonnes ne s'additionnent pas.** Les deux juridictions présentent
+désormais des dépenses réelles — le fédéral par les Comptes publics du Canada,
+le Québec par les Comptes publics du Québec — mais les transferts fédéraux
+versés au Québec figurent dans les deux : comme dépense fédérale, puis comme
+revenu finançant la dépense québécoise. Les additionner compterait la santé et
+la péréquation deux fois.
 
 La couleur des barres indique dans quelle mesure une catégorie peut être mise en
 regard de l'autre juridiction — verte pour comparable, ambre pour prudence,

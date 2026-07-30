@@ -362,7 +362,8 @@ def build_budget(output_dir: Path | None = None) -> dict[str, int]:
     """
     out = output_dir or DASHBOARD_DATA_DIR
     out.mkdir(parents=True, exist_ok=True)
-    if not (_has_budget("gc_infobase") and _has_budget("qc_budget_depenses")):
+    qc_source = "qc_comptes_publics" if _has_budget("qc_comptes_publics") else "qc_budget_depenses"
+    if not (_has_budget("gc_infobase") and _has_budget(qc_source)):
         log.warning("budget lines missing for one or both jurisdictions; skipping")
         return {}
 
@@ -371,11 +372,20 @@ def build_budget(output_dir: Path | None = None) -> dict[str, int]:
         CREATE VIEW budget AS
         SELECT * FROM read_parquet('{_budget_parquet("gc_infobase")}')
         UNION ALL BY NAME
-        SELECT * FROM read_parquet('{_budget_parquet("qc_budget_depenses")}')
+        SELECT * FROM read_parquet('{_budget_parquet(qc_source)}')
     """)
-    # One comparable slice per jurisdiction: federal actual expenditures by
-    # standard object, Quebec total credits. Anything else would mix measures.
-    con.execute("""
+    # One slice per jurisdiction, both on actual expenditure now that the
+    # Comptes publics are ingested. Quebec previously had to use credits, which
+    # meant comparing a plan against an outturn.
+    #
+    # The beneficiary table is excluded: it is the same transfer money cut by
+    # recipient, so including it would double-count Quebec's transfers.
+    qc_filter = (
+        "measure = 'expenditures' AND dimensions LIKE '%comptes_publics%'"
+        if qc_source == "qc_comptes_publics"
+        else "measure = 'authorities'"
+    )
+    con.execute(f"""
         CREATE VIEW spine AS
         SELECT jurisdiction, fiscal_year, organization,
                coalesce(economic_category, 'other') AS economic_category,
@@ -384,7 +394,7 @@ def build_budget(output_dir: Path | None = None) -> dict[str, int]:
         FROM budget
         WHERE (jurisdiction = 'ca-federal' AND measure = 'expenditures'
                AND dimensions LIKE '%standard_object%')
-           OR (jurisdiction = 'qc' AND measure = 'authorities')
+           OR (jurisdiction = 'qc' AND {qc_filter})
         GROUP BY 1, 2, 3, 4, 5
     """)
 
@@ -443,7 +453,15 @@ def build_budget(output_dir: Path | None = None) -> dict[str, int]:
             SELECT 'qc', fiscal_year, organization, programme,
                    'programme', amount
             FROM budget
-            WHERE jurisdiction = 'qc' AND measure = 'authorities'
+            WHERE jurisdiction = 'qc' AND measure = 'expenditures'
+              AND dimensions LIKE '%comptes_publics%'
+              AND programme IS NOT NULL
+            UNION ALL
+            -- Who actually receives Quebec's transfers.
+            SELECT 'qc', fiscal_year, organization, programme,
+                   'transfer', amount
+            FROM budget
+            WHERE jurisdiction = 'qc' AND dimensions LIKE '%beneficiaires%'
               AND programme IS NOT NULL
         )
         SELECT * EXCLUDE (rn) FROM (
@@ -486,7 +504,11 @@ def build_budget(output_dir: Path | None = None) -> dict[str, int]:
             }
             for category in taxonomy.ECONOMIC_CATEGORIES
         ],
-        "measures": {"ca-federal": "expenditures", "qc": "authorities"},
+        "measures": {
+            "ca-federal": "expenditures",
+            "qc": "expenditures" if qc_source == "qc_comptes_publics" else "authorities",
+        },
+        "qc_source": qc_source,
     }
     (out / "comparability.json").write_text(
         json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8"

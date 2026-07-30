@@ -35,8 +35,14 @@ default branch that touches `dashboard/`.
 
 Six pages. **Où va l'argent** is the spending view: the largest federal
 appropriations and Quebec programmes by name, every federal transfer programme
-individually, spending by organization and by nature, and the gap between what
-Parliament authorized and what was actually spent.
+individually, who receives Quebec's transfers, spending by organization and by
+nature, and the gap between what Parliament authorized and what was actually
+spent.
+
+Both jurisdictions are on **actual expenditure** — federal from the Public
+Accounts of Canada via GC InfoBase, Quebec from the Comptes publics du Québec.
+Quebec was previously represented by its credits, which meant charting a plan
+against an outturn.
 
 Comparability is a footnote there rather than the organizing principle — the
 verdicts from [`taxonomy.py`](src/govbudget/taxonomy.py) colour the bars and
