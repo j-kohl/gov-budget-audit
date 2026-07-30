@@ -1,18 +1,30 @@
-"""Parse legacy SEAO XML (2009 to March 2021) into ContractAward records.
+"""Parse SEAO XML into contract awards, final amounts and supplementary expenses.
 
-SEAO's pre-OCDS XML has no published machine-readable schema, and the exact tag
-spellings vary across the decade the files span. Rather than hard-code one
-guess, this parser:
+Written against "Format XML pour les données ouvertes du SEAO" (Secrétariat du
+Conseil du trésor, 1 December 2014), which SEAO publishes alongside the data on
+Données Québec, and verified against real monthly archives. The code tables live
+in `govbudget.seao_codes`.
 
-1. normalizes every tag (namespace, accents, case, punctuation all stripped) so
-   'NuméroSEAO', 'NUMERO_SEAO' and '{ns}numero-seao' collapse to 'numeroseao';
-2. resolves each canonical field against an ordered tuple of candidate tags, so
-   adding a newly-observed spelling is a one-line change to FIELD_MAP;
-3. records anything it could not map into ContractAward.unmapped.
+Each monthly archive holds six files:
 
-Run `govbudget seao:inspect <file>` against a real file to see the actual
-element paths and their frequencies, then correct FIELD_MAP from the output.
-That command exists precisely because these mappings are unverified.
+    Avis_*.xml               notices, their buyer, and every bidder
+    Contrats_*.xml           final settled amount per contract
+    Depenses_*.xml           spending beyond the original contract
+    *Revisions_*.xml         corrections to previously published records
+
+All use `<export>` as the root with lowercase, unaccented tag names. The record
+element differs per file, so parsing routes on what it finds rather than on the
+filename, which keeps it working for the yearly archives whose members are named
+differently.
+
+Three things in this format will silently corrupt a spending total:
+
+1. `<fournisseurs>` lists **every bidder**, not just the winner. Only
+   `<adjudicataire>1</adjudicataire>` is an award.
+2. `<montanttotalcontrat>` is frequently `0.000000` while `<montantcontrat>`
+   holds the real figure, so naive field-preference picks zero.
+3. `<montantssoumisunite>` says what the amount *is*: dollars, but also $/km,
+   percent, points or dollars-per-hour. Only unit 1 may be summed.
 """
 
 from __future__ import annotations
@@ -20,55 +32,56 @@ from __future__ import annotations
 import logging
 from collections import Counter, defaultdict
 from collections.abc import Iterator
+from io import BytesIO
 from typing import Any
 
 from lxml import etree
 
-from ..models import ContractAward
-from ._util import clean_text, normalize_tag, parse_amount, parse_date, parse_int
+from ..models import ContractAward, ContractExpense, ContractFinal
+from ..seao_codes import AMOUNT_UNIT, DELIVERY_REGION, NATURE, NOTICE_TYPE, label
+from ._util import clean_text, normalize_tag, parse_amount, parse_date
 
 log = logging.getLogger(__name__)
 
-#: Elements that plausibly delimit one contract notice.
-RECORD_TAGS = ("avis", "contrat", "contract", "release", "item")
+#: Record elements across the file types.
+RECORD_TAGS = ("avis", "contrat")
 
-#: Nested elements that repeat once per supplier on an award.
-SUPPLIER_TAGS = ("fournisseur", "contractant", "adjudicataire", "soumissionnaire", "supplier")
+SUPPLIER_TAG = "fournisseur"
+EXPENSE_TAG = "depense"
 
-#: Canonical field -> candidate normalized tags, in preference order.
-FIELD_MAP: dict[str, tuple[str, ...]] = {
-    "notice_number": ("numeroseao", "noseao", "numeroavis", "numero", "id"),
-    "title": ("titre", "titreavis", "objet", "nomcontrat"),
-    "description": ("description", "descriptionavis", "precisions"),
-    "buyer_name": ("organisme", "nomorganisme", "donneurdouvrage", "acheteur", "entiteacheteuse"),
-    "buyer_id": ("numeroorganisme", "idorganisme", "codeorganisme"),
-    "buyer_category": ("categorieorganisme", "typeorganisme", "reseau", "secteur"),
-    "procurement_method": ("typeavis", "natureavis", "modeadjudication", "typeadjudication"),
-    "procurement_category": ("categorieseao", "categorie", "naturecontrat", "typecontrat"),
-    "unspsc_code": ("unspsc", "codeunspsc", "classification"),
-    "publication_date": ("datepublication", "datepub", "datediffusion", "datesaisie"),
-    "award_date": ("dateadjudication", "datefinale", "dateoctroi", "datecontrat", "datefermeture"),
-    "contract_start": ("datedebutcontrat", "datedebut"),
-    "contract_end": ("datefincontrat", "datefin"),
-    "number_of_bidders": ("nombresoumissions", "nbsoumissions", "nombresoumissionnaires"),
-}
+#: Amount fields on a supplier, most authoritative first. Zeros are rejected
+#: during lookup — see `_amount`.
+SUPPLIER_AMOUNT_FIELDS = ("montanttotalcontrat", "montantcontrat", "montantsoumis")
 
-#: Amount fields, most authoritative first: a final settled amount beats the
-#: originally contracted amount, which beats the bid.
-AMOUNT_FIELDS = (
-    "montantfinal",
-    "montanttotalcontrat",
-    "montantcontrat",
-    "montantentente",
-    "montant",
-    "montantsoumis",
-    "prix",
+#: Notice fields covered by the 2014 specification. Anything else lands in
+#: `unmapped` so a schema change shows up rather than being dropped.
+KNOWN_NOTICE_FIELDS = frozenset(
+    {
+        "numeroseao", "numero", "organisme", "municipal", "adresse1", "adresse2",
+        "ville", "province", "pays", "codepostal", "titre", "type", "nature",
+        "precision", "datepublication", "datefermeture", "datesaisieouverture",
+        "datesaisieadjudication", "dateadjudication", "regionlivraison",
+        "unspscprincipale", "disposition", "hyperlienseao",
+        # Present on essentially every notice but absent from the 2014
+        # specification. Carries SEAO's own category taxonomy, e.g.
+        # 'C03 - Autres travaux de construction'.
+        "categorieseao",
+    }
 )
 
-SUPPLIER_NAME_FIELDS = ("nomorganisation", "nomfournisseur", "nom", "raisonsociale", "name")
-SUPPLIER_NEQ_FIELDS = ("neq", "numeroentreprise", "numeroentreprisequebec")
-SUPPLIER_CITY_FIELDS = ("ville", "municipalite", "city")
-SUPPLIER_REGION_FIELDS = ("province", "region", "regionadministrative")
+KNOWN_FINAL_FIELDS = frozenset(
+    {
+        "numeroseao", "numero", "datefinale", "datepublicationfinale",
+        "montantfinal", "nomcontractant", "neqcontractant",
+    }
+)
+
+KNOWN_EXPENSE_FIELDS = frozenset(
+    {
+        "datedepense", "datepublicationdepense", "montantdepense",
+        "description", "nomcontractant", "neqcontractant",
+    }
+)
 
 
 def parse(
@@ -77,8 +90,31 @@ def parse(
     source_id: str = "seao",
     content_hash: str = "",
 ) -> list[ContractAward]:
-    """Parse a SEAO XML document into contract awards."""
-    return list(iter_parse(payload, source_id=source_id, content_hash=content_hash))
+    """Parse an Avis file into contract awards."""
+    awards, _, _ = parse_all(payload, source_id=source_id, content_hash=content_hash)
+    return awards
+
+
+def parse_all(
+    payload: bytes | str,
+    *,
+    source_id: str = "seao",
+    content_hash: str = "",
+) -> tuple[list[ContractAward], list[ContractFinal], list[ContractExpense]]:
+    """Parse any SEAO XML file, returning whichever record types it contains."""
+    awards: list[ContractAward] = []
+    finals: list[ContractFinal] = []
+    expenses: list[ContractExpense] = []
+
+    for kind, element in _iter_records(payload):
+        if kind == "contrat":
+            finals.append(_to_final(element, source_id, content_hash))
+        elif kind == "depense":
+            expenses.extend(_to_expenses(element, source_id, content_hash))
+        else:
+            awards.extend(_to_awards(element, source_id, content_hash))
+
+    return awards, finals, expenses
 
 
 def iter_parse(
@@ -87,190 +123,224 @@ def iter_parse(
     source_id: str = "seao",
     content_hash: str = "",
 ) -> Iterator[ContractAward]:
-    """Stream awards from a SEAO XML document.
+    """Stream awards from an Avis file.
 
-    Streaming matters: the yearly files cover every contract in Quebec for a
-    year and are large enough that building a full tree is wasteful.
+    The yearly archives are large enough that the notice files are streamed and
+    cleared as they go rather than held as a tree.
+    """
+    for kind, element in _iter_records(payload):
+        if kind == "avis":
+            yield from _to_awards(element, source_id, content_hash)
+
+
+def _iter_records(payload: bytes | str) -> Iterator[tuple[str, etree._Element]]:
+    """Yield (kind, element) per record, clearing processed nodes as it goes.
+
+    `kind` is 'avis', 'contrat' or 'depense'. An <avis> carrying <depenses>
+    comes from the expenses file and is reported as 'depense'.
     """
     data = payload.encode("utf-8") if isinstance(payload, str) else payload
     if not data.strip():
         return
 
-    record_tag = _detect_record_tag(data)
-    if record_tag is None:
-        log.warning("no repeating record element found; document may not be SEAO XML")
-        return
-
-    # iterparse takes recovery options directly; it rejects a `parser` object.
-    context = etree.iterparse(_as_stream(data), events=("end",), recover=True, huge_tree=True)
-
+    context = etree.iterparse(BytesIO(data), events=("end",), recover=True, huge_tree=True)
     for _, element in context:
-        if normalize_tag(element.tag) != record_tag:
+        tag = normalize_tag(element.tag)
+        if tag not in RECORD_TAGS:
             continue
-        yield from _record_to_awards(element, source_id=source_id, content_hash=content_hash)
+
+        if tag == "contrat":
+            yield "contrat", element
+        else:
+            has_expenses = any(
+                normalize_tag(child.tag) == "depenses"
+                for child in element
+                if isinstance(child.tag, str)
+            )
+            yield ("depense" if has_expenses else "avis"), element
+
         element.clear()
-        # Drop already-processed siblings so memory stays flat across the file.
         parent = element.getparent()
         if parent is not None:
             while element.getprevious() is not None:
                 del parent[0]
 
 
-def _as_stream(data: bytes):
-    from io import BytesIO
-
-    return BytesIO(data)
+# -- field access ---------------------------------------------------------
 
 
-def _detect_record_tag(data: bytes) -> str | None:
-    """Find which element repeats once per contract notice.
-
-    Prefers a known candidate from RECORD_TAGS; otherwise falls back to the most
-    frequent element that has element children, which is the record row in every
-    tabular XML dump we have seen.
-    """
-    counts: Counter[str] = Counter()
-    has_children: set[str] = set()
-
-    context = etree.iterparse(_as_stream(data), events=("end",), recover=True, huge_tree=True)
-    scanned = 0
-    for _, element in context:
-        tag = normalize_tag(element.tag)
-        counts[tag] += 1
-        if len(element) > 0:
-            has_children.add(tag)
-        scanned += 1
-        # A few thousand elements is plenty to identify the repeating row.
-        if scanned > 20000:
-            break
-
-    for candidate in RECORD_TAGS:
-        if counts.get(candidate, 0) > 0 and candidate in has_children:
-            return candidate
-
-    container = {t for t in has_children if counts[t] > 1}
-    if not container:
-        return None
-    return max(container, key=lambda tag: counts[tag])
-
-
-def _record_to_awards(
-    element: etree._Element, *, source_id: str, content_hash: str
-) -> Iterator[ContractAward]:
-    fields, suppliers, unmapped = _extract(element)
-
-    base = {
-        "source_id": source_id,
-        "source_content_hash": content_hash,
-        "source_format": "seao-xml",
-        "notice_number": _first(fields, FIELD_MAP["notice_number"]),
-        "title": _first(fields, FIELD_MAP["title"]),
-        "description": _first(fields, FIELD_MAP["description"]),
-        "buyer_name": _first(fields, FIELD_MAP["buyer_name"]),
-        "buyer_id": _first(fields, FIELD_MAP["buyer_id"]),
-        "buyer_category": _first(fields, FIELD_MAP["buyer_category"]),
-        "procurement_method": _first(fields, FIELD_MAP["procurement_method"]),
-        "procurement_category": _first(fields, FIELD_MAP["procurement_category"]),
-        "unspsc_code": _first(fields, FIELD_MAP["unspsc_code"]),
-        "publication_date": parse_date(_first(fields, FIELD_MAP["publication_date"])),
-        "award_date": parse_date(_first(fields, FIELD_MAP["award_date"])),
-        "contract_start": parse_date(_first(fields, FIELD_MAP["contract_start"])),
-        "contract_end": parse_date(_first(fields, FIELD_MAP["contract_end"])),
-        "number_of_bidders": parse_int(_first(fields, FIELD_MAP["number_of_bidders"])),
-        "currency": "CAD",
-    }
-    record_amount = parse_amount(_first(fields, AMOUNT_FIELDS))
-
-    if not suppliers:
-        # No supplier block: still worth emitting if there is an amount, since
-        # some notices carry the award inline.
-        if record_amount is not None or base["notice_number"]:
-            yield ContractAward(**base, amount=record_amount, unmapped=unmapped)
-        return
-
-    for supplier in suppliers:
-        yield ContractAward(
-            **base,
-            amount=parse_amount(_first(supplier, AMOUNT_FIELDS)) or record_amount,
-            supplier_name=_first(supplier, SUPPLIER_NAME_FIELDS),
-            supplier_neq=_first(supplier, SUPPLIER_NEQ_FIELDS),
-            supplier_city=_first(supplier, SUPPLIER_CITY_FIELDS),
-            supplier_region=_first(supplier, SUPPLIER_REGION_FIELDS),
-            unmapped=unmapped,
-        )
-
-
-def _extract(
-    element: etree._Element,
-) -> tuple[dict[str, str], list[dict[str, str]], dict[str, Any]]:
-    """Split a record into its own leaf fields and its nested supplier blocks."""
-    fields: dict[str, str] = {}
-    suppliers: list[dict[str, str]] = []
-    mapped_tags = _all_known_tags()
-    unmapped: dict[str, Any] = {}
-
-    def collect_leaves(node: etree._Element, into: dict[str, str]) -> None:
-        for child in node:
-            if not isinstance(child.tag, str):  # comments, processing instructions
-                continue
-            tag = normalize_tag(child.tag)
-            if len(child) > 0:
-                collect_leaves(child, into)
-                continue
-            text = clean_text(child.text)
-            if text and tag not in into:
-                into[tag] = text
-
+def _leaves(element: etree._Element, *, skip: set[str] | None = None) -> dict[str, str]:
+    """Direct child leaf values, keyed by normalized tag."""
+    skip = skip or set()
+    values: dict[str, str] = {}
     for child in element:
         if not isinstance(child.tag, str):
             continue
         tag = normalize_tag(child.tag)
-
-        if tag in SUPPLIER_TAGS:
-            block: dict[str, str] = {}
-            collect_leaves(child, block)
-            if block:
-                suppliers.append(block)
+        if tag in skip or len(child) > 0:
             continue
+        text = clean_text(child.text)
+        if text:
+            values[tag] = text
+    return values
 
-        # A wrapper such as <Fournisseurs> holding <Fournisseur> children.
-        nested = [c for c in child if isinstance(c.tag, str) and normalize_tag(c.tag) in SUPPLIER_TAGS]
-        if nested:
-            for supplier_element in nested:
-                block = {}
-                collect_leaves(supplier_element, block)
-                if block:
-                    suppliers.append(block)
+
+def _children(element: etree._Element, wrapper: str, item: str) -> list[etree._Element]:
+    """Find repeated <item> elements, whether or not they sit inside <wrapper>."""
+    found: list[etree._Element] = []
+    for child in element:
+        if not isinstance(child.tag, str):
             continue
-
-        if len(child) > 0:
-            collect_leaves(child, fields)
-        else:
-            text = clean_text(child.text)
-            if text and tag not in fields:
-                fields[tag] = text
-
-    for tag, value in fields.items():
-        if tag not in mapped_tags:
-            unmapped[tag] = value
-
-    return fields, suppliers, unmapped
+        tag = normalize_tag(child.tag)
+        if tag == item:
+            found.append(child)
+        elif tag == wrapper:
+            found.extend(
+                grandchild
+                for grandchild in child
+                if isinstance(grandchild.tag, str) and normalize_tag(grandchild.tag) == item
+            )
+    return found
 
 
-def _all_known_tags() -> set[str]:
-    known: set[str] = set()
-    for candidates in FIELD_MAP.values():
-        known.update(candidates)
-    known.update(AMOUNT_FIELDS)
-    return known
+def _amount(values: dict[str, str], fields: tuple[str, ...]) -> float | None:
+    """First non-zero amount among `fields`, falling back to zero if that is all.
+
+    Zero is skipped deliberately: SEAO writes 0.000000 in `montanttotalcontrat`
+    to mean "not applicable", so honouring it would pick zero over the real
+    figure sitting in the next field.
+    """
+    fallback: float | None = None
+    for name in fields:
+        amount = parse_amount(values.get(name))
+        if amount is None:
+            continue
+        if amount != 0:
+            return amount
+        if fallback is None:
+            fallback = amount
+    return fallback
 
 
-def _first(source: dict[str, str], candidates: tuple[str, ...]) -> str | None:
-    for candidate in candidates:
-        value = source.get(candidate)
-        if value:
-            return value
+def _flag(value: str | None) -> bool | None:
+    """SEAO 0/1 flags, where empty means 'not disclosed' rather than false."""
+    text = clean_text(value)
+    if text in {"1", "0"}:
+        return text == "1"
     return None
+
+
+# -- record builders ------------------------------------------------------
+
+
+def _to_awards(element: etree._Element, source_id: str, content_hash: str) -> list[ContractAward]:
+    notice = _leaves(element, skip={"fournisseurs"})
+    suppliers = _children(element, "fournisseurs", SUPPLIER_TAG)
+
+    notice_type = notice.get("type")
+    nature = notice.get("nature")
+    region = notice.get("regionlivraison")
+
+    base: dict[str, Any] = {
+        "source_id": source_id,
+        "source_content_hash": content_hash,
+        "source_format": "seao-xml",
+        "notice_number": notice.get("numeroseao"),
+        "buyer_reference": notice.get("numero"),
+        "buyer_name": notice.get("organisme"),
+        "buyer_city": notice.get("ville"),
+        "buyer_region": notice.get("province"),
+        "is_municipal": _flag(notice.get("municipal")),
+        "title": notice.get("titre"),
+        "description": notice.get("precision"),
+        "notice_type_code": notice_type,
+        "notice_type_label": label(NOTICE_TYPE, notice_type),
+        "nature_code": nature,
+        "nature_label": label(NATURE, nature),
+        "procurement_method": label(NOTICE_TYPE, notice_type),
+        "procurement_category": label(NATURE, nature),
+        "seao_category": notice.get("categorieseao"),
+        "unspsc_code": notice.get("unspscprincipale"),
+        "delivery_region_code": region,
+        "delivery_region_label": label(DELIVERY_REGION, region),
+        "disposition_code": notice.get("disposition"),
+        "publication_date": parse_date(notice.get("datepublication")),
+        "closing_date": parse_date(notice.get("datefermeture")),
+        "award_date": parse_date(notice.get("dateadjudication")),
+        "currency": "CAD",
+        "number_of_bidders": len(suppliers) or None,
+        "seao_url": notice.get("hyperlienseao"),
+        "unmapped": {k: v for k, v in notice.items() if k not in KNOWN_NOTICE_FIELDS},
+    }
+
+    if not suppliers:
+        return [ContractAward(**base)]
+
+    awards = []
+    for supplier_element in suppliers:
+        supplier = _leaves(supplier_element)
+        unit = supplier.get("montantssoumisunite")
+        awards.append(
+            ContractAward(
+                **base,
+                supplier_name=supplier.get("nomorganisation"),
+                supplier_neq=supplier.get("neq"),
+                supplier_city=supplier.get("ville"),
+                supplier_region=supplier.get("province"),
+                supplier_country=supplier.get("pays"),
+                supplier_postal_code=supplier.get("codepostal"),
+                is_winner=_flag(supplier.get("adjudicataire")),
+                is_compliant=_flag(supplier.get("conforme")),
+                is_eligible=_flag(supplier.get("admissible")),
+                amount=_amount(supplier, SUPPLIER_AMOUNT_FIELDS),
+                amount_unit_code=unit,
+                amount_unit_label=label(AMOUNT_UNIT, unit),
+            )
+        )
+    return awards
+
+
+def _to_final(element: etree._Element, source_id: str, content_hash: str) -> ContractFinal:
+    values = _leaves(element)
+    return ContractFinal(
+        source_id=source_id,
+        source_content_hash=content_hash,
+        source_format="seao-xml",
+        notice_number=values.get("numeroseao"),
+        buyer_reference=values.get("numero"),
+        final_date=parse_date(values.get("datefinale")),
+        final_publication_date=parse_date(values.get("datepublicationfinale")),
+        final_amount=parse_amount(values.get("montantfinal")),
+        supplier_name=values.get("nomcontractant"),
+        supplier_neq=values.get("neqcontractant"),
+        unmapped={k: v for k, v in values.items() if k not in KNOWN_FINAL_FIELDS},
+    )
+
+
+def _to_expenses(
+    element: etree._Element, source_id: str, content_hash: str
+) -> list[ContractExpense]:
+    notice = _leaves(element, skip={"depenses"})
+    expenses = []
+    for expense_element in _children(element, "depenses", EXPENSE_TAG):
+        values = _leaves(expense_element)
+        expenses.append(
+            ContractExpense(
+                source_id=source_id,
+                source_content_hash=content_hash,
+                source_format="seao-xml",
+                notice_number=notice.get("numeroseao"),
+                buyer_reference=notice.get("numero"),
+                expense_date=parse_date(values.get("datedepense")),
+                expense_publication_date=parse_date(values.get("datepublicationdepense")),
+                amount=parse_amount(values.get("montantdepense")),
+                description=values.get("description"),
+                supplier_name=values.get("nomcontractant"),
+                supplier_neq=values.get("neqcontractant"),
+                unmapped={k: v for k, v in values.items() if k not in KNOWN_EXPENSE_FIELDS},
+            )
+        )
+    return expenses
 
 
 # -- structure inspection -------------------------------------------------
@@ -279,9 +349,8 @@ def _first(source: dict[str, str], candidates: tuple[str, ...]) -> str | None:
 def inspect_structure(payload: bytes | str, *, max_samples: int = 3) -> dict[str, Any]:
     """Report the element paths a document actually contains.
 
-    Returns paths with their frequency and a few sample values, plus which tags
-    FIELD_MAP does not currently cover. This is the tool for correcting the
-    mappings above against a real file.
+    A first-contact tool for archives whose layout differs from the 2014
+    specification — the earliest yearly files predate it.
     """
     data = payload.encode("utf-8") if isinstance(payload, str) else payload
     parser = etree.XMLParser(recover=True, huge_tree=True)
@@ -310,13 +379,18 @@ def inspect_structure(payload: bytes | str, *, max_samples: int = 3) -> dict[str
     counts[root_tag] += 1
     walk(root, root_tag)
 
-    known = _all_known_tags() | set(SUPPLIER_NAME_FIELDS) | set(SUPPLIER_NEQ_FIELDS)
-    known |= set(SUPPLIER_CITY_FIELDS) | set(SUPPLIER_REGION_FIELDS) | set(SUPPLIER_TAGS)
-    leaf_tags = {path.rsplit("/", 1)[-1] for path in counts if path in samples}
+    leaf_paths = {p for p in counts if p in samples}
+    leaf_tags = {p.rsplit("/", 1)[-1] for p in leaf_paths}
+    known = KNOWN_NOTICE_FIELDS | KNOWN_FINAL_FIELDS | KNOWN_EXPENSE_FIELDS
+    known |= {
+        "nomorganisation", "neq", "admissible", "conforme", "adjudicataire",
+        "montantsoumis", "montantssoumisunite", "montantcontrat",
+        "montanttotalcontrat",
+    }
 
     return {
         "root": root_tag,
-        "detected_record_tag": _detect_record_tag(data),
+        "record_tags_present": [t for t in RECORD_TAGS if any(p.endswith(t) for p in counts)],
         "paths": [
             {"path": path, "count": count, "samples": samples.get(path, [])}
             for path, count in counts.most_common()

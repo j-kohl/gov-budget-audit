@@ -20,22 +20,31 @@ be slower, more fragile, and produce worse data than the files already published
 
 ## Quebec
 
-### SEAO — public contracts *(built)*
+### SEAO — public contracts *(built and verified)*
 Every contract awarded in Quebec since 2009: ministries, the education network,
-health and social services, and municipalities. Published through Données Québec,
-not scraped from seao.ca.
+health and social services, and municipalities. Published through Données Québec
+(dataset `d23b2e02-085d-43e5-9e6e-e1d558ebfdd5`), not scraped from seao.ca.
 
-Two eras meet in March 2021. Before it, yearly XML with no published schema;
-after, JSON based on the Open Contracting Data Standard. Weekly (`hebdo_`) and
-monthly (`mensuel_`) drops carry recent periods.
+Verified against the live dataset: 418 resources, made up of 12 yearly XML
+archives, 41 monthly XML archives named in French, 361 OCDS JSON files, and 3
+PDFs — two of which are the **published format specifications** for the XML and
+JSON, which is what the parsers are written against.
+
+The XML runs to May 2024 and the OCDS JSON starts June 2021, so the two overlap
+for three years and must not both be ingested for the same period.
+
+Each XML archive contains three distinct facts, not three views of one:
+`Avis` (notices and every bidder), `Contrats` (final settled amount) and
+`Depenses` (spending beyond the original contract), each with a Revisions
+counterpart. `Depenses` is the most audit-relevant thing SEAO publishes —
+supplementary spending above 10% of the contract, with a stated reason — and it
+is only visible by joining back to the award.
 
 This was the first ingester because it is the highest-value dataset that needs no
 PDF work, and because contract awards need no taxonomy reconciliation to be
-useful — an award has a supplier and an amount.
+useful. See the README for the three ways this format will silently corrupt a
+spending total.
 
-Worth doing once: ingest the overlap window from both sides and diff it. The
-schema change was not purely an encoding change, and a unified contract series
-across that boundary should not be trusted until someone has checked.
 
 ### Budget de dépenses (Conseil du trésor)
 Quebec expenditure broken down by portefeuille ministériel and by programme —
@@ -93,7 +102,8 @@ volume, easy to crawl.
 
 ## Ingest order
 
-1. **SEAO** — done. Highest value, no PDF work, no taxonomy problem.
+1. **SEAO** — done and verified against live data. Highest value, no PDF
+   work, no taxonomy problem.
 2. **GC InfoBase CSVs** — largest federal win per unit of effort, and the
    federal expenditure spine everything else hangs off.
 3. **Federal proactive disclosure** — contracts and grants, so both

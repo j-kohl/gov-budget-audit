@@ -102,46 +102,108 @@ class TestCkanClient:
 
 
 class TestClassification:
+    """Names below are the real ones published on Données Québec."""
+
     def make(self, name, url, fmt):
         return seao.classify(Resource(id="x", name=name, url=url, format=fmt))
 
-    def test_yearly_xml(self):
-        item = self.make("seao_2019.xml", "https://x/seao_2019.xml", "XML")
+    def test_yearly_xml_archive(self):
+        item = self.make("Année 2019", "https://x/download/annee2019.zip", "XML")
         assert item.era == "xml"
         assert item.cadence == "annuel"
         assert item.year == 2019
 
+    def test_monthly_xml_named_in_french(self):
+        """The monthly XML archives are named 'Mai 2024', not 'mensuel_...'."""
+        item = self.make("Mai 2024", "https://x/download/mai-2024.zip", "XML")
+        assert item.era == "xml"
+        assert item.cadence == "mensuel"
+        assert (item.year, item.month) == (2024, 5)
+
+    def test_french_month_with_accent(self):
+        item = self.make("Février 2021", "https://x/download/2021_fevrier.zip", "XML")
+        assert item.cadence == "mensuel"
+        assert (item.year, item.month) == (2021, 2)
+
     def test_weekly_json_is_ocds(self):
-        item = self.make("hebdo_2024-05.json", "https://x/hebdo_2024-05.json", "JSON")
+        item = self.make(
+            "hebdo_20260720_20260726.json", "https://x/hebdo_20260720_20260726.json", "JSON"
+        )
         assert item.era == "ocds"
         assert item.cadence == "hebdo"
-        assert item.year == 2024
-        assert item.month == 5
+        assert (item.year, item.month) == (2026, 7)
 
-    def test_monthly(self):
-        item = self.make("mensuel_2022-11.json", "https://x/mensuel_2022-11.json", "JSON")
+    def test_monthly_json(self):
+        item = self.make(
+            "mensuel_20221101_20221130.json", "https://x/mensuel_20221101_20221130.json", "JSON"
+        )
         assert item.cadence == "mensuel"
-        assert item.month == 11
+        assert (item.year, item.month) == (2022, 11)
+
+    def test_zip_bundle_of_json_routed_by_name(self):
+        """Declared format is 'zip'; only the name says it holds JSON."""
+        item = self.make(
+            "JSON_Mensuel_20230101_20240430.zip",
+            "https://x/json_mensuel_20230101_20240430.zip",
+            "ZIP",
+        )
+        assert item.era == "ocds"
 
     def test_format_beats_period(self):
-        """A 2023 file published as XML is still XML-era."""
-        item = self.make("seao_2023.xml", "https://x/seao_2023.xml", "XML")
+        """XML archives continue past the 2021 OCDS start; format decides."""
+        item = self.make("Mars 2024", "https://x/download/mars-2024.zip", "XML")
         assert item.era == "xml"
 
-    def test_unknown_format_uses_era_boundary(self):
-        assert self.make("data_2015", "https://x/data_2015", "").era == "xml"
-        assert self.make("data_2023", "https://x/data_2023", "").era == "ocds"
+    def test_documentation_is_not_data(self):
+        """The dataset carries the format specs and an FAQ as PDFs."""
+        for name in ("FAQ_SEAO", "Format XML pour les données ouvertes du SEAO"):
+            item = self.make(name, "https://x/download/faqseao.pdf", "PDF")
+            assert item.cadence == "doc"
+            assert item.is_data is False
+
+    def test_select_excludes_documentation(self):
+        resources = [
+            self.make("Année 2019", "https://x/annee2019.zip", "XML"),
+            self.make("FAQ_SEAO", "https://x/faqseao.pdf", "PDF"),
+        ]
+        assert [r.name for r in seao.select(resources)] == ["Année 2019"]
+        assert len(seao.select(resources, include_docs=True)) == 2
 
     def test_select_filters_and_sorts_newest_first(self):
         resources = [
-            self.make("seao_2019.xml", "https://x/a.xml", "XML"),
-            self.make("hebdo_2024-05.json", "https://x/b.json", "JSON"),
-            self.make("mensuel_2023-01.json", "https://x/c.json", "JSON"),
+            self.make("Année 2019", "https://x/annee2019.zip", "XML"),
+            self.make("hebdo_20240501_20240507.json", "https://x/b.json", "JSON"),
+            self.make("mensuel_20230101_20230131.json", "https://x/c.json", "JSON"),
         ]
         ocds_only = seao.select(resources, era="ocds")
         assert [r.year for r in ocds_only] == [2024, 2023]
         assert len(seao.select(resources, limit=1)) == 1
         assert len(seao.select(resources, year=2019)) == 1
+
+
+class TestRevisionsHandling:
+    def test_revisions_members_skipped_by_default(self, tmp_path):
+        """Revisions restate records already in the main files."""
+        import io
+        import zipfile
+
+        from govbudget.storage import RawFile
+
+        avis = b"<export><avis><numeroseao>1</numeroseao></avis></export>"
+        buffer = io.BytesIO()
+        with zipfile.ZipFile(buffer, "w") as archive:
+            archive.writestr("Avis_20240501_20240531.xml", avis)
+            archive.writestr("AvisRevisions_20240501_20240531.xml", avis)
+
+        entry = RawFile(
+            source_id="seao", url="https://x/f.zip", content_hash="h",
+            size_bytes=1, fetched_at="", relative_path="seao/h.zip",
+        )
+        awards, _, _ = seao.parse_raw(entry, buffer.getvalue(), "xml")
+        assert len(awards) == 1
+
+        awards, _, _ = seao.parse_raw(entry, buffer.getvalue(), "xml", include_revisions=True)
+        assert len(awards) == 2
 
 
 class TestZipHandling:
@@ -189,7 +251,10 @@ class TestStorage:
             entry = store.fetch("https://x/seao_2019.xml", "seao")
 
             assert entry.size_bytes == len(payload)
+            # POSIX separators regardless of platform, so a manifest written on
+            # Windows stays readable on Linux.
             assert entry.relative_path.startswith("seao/")
+            assert "\\" not in entry.relative_path
             assert entry.relative_path.endswith(".xml")
             assert store.read(entry) == payload
             assert len(store.manifest("seao")) == 1
@@ -286,12 +351,76 @@ class TestStaging:
         )
         assert deduplicate(frame).height == 2
 
-    def test_summarize(self):
-        frame = awards_to_frame([make_award(), make_award(supplier_name="B", amount=50.0)])
+    def test_summarize_counts_only_winning_bids(self):
+        frame = awards_to_frame(
+            [
+                make_award(supplier_name="A", amount=100.0, is_winner=True),
+                make_award(supplier_name="B", amount=50.0, is_winner=True),
+                make_award(supplier_name="C", amount=999.0, is_winner=False),
+            ]
+        )
         stats = summarize(frame)
-        assert stats["rows"] == 2
-        assert stats["total_value"] == 150.0
+        assert stats["bids"] == 3
+        assert stats["winning_bids"] == 2
+        assert stats["awarded_total_cad"] == 150.0
         assert stats["distinct_suppliers"] == 2
+
+    def test_summarize_excludes_non_dollar_units(self):
+        """A percentage or a points score must not be added to a dollar total."""
+        frame = awards_to_frame(
+            [
+                make_award(supplier_name="A", amount=100.0, is_winner=True,
+                           amount_unit_code="1"),
+                make_award(supplier_name="B", amount=95.0, is_winner=True,
+                           amount_unit_code="8", amount_unit_label="%"),
+            ]
+        )
+        stats = summarize(frame)
+        assert stats["awarded_total_cad"] == 100.0
+        assert stats["awarded_rows_counted"] == 1
+        assert stats["excluded_non_dollar_rows"] == 1
+        assert stats["excluded_units"] == {"%": 1}
+
+    def test_is_summable_materialized_into_the_frame(self):
+        frame = awards_to_frame(
+            [make_award(amount=1.0, amount_unit_code="11", amount_unit_label="points")]
+        )
+        assert frame["is_summable"][0] is False
 
     def test_summarize_empty(self):
         assert summarize(awards_to_frame([])) == {"rows": 0}
+
+
+class TestOtherDatasets:
+    def test_finals_roundtrip(self, tmp_path):
+        import polars as pl
+
+        from govbudget.models import ContractFinal
+        from govbudget.staging import write_records
+
+        final = ContractFinal(
+            source_id="seao", source_content_hash="h", source_format="seao-xml",
+            notice_number="304462", final_amount=566036.76, final_date=date(2010, 8, 10),
+            supplier_name="TISSEUR INC.", supplier_neq="1149222300",
+        )
+        path = write_records(
+            [final], dataset="finals", source_id="seao", content_hash="h", staging_dir=tmp_path
+        )
+        assert pl.read_parquet(path)["final_amount"][0] == 566036.76
+
+    def test_expenses_roundtrip(self, tmp_path):
+        import polars as pl
+
+        from govbudget.models import ContractExpense
+        from govbudget.staging import write_records
+
+        expense = ContractExpense(
+            source_id="seao", source_content_hash="h", source_format="seao-xml",
+            notice_number="887070", amount=197702.18, expense_date=date(2024, 4, 26),
+            description="Dépense supplémentaire", supplier_name="BRUNEAU ELECTRIQUE INC.",
+        )
+        path = write_records(
+            [expense], dataset="expenses", source_id="seao", content_hash="h",
+            staging_dir=tmp_path,
+        )
+        assert pl.read_parquet(path)["amount"][0] == 197702.18

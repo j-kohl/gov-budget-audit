@@ -15,6 +15,7 @@ import argparse
 import json
 import logging
 import sys
+from datetime import UTC, datetime
 from pathlib import Path
 
 from . import registry, staging
@@ -60,23 +61,30 @@ def cmd_check_sources(args: argparse.Namespace) -> int:
     """Probe each source's portal or API for reachability."""
     import httpx
 
+    from .http import build_client
+
     entries = registry.sources()
     if args.id:
         entries = [s for s in entries if s.id in set(args.id)]
 
     results: list[tuple[str, str, str]] = []
-    with httpx.Client(timeout=30.0, follow_redirects=True) as client:
+    with build_client(timeout=30.0) as client:
         for source in entries:
             url = source.ckan_api and f"{source.ckan_api}/status_show" or source.portal
             if not url:
                 results.append((source.id, "skipped", "no URL in registry"))
                 continue
             try:
-                response = client.get(url, headers={"User-Agent": "gov-budget-audit"})
+                response = client.get(url)
                 status = "live" if response.status_code < 400 else "error"
                 results.append((source.id, status, f"HTTP {response.status_code}"))
             except httpx.ProxyError as exc:
                 results.append((source.id, "blocked", f"egress policy: {exc}"))
+            except httpx.ConnectError as exc:
+                # A certificate failure means the host answered — it is a trust
+                # problem, not a dead endpoint, and needs a different fix.
+                kind = "tls" if "CERTIFICATE" in str(exc).upper() else "dead"
+                results.append((source.id, kind, f"{type(exc).__name__}: {exc}"))
             except httpx.HTTPError as exc:
                 results.append((source.id, "dead", f"{type(exc).__name__}: {exc}"))
 
@@ -94,6 +102,7 @@ def cmd_check_sources(args: argparse.Namespace) -> int:
         for entry in data["sources"]:
             if entry["id"] in probed:
                 entry["verified"] = entry["id"] in live_ids
+        data["last_verified"] = datetime.now(UTC).isoformat(timespec="seconds")
         registry.REGISTRY_PATH.write_text(
             json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
         )
@@ -133,7 +142,7 @@ def cmd_seao_inspect(args: argparse.Namespace) -> int:
         return 0
 
     print(f"root: {report.get('root')}")
-    print(f"detected record tag: {report.get('detected_record_tag')}\n")
+    print(f"record tags present: {report.get('record_tags_present')}\n")
     print("paths:")
     for entry in report.get("paths", [])[: args.limit]:
         samples = "; ".join(entry["samples"][:2])
@@ -167,39 +176,53 @@ def cmd_seao_ingest(args: argparse.Namespace) -> int:
             print(f"  would fetch {item}\n      {item.url}")
         return 0
 
-    total_awards = 0
+    totals = {"awards": 0, "finals": 0, "expenses": 0}
     written: list[Path] = []
     with RawStore() as store:
-        for _item, entry, awards in seao.ingest(selected, store=store, force=args.force):
-            total_awards += len(awards)
-            path = staging.write_awards(
-                awards, source_id=seao.SOURCE_ID, content_hash=entry.content_hash
-            )
-            if path:
-                written.append(path)
+        for _item, entry, bundle in seao.ingest(
+            selected, store=store, force=args.force, include_revisions=args.include_revisions
+        ):
+            for dataset, records in zip(("awards", "finals", "expenses"), bundle, strict=True):
+                totals[dataset] += len(records)
+                path = staging.write_records(
+                    records,
+                    dataset=dataset,
+                    source_id=seao.SOURCE_ID,
+                    content_hash=entry.content_hash,
+                )
+                if path:
+                    written.append(path)
 
-    print(f"\n{total_awards} awards from {len(written)} file(s)", file=sys.stderr)
+    summary = ", ".join(f"{count:,} {name}" for name, count in totals.items())
+    print(f"\n{summary} from {len(written)} staged file(s)", file=sys.stderr)
 
     if written:
         db = staging.load_duckdb(source_id=seao.SOURCE_ID)
-        print(f"duckdb view seao_awards ready at {db}", file=sys.stderr)
+        print(f"duckdb views seao_awards / seao_awards_won / seao_finals / "
+              f"seao_expenses ready at {db}", file=sys.stderr)
     return 0
 
 
 def cmd_seao_summary(args: argparse.Namespace) -> int:
-    frame = staging.load_awards("seao")
-    if frame.is_empty():
+    datasets = [args.dataset] if args.dataset else list(staging.DATASETS)
+    found = False
+    for dataset in datasets:
+        frame = staging.load(dataset, "seao")
+        if frame.is_empty():
+            continue
+        found = True
+        if args.dedupe:
+            frame = staging.deduplicate(frame)
+        print(f"\n{dataset}:")
+        for key, value in staging.summarize(frame).items():
+            if isinstance(value, float):
+                print(f"  {key:<26} {value:,.2f}")
+            else:
+                print(f"  {key:<26} {value}")
+
+    if not found:
         print("nothing staged yet — run `govbudget seao:ingest`", file=sys.stderr)
         return 1
-
-    if args.dedupe:
-        frame = staging.deduplicate(frame)
-
-    for key, value in staging.summarize(frame).items():
-        if isinstance(value, float):
-            print(f"  {key:<20} {value:,.2f}")
-        else:
-            print(f"  {key:<20} {value}")
     return 0
 
 
@@ -245,9 +268,15 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--limit", type=int, help="stop after N resources")
     p.add_argument("--force", action="store_true", help="re-download even if unchanged")
     p.add_argument("--dry-run", action="store_true", help="list what would be fetched")
+    p.add_argument(
+        "--include-revisions",
+        action="store_true",
+        help="also parse the *Revisions files (they restate existing records)",
+    )
     p.set_defaults(func=cmd_seao_ingest)
 
     p = sub.add_parser("seao:summary", help="headline figures for staged contracts")
+    p.add_argument("--dataset", choices=["awards", "finals", "expenses"])
     p.add_argument("--dedupe", action="store_true", default=True)
     p.add_argument("--no-dedupe", dest="dedupe", action="store_false")
     p.set_defaults(func=cmd_seao_summary)

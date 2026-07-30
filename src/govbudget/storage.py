@@ -27,12 +27,13 @@ from urllib.parse import urlparse
 
 import httpx
 
+from .http import build_client
+
 log = logging.getLogger(__name__)
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_DATA_DIR = Path(os.environ.get("GOVBUDGET_DATA_DIR", REPO_ROOT / "data"))
 
-USER_AGENT = "gov-budget-audit (+https://github.com/j-kohl/gov-budget-audit)"
 CHUNK_SIZE = 1 << 20
 
 
@@ -62,11 +63,7 @@ class RawStore:
     def __init__(self, data_dir: Path | None = None, *, client: httpx.Client | None = None):
         self.root = (data_dir or DEFAULT_DATA_DIR) / "raw"
         self.root.mkdir(parents=True, exist_ok=True)
-        self._client = client or httpx.Client(
-            timeout=httpx.Timeout(30.0, read=300.0),
-            follow_redirects=True,
-            headers={"User-Agent": USER_AGENT},
-        )
+        self._client = client or build_client(timeout=httpx.Timeout(30.0, read=300.0))
         self._owns_client = client is None
 
     def close(self) -> None:
@@ -167,7 +164,9 @@ class RawStore:
             content_hash=content_hash,
             size_bytes=size,
             fetched_at=datetime.now(UTC).isoformat(),
-            relative_path=str(relative),
+            # POSIX separators always: a manifest written on Windows has to stay
+            # readable on Linux, since the raw store is meant to be shared.
+            relative_path=relative.as_posix(),
             content_type=content_type,
             etag=etag,
             last_modified=last_modified,

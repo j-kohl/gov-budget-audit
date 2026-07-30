@@ -1,50 +1,82 @@
+"""Tests for the OCDS parser.
+
+The fixture reproduces a real SEAO release, including the three publisher
+conventions that a generic OCDS reader gets wrong: the notice number living in
+the OCID, the NEQ living in `parties[].details`, and `contracts[].value` being
+the settled amount rather than a duplicate of the award value.
+"""
+
 import json
 from datetime import date
 
 from govbudget.parsers import ocds
 
 RELEASE_PACKAGE = {
-    "uri": "https://example.qc.ca/ocds/2021-03.json",
-    "publishedDate": "2021-03-31T00:00:00Z",
+    "uri": "https://donneesquebec.ca/seao/mensuel_20260601_20260630.json",
+    "version": "1.1",
+    "publishedDate": "2026-07-01T00:00:00-04:00",
     "publisher": {"name": "SEAO"},
     "releases": [
         {
-            "ocid": "ocds-abc123-2021-0001",
-            "id": "2021-0001-award-01",
-            "date": "2021-03-15T12:00:00Z",
-            "tag": ["award"],
+            "ocid": "ocds-ec9k95-1740136",
+            "id": "20260602192354",
+            "date": "2026-06-02T14:05:54-04:00",
+            "tag": ["contract"],
+            "initiationType": "tender",
             "parties": [
                 {
-                    "id": "ORG-1",
-                    "name": "Ministère des Transports",
+                    "name": "Ville de Montmagny",
+                    "id": "OP-81796",
+                    "address": {"locality": "Montmagny", "region": "QC", "countryName": "CAN"},
                     "roles": ["buyer"],
+                    "details": {"municipal": "1"},
                 },
                 {
-                    "id": "SUP-1",
-                    "name": "Construction Tremblay inc.",
+                    "name": "FNX-INNOV INC.",
+                    "id": "FO-1174002437",
+                    "address": {
+                        "locality": "Longueuil",
+                        "region": "QC",
+                        "postalCode": "J4G2J4",
+                        "countryName": "CAN",
+                    },
                     "roles": ["supplier"],
-                    "identifier": {"scheme": "CA-QC-NEQ", "id": "1140000000"},
-                    "address": {"locality": "Québec", "region": "QC"},
+                    "details": {"neq": "1174002437"},
                 },
             ],
-            "buyer": {"id": "ORG-1", "name": "Ministère des Transports"},
+            "buyer": {"name": "Ville de Montmagny", "id": "OP-81796"},
             "tender": {
-                "id": "1234567",
-                "title": "Réfection de la route 132",
-                "procurementMethod": "open",
-                "mainProcurementCategory": "works",
-                "numberOfTenderers": 4,
-                "items": [{"classification": {"scheme": "UNSPSC", "id": "72141100"}}],
+                "id": "VM-2022-02(G)",
+                "title": "Étude géotechnique - Réfection du boulevard Taché Est",
+                "status": "complete",
+                "items": [
+                    {
+                        "id": "S8",
+                        "description": "S8 - Contrôle de la qualité, essais et inspections",
+                        "classification": {"scheme": "UNSPSC", "id": "81141503"},
+                    }
+                ],
+                "procurementMethod": "direct",
+                "procurementMethodDetails": "Contrat de gré à gré",
+                "mainProcurementCategory": "services",
             },
             "awards": [
                 {
-                    "id": "AWD-1",
-                    "title": "Réfection de la route 132",
-                    "date": "2021-03-10T00:00:00Z",
+                    "id": "20145160",
                     "status": "active",
-                    "value": {"amount": 2500000.5, "currency": "CAD"},
-                    "suppliers": [{"id": "SUP-1", "name": "Construction Tremblay inc."}],
-                    "contractPeriod": {"startDate": "2021-04-01", "endDate": "2022-03-31"},
+                    "date": "2022-08-23T00:00:00-04:00",
+                    "value": {"amount": 29709.54, "currency": "CAD"},
+                    "suppliers": [{"name": "FNX-INNOV INC.", "id": "FO-1174002437"}],
+                }
+            ],
+            "contracts": [
+                {
+                    "id": "20145160",
+                    "awardID": "20145160",
+                    "status": "terminated",
+                    "period": {"endDate": "2022-08-24T00:00:00-04:00"},
+                    "value": {"amount": 26738.59, "currency": "CAD"},
+                    "dateSigned": "2022-08-23T00:00:00-04:00",
                 }
             ],
         }
@@ -52,47 +84,61 @@ RELEASE_PACKAGE = {
 }
 
 
-class TestParseReleasePackage:
-    def test_extracts_core_fields(self):
-        awards = ocds.parse(RELEASE_PACKAGE, content_hash="deadbeef")
-        assert len(awards) == 1
-        award = awards[0]
-
-        assert award.ocid == "ocds-abc123-2021-0001"
-        assert award.notice_number == "1234567"
-        assert award.award_id == "AWD-1"
-        assert award.buyer_name == "Ministère des Transports"
-        assert award.title == "Réfection de la route 132"
-        assert award.amount == 2500000.5
-        assert award.currency == "CAD"
-        assert award.supplier_name == "Construction Tremblay inc."
-        assert award.supplier_neq == "1140000000"
-        assert award.supplier_city == "Québec"
-        assert award.number_of_bidders == 4
-        assert award.unspsc_code == "72141100"
-        assert award.procurement_method == "open"
-
-    def test_dates(self):
+class TestPublisherConventions:
+    def test_notice_number_comes_from_the_ocid(self):
+        """`tender.id` is the buyer's own reference, not the SEAO number.
+        Getting this wrong breaks the join to the XML-era records."""
         award = ocds.parse(RELEASE_PACKAGE)[0]
-        assert award.award_date == date(2021, 3, 10)
-        assert award.publication_date == date(2021, 3, 15)
-        assert award.contract_start == date(2021, 4, 1)
-        assert award.contract_end == date(2022, 3, 31)
+        assert award.notice_number == "1740136"
+        assert award.buyer_reference == "VM-2022-02(G)"
 
-    def test_provenance_recorded(self):
-        award = ocds.parse(RELEASE_PACKAGE, content_hash="deadbeef")[0]
+    def test_neq_read_from_party_details(self):
+        """SEAO puts the NEQ in `details.neq`, not the standard `identifier`."""
+        assert ocds.parse(RELEASE_PACKAGE)[0].supplier_neq == "1174002437"
+
+    def test_award_and_contract_values_kept_apart(self):
+        awards, finals = ocds.parse_all(RELEASE_PACKAGE)
+        assert awards[0].amount == 29709.54
+        assert finals[0].final_amount == 26738.59
+
+    def test_every_award_row_is_a_winner(self):
+        """OCDS publishes no losing bids, so a shared is_winner filter needs
+        this set or the OCDS era vanishes from every total."""
+        award = ocds.parse(RELEASE_PACKAGE)[0]
+        assert award.is_winner is True
+        assert award.is_summable is True
+
+
+class TestFieldExtraction:
+    def test_buyer(self):
+        award = ocds.parse(RELEASE_PACKAGE)[0]
+        assert award.buyer_name == "Ville de Montmagny"
+        assert award.buyer_city == "Montmagny"
+        assert award.is_municipal is True
+
+    def test_supplier_address(self):
+        award = ocds.parse(RELEASE_PACKAGE)[0]
+        assert award.supplier_name == "FNX-INNOV INC."
+        assert award.supplier_city == "Longueuil"
+        assert award.supplier_country == "CAN"
+        assert award.supplier_postal_code == "J4G2J4"
+
+    def test_procurement_detail_preferred_over_code(self):
+        award = ocds.parse(RELEASE_PACKAGE)[0]
+        assert award.procurement_method == "Contrat de gré à gré"
+        assert award.procurement_category == "services"
+        assert award.unspsc_code == "81141503"
+        assert award.seao_category.startswith("S8 -")
+
+    def test_dates_with_offset(self):
+        award = ocds.parse(RELEASE_PACKAGE)[0]
+        assert award.award_date == date(2022, 8, 23)
+        assert award.publication_date == date(2026, 6, 2)
+
+    def test_provenance(self):
+        award = ocds.parse(RELEASE_PACKAGE, content_hash="beef")[0]
         assert award.source_format == "ocds-json"
-        assert award.source_content_hash == "deadbeef"
-
-    def test_accepts_bytes_and_str(self):
-        as_bytes = json.dumps(RELEASE_PACKAGE).encode("utf-8")
-        assert len(ocds.parse(as_bytes)) == 1
-        assert len(ocds.parse(json.dumps(RELEASE_PACKAGE))) == 1
-
-    def test_handles_utf8_bom(self):
-        """Government JSON exports frequently carry a BOM."""
-        payload = b"\xef\xbb\xbf" + json.dumps(RELEASE_PACKAGE).encode("utf-8")
-        assert len(ocds.parse(payload)) == 1
+        assert award.source_content_hash == "beef"
 
 
 class TestMultipleSuppliers:
@@ -104,24 +150,13 @@ class TestMultipleSuppliers:
         ]
         awards = ocds.parse(package)
         assert len(awards) == 2
-        assert {a.supplier_name for a in awards} == {"Alpha inc.", "Beta ltée"}
-
-    def test_award_id_in_dedupe_key_prevents_collapse(self):
-        package = json.loads(json.dumps(RELEASE_PACKAGE))
-        package["releases"][0]["awards"][0]["suppliers"] = [
-            {"id": "SUP-1", "name": "Alpha inc."},
-            {"id": "SUP-2", "name": "Beta ltée"},
-        ]
-        awards = ocds.parse(package)
         assert len({a.key() for a in awards}) == 2
 
 
 class TestContainerShapes:
     def test_record_package(self):
-        record_package = {
-            "records": [{"ocid": "x", "compiledRelease": RELEASE_PACKAGE["releases"][0]}]
-        }
-        assert len(ocds.parse(record_package)) == 1
+        package = {"records": [{"ocid": "x", "compiledRelease": RELEASE_PACKAGE["releases"][0]}]}
+        assert len(ocds.parse(package)) == 1
 
     def test_bare_release(self):
         assert len(ocds.parse(RELEASE_PACKAGE["releases"][0])) == 1
@@ -133,30 +168,30 @@ class TestContainerShapes:
         text = "\n".join(json.dumps(r) for r in [RELEASE_PACKAGE["releases"][0]] * 3)
         assert len(ocds.parse(text)) == 3
 
+    def test_accepts_bytes_and_bom(self):
+        payload = b"\xef\xbb\xbf" + json.dumps(RELEASE_PACKAGE).encode("utf-8")
+        assert len(ocds.parse(payload)) == 1
+
     def test_empty_input(self):
         assert ocds.parse(b"") == []
         assert ocds.parse("   ") == []
 
 
 class TestEdgeCases:
-    def test_tender_only_release_emits_nothing(self):
-        """A tender with no award must not become a $0 award row."""
-        package = {"releases": [{"ocid": "x", "id": "1", "tender": {"title": "t"}}]}
+    def test_tender_only_release_emits_no_award(self):
+        package = {"releases": [{"ocid": "ocds-x-1", "id": "1", "tender": {"title": "t"}}]}
         assert ocds.parse(package) == []
 
     def test_buyer_falls_back_to_parties(self):
         package = json.loads(json.dumps(RELEASE_PACKAGE))
         del package["releases"][0]["buyer"]
-        award = ocds.parse(package)[0]
-        assert award.buyer_name == "Ministère des Transports"
+        assert ocds.parse(package)[0].buyer_name == "Ville de Montmagny"
 
-    def test_value_falls_back_to_contract(self):
+    def test_contract_without_value_produces_no_final(self):
         package = json.loads(json.dumps(RELEASE_PACKAGE))
-        del package["releases"][0]["awards"][0]["value"]
-        package["releases"][0]["contracts"] = [
-            {"id": "C-1", "awardID": "AWD-1", "value": {"amount": 999.0, "currency": "CAD"}}
-        ]
-        assert ocds.parse(package)[0].amount == 999.0
+        del package["releases"][0]["contracts"][0]["value"]
+        _, finals = ocds.parse_all(package)
+        assert finals == []
 
     def test_missing_suppliers_still_yields_award(self):
         package = json.loads(json.dumps(RELEASE_PACKAGE))
@@ -164,4 +199,12 @@ class TestEdgeCases:
         awards = ocds.parse(package)
         assert len(awards) == 1
         assert awards[0].supplier_name is None
-        assert awards[0].amount == 2500000.5
+        assert awards[0].amount == 29709.54
+
+    def test_standard_identifier_still_read(self):
+        """Non-SEAO OCDS publishers use the standard identifier object."""
+        package = json.loads(json.dumps(RELEASE_PACKAGE))
+        party = package["releases"][0]["parties"][1]
+        del party["details"]
+        party["identifier"] = {"scheme": "CA-QC-NEQ", "id": "9999999999"}
+        assert ocds.parse(package)[0].supplier_neq == "9999999999"

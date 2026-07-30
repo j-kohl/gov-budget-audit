@@ -11,125 +11,174 @@ identifiers with any of them.
 
 ## Status
 
-The **SEAO ingester is built and tested**: Quebec public contracts, 2009 to
-present, discovered through Données Québec and parsed from both the legacy XML
-and the post-2021 OCDS JSON.
+The **SEAO ingester is built, verified against live data, and working**: Quebec
+public contracts from 2009 to the present, covering both the XML era and the
+OCDS JSON era, discovered through Données Québec.
 
-Also here: the [source registry](sources/registry.json) covering 12 federal and
-Quebec sources with their access method and known traps, and the raw-store and
-staging layers the remaining ingesters will reuse.
+All 12 sources in the [registry](sources/registry.json) have been probed and
+respond. Contract awards, final settled amounts and cost overruns are staged to
+Parquet and queryable through DuckDB.
 
 Not yet built: the PDF extractors (Quebec Budget de dépenses, Comptes publics,
 Public Accounts of Canada), the federal ingesters, and the dashboard itself.
 
 ## Why Python rather than a Node stack
 
-Roughly half the sources are PDFs — the Budget de dépenses, Comptes publics, and
-Public Accounts of Canada — and `pdfplumber`/`Camelot` have no serious JS
-equivalent. Reconciling two incompatible spending taxonomies is also far easier
-in polars than in anything on the JS side.
+Roughly half the remaining sources are PDFs — the Budget de dépenses, Comptes
+publics, and Public Accounts of Canada — and `pdfplumber`/`Camelot` have no
+serious JS equivalent. Reconciling two incompatible spending taxonomies is also
+far easier in polars.
 
-The storage layer is Parquet plus DuckDB rather than Postgres. These are
-analytical facts, not transactional app data: DuckDB queries the Parquet in
-place, costs nothing to host, and a parser fix means re-running over the raw
-store instead of writing a migration. Nothing here stops the staged output being
-loaded into Postgres later if the dashboard wants it there.
+Storage is Parquet plus DuckDB rather than Postgres. These are analytical facts,
+not transactional app data: DuckDB queries the Parquet in place, costs nothing
+to host, and a parser fix means re-running over the raw store instead of writing
+a migration. The staged output still loads into Postgres later if the dashboard
+wants it there.
 
 ## Setup
 
 ```bash
-python3 -m venv .venv
-.venv/bin/pip install -e ".[dev,pdf]"
+python -m venv .venv
+.venv/bin/pip install -e ".[dev,pdf]"    # .venv/Scripts/pip on Windows
 ```
 
 ## Usage
 
 ```bash
-govbudget sources                    # what is in the registry
-govbudget caveats                    # cross-cutting data traps, by severity
-govbudget check-sources --write      # probe reachability, record results
+govbudget sources                     # what is in the registry
+govbudget caveats                     # data traps, by severity
+govbudget check-sources --write       # probe reachability, record results
 
-govbudget seao:discover              # list SEAO files published on Données Québec
-govbudget seao:discover --era ocds --cadence hebdo
-govbudget seao:ingest --era ocds --limit 5
-govbudget seao:ingest --year 2019 --dry-run
-govbudget seao:summary               # headline figures for what has been staged
+govbudget seao:discover               # list SEAO files on Données Québec
+govbudget seao:discover --era xml --cadence annuel
+govbudget seao:ingest --era ocds --cadence mensuel --limit 3
+govbudget seao:ingest --era xml --year 2019
+govbudget seao:summary                # headline figures for what is staged
 
 govbudget seao:inspect path/to/file.xml   # report a file's real structure
 ```
 
-Then query directly:
+Then query:
 
 ```sql
 -- data/govbudget.duckdb
-SELECT supplier_name, sum(amount) AS total, count(*) AS contracts
-FROM seao_awards
-WHERE award_date >= '2023-01-01'
+-- seao_awards_won is the view to use for money: winners only, dollars only.
+SELECT supplier_name, count(*) AS contracts, sum(amount) AS total
+FROM seao_awards_won
+WHERE award_date >= '2024-01-01'
 GROUP BY 1 ORDER BY total DESC LIMIT 20;
+
+-- Cost overruns: supplementary spending against the original award.
+SELECT e.notice_number, a.buyer_name, a.amount AS awarded,
+       sum(e.amount) AS overrun,
+       round(100.0 * sum(e.amount) / nullif(a.amount, 0), 1) AS pct
+FROM seao_expenses e
+JOIN seao_awards_won a USING (notice_number)
+WHERE a.amount > 0
+GROUP BY 1, 2, 3 ORDER BY overrun DESC LIMIT 20;
 ```
+
+Views: `seao_awards` (every bidder), `seao_awards_won` (winners, CAD only),
+`seao_finals` (settled amounts), `seao_expenses` (overruns).
+
+## What SEAO actually publishes
+
+Verified against the live dataset — 418 resources:
+
+| | |
+| --- | --- |
+| `Année 2009` … `Année 2020` | yearly XML archives (zip) |
+| `Janvier 2021` … `Mai 2024` | monthly XML archives, named in French |
+| `mensuel_YYYYMMDD_YYYYMMDD` | monthly OCDS JSON, from June 2021 |
+| `hebdo_YYYYMMDD_YYYYMMDD` | weekly OCDS JSON |
+| 3 PDFs | the XML and JSON format specifications, and an FAQ |
+
+**XML and JSON overlap** from June 2021 to May 2024, so ingesting both
+double-counts. Ingest one era at a time.
+
+**Each XML archive holds six files**, and they are three different facts:
+
+- `Avis_*.xml` — notices, the buyer, and **every bidder**
+- `Contrats_*.xml` — the final settled amount
+- `Depenses_*.xml` — spending beyond the original contract
+- plus a `*Revisions` file for each, skipped by default since they restate
+  records already present
+
+## Three ways to get the numbers wrong
+
+Each of these was found by checking real files against the published
+specification, and each silently corrupts a spending total.
+
+**1. `<fournisseurs>` lists every bidder, not just the winner.** Only
+`<adjudicataire>1</adjudicataire>` is an award. In May 2024 that is 6,276
+winners out of 11,350 bidder rows — counting all of them overstates spending by
+about 80%. Both parsers set `is_winner`; every total must filter on it. (OCDS
+publishes winners only, so those rows are marked `is_winner = true` to keep one
+filter working across both eras.)
+
+**2. Amounts are not always dollars.** `<montantssoumisunite>` can mean `$/km`,
+`$/hour`, `%`, `points` or `$US`. Summing without filtering adds percentages to
+dollars. Only units 0 and 1 are plain CAD, materialized as `is_summable`.
+
+Unit `0` is not in the published specification but is the most common value in
+the data. It is dollars: cross-checking those rows against the independently
+published final amounts in `Contrats_*.xml` gives a median ratio of 1.000,
+identical to unit 1. Treating it as unknown would discard most of the money.
+
+**3. `0.000000` means "not applicable".** `<montanttotalcontrat>` is usually
+zero while `<montantcontrat>` holds the real figure, so ordinary field-preference
+ordering picks zero.
+
+The OCDS side has its own conventions: the SEAO notice number is in the **OCID**
+(`ocds-ec9k95-1740136`), not `tender.id` — which is the buyer's own reference —
+and the NEQ is in `parties[].details.neq`, not the standard `identifier` object.
+Getting either wrong breaks the join between the two eras.
 
 ## How the pipeline is arranged
 
 ```
 Données Québec CKAN  ->  raw store  ->  parsers  ->  Parquet staging  ->  DuckDB
-   (discovery)          (verbatim,      (XML |       (one file per      (views over
-                       content-hash)     OCDS)        source hash)       parquet)
+   (discovery)          (verbatim,      (XML |       (awards, finals,   (views over
+                       content-hash)     OCDS)        expenses)          parquet)
 ```
 
 Raw files land verbatim, named by the SHA-256 of their bytes, and are never
-mutated. Fetches are conditional on ETag and Last-Modified, so re-running only
-transfers what changed. Because parsing reads from the raw store rather than the
-network, a parser fix replays over the whole history without re-fetching — which
-matters when a source publishes a decade of files.
+mutated. Fetches are conditional on ETag and Last-Modified. Because parsing reads
+from the raw store rather than the network, a parser fix replays over the whole
+history without re-fetching — which matters when a source publishes 15 years of
+archives.
 
-## The unverified parts
+## A note on TLS
 
-**Every endpoint in this repository is unverified.** The environment this was
-built in denies egress to every Canadian and Quebec government host
-(`open.canada.ca`, `donneesquebec.ca`, `seao.ca`, `tbs-sct.canada.ca`,
-`finances.gouv.qc.ca`, `quebec.ca`, `vgq.qc.ca`, `pbo-dpb.ca` — all 403 at the
-proxy). Nothing was fetched, so nothing could be checked against reality.
-
-What this means in practice:
-
-- **The OCDS parser should be close to right.** It targets a published standard,
-  and is tested against release packages, record packages, bare releases and
-  newline-delimited JSON, including multi-supplier awards and value fallbacks.
-- **The legacy SEAO XML field map is a guess.** SEAO's pre-2021 XML has no
-  published schema. The parser resolves each field against a list of candidate
-  tag spellings after normalizing away namespace, accents, case and punctuation,
-  so correcting it is a one-line change to `FIELD_MAP`. Run
-  `govbudget seao:inspect` on a real file first — it prints the actual element
-  paths with sample values and flags every tag the map does not cover.
-- **Dataset discovery is by search, not by hard-coded ID.** If the CKAN query
-  fails to find SEAO, the error says so and points at the registry rather than
-  failing silently.
-
-Run `govbudget check-sources --write` from an unrestricted network and the
-registry records what is genuinely reachable.
+Some Government of Canada hosts — `tpsgc-pwgsc.gc.ca` among them — serve
+certificates under Entrust roots. Mozilla distrusted Entrust in 2024 and certifi
+mirrors Mozilla, so **certifi ships no Entrust roots at all** and Python cannot
+reach these hosts even though browsers can. The project defers to the OS trust
+store via `truststore`. Verification is never disabled.
 
 ## Decisions worth making early
 
-Recorded in full under `caveats` in the registry; `govbudget caveats` prints
-them by severity. The one that shapes the schema:
+`govbudget caveats` prints all 16 by severity. The one that shapes the schema:
 
 **The federal and Quebec spending taxonomies do not map onto each other.** The
 federal standard object / vote / program structure and Quebec's portefeuille /
 mission / programme structure have no crosswalk that survives contact with the
 detail. Either build two parallel fact tables joined only at a coarse function
-level, or accept a lossy mapping into one. This is why `models.BudgetLine` holds
-jurisdiction-specific dimensions in a `dimensions` dict rather than as columns —
-it defers the decision without pretending it has been made.
+level, or accept a lossy mapping into one. `models.BudgetLine` holds
+jurisdiction-specific dimensions in a `dimensions` dict rather than as columns,
+so it defers the decision without pretending it has been made.
 
-Contract awards sidestep this entirely, which is the other reason SEAO was a
-good place to start: an award has a supplier and an amount, and needs no
-taxonomy reconciliation to be useful.
+Contract awards sidestep this, which is the other reason SEAO was a good place to
+start: an award has a supplier and an amount, and needs no taxonomy
+reconciliation to be useful.
 
-Two more worth knowing before charting anything: Estimates report *authorities*
-and Public Accounts report *expenditures* (the gap is lapsed spending, and it is
-real), and federal transfers to Quebec appear as both federal expenditure and
-Quebec revenue, so summing the two levels double-counts the health transfer and
-equalization.
+Also worth knowing before charting: Estimates report *authorities* and Public
+Accounts report *expenditures* (the gap is lapsed spending, and it is real);
+federal transfers to Quebec appear as both federal expenditure and Quebec
+revenue, so summing the two levels double-counts the health transfer and
+equalization; and the two SEAO eras label procurement methods differently, so
+grouping by method across the boundary splits one category in two until a
+crosswalk is applied.
 
 ## Licensing
 
@@ -140,9 +189,9 @@ needs a visible attribution statement per the licence terms.
 ## Tests
 
 ```bash
-.venv/bin/python -m pytest
+.venv/bin/pytest
 ```
 
-82 tests covering amount and date normalization across French and English
-formats, both parsers, CKAN response handling, content-addressed storage with
-conditional fetch, and the staging schema.
+105 tests. The parser fixtures reproduce the real published schema — the 0/1
+flags, the `0.000000` convention, French number formatting, and the OCDS
+publisher conventions — rather than an invented one.
