@@ -188,6 +188,36 @@ QUEBEC_SUPERCATEGORIE: dict[str, str] = {
     "A": "other",           # moins Amortissement
 }
 
+#: Quebec supercatégories keyed on the *label* rather than the code.
+#:
+#: The Budget de dépenses writes '5 Transfert' with a leading code; the Comptes
+#: publics write 'Transferts' with none, and pluralise differently. Keying only
+#: on the code sends every Comptes publics row to 'other' — silently, since the
+#: fallback is a valid category.
+QUEBEC_SUPERCATEGORIE_LABEL: dict[str, str] = {
+    "remuneration": "personnel",
+    "fonctionnement": "operating",
+    "transfert": "transfers",
+    "transferts": "transfers",
+    "immobilisations autres qu'en ressources informationnelles": "capital",
+    "immobilisations en ressources informationnelles": "capital",
+    "service de la dette": "debt_service",
+    "affectation a un fonds special": "other",
+    "creances douteuses et autres provisions": "other",
+    "creances douteuses, autres provisions et pertes": "other",
+    "prets, placements, avances et autres couts": "other",
+    "moins amortissement": "other",
+    "amortissement": "other",
+}
+
+
+def _strip_accents(text: str) -> str:
+    import unicodedata
+
+    decomposed = unicodedata.normalize("NFKD", text)
+    return "".join(c for c in decomposed if not unicodedata.combining(c))
+
+
 #: Appropriation type. The one dimension that maps exactly.
 APPROPRIATION = {
     "voted": ("Voted", "Votés"),
@@ -202,8 +232,14 @@ FEDERAL_APPROPRIATION: dict[str, str] = {
 }
 
 QUEBEC_APPROPRIATION: dict[str, str] = {
+    # Budget de dépenses wording
     "Votés": "voted",
     "Permanents": "statutory",
+    # Comptes publics wording for the same distinction
+    "Annuels": "voted",
+    # Spending that requires no appropriation at all — neither voted nor
+    # statutory, so it is left unmapped rather than forced into one.
+    "Ne nécessitant pas de crédits": None,
 }
 
 
@@ -217,12 +253,19 @@ def federal_economic(standard_object: str | None) -> str:
 def quebec_economic(supercategorie: str | None) -> str:
     """Map a Quebec supercatégorie to the harmonized category.
 
-    Accepts the raw CSV value, which prefixes the code: '1 Rémunération'.
+    Handles both published forms: the Budget de dépenses prefixes a code
+    ('5 Transfert'), the Comptes publics give the label alone ('Transferts').
     """
-    if not supercategorie:
+    text = (supercategorie or "").strip()
+    if not text:
         return "other"
-    code = supercategorie.strip().split(None, 1)[0]
-    return QUEBEC_SUPERCATEGORIE.get(code, "other")
+
+    code = text.split(None, 1)[0]
+    if code in QUEBEC_SUPERCATEGORIE:
+        return QUEBEC_SUPERCATEGORIE[code]
+
+    label = _strip_accents(text).lower().strip()
+    return QUEBEC_SUPERCATEGORIE_LABEL.get(label, "other")
 
 
 def quebec_appropriation(type_de_credits: str | None) -> str | None:

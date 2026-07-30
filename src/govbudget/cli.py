@@ -10,6 +10,7 @@
     govbudget infobase:ingest         fetch, parse and stage GC InfoBase
     govbudget infobase:summary        headline federal figures
     govbudget qc:ingest               fetch, parse and stage the Budget de dépenses
+    govbudget qc:comptes              fetch, parse and stage the Comptes publics
     govbudget compare                 federal vs Quebec on the shared spine
     govbudget dashboard:data          build the aggregates the dashboard reads
 """
@@ -308,6 +309,28 @@ def cmd_qc_ingest(args: argparse.Namespace) -> int:
     return 0 if total else 1
 
 
+def cmd_qc_comptes(args: argparse.Namespace) -> int:
+    from .sources import qc_comptes
+
+    total = 0
+    written: list[Path] = []
+    with RawStore() as store:
+        for resource, entry, lines in qc_comptes.ingest(
+            store=store, years=args.years, force=args.force
+        ):
+            total += len(lines)
+            path = staging.write_records(
+                lines, dataset="budget_lines", source_id=qc_comptes.SOURCE_ID,
+                content_hash=entry.content_hash,
+            )
+            if path:
+                written.append(path)
+            print(f"  {(resource.name or '').strip()[:52]:<52} {len(lines):>6,}", file=sys.stderr)
+
+    print(f"\n{total:,} budget lines from {len(written)} file(s)", file=sys.stderr)
+    return 0 if total else 1
+
+
 def cmd_compare(args: argparse.Namespace) -> int:
     """Federal vs Quebec on the dimensions the taxonomy says are shared."""
     import polars as pl
@@ -448,6 +471,11 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--years", type=int, help="only the N most recent years")
     p.add_argument("--force", action="store_true", help="re-download even if unchanged")
     p.set_defaults(func=cmd_qc_ingest)
+
+    p = sub.add_parser("qc:comptes", help="fetch and stage the Comptes publics du Québec")
+    p.add_argument("--years", type=int, help="only the N most recent years")
+    p.add_argument("--force", action="store_true")
+    p.set_defaults(func=cmd_qc_comptes)
 
     p = sub.add_parser("compare", help="federal vs Quebec on the shared spine")
     p.add_argument("--federal-year")

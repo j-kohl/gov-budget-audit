@@ -153,7 +153,10 @@ def parse(data: bytes, content_hash: str) -> list[BudgetLine]:
     text = data.decode("utf-8-sig", errors="replace")
     sample = text[:8000]
     delimiter = ";" if sample.count(";") > sample.count(",") else ","
-    reader = csv.DictReader(io.StringIO(text), delimiter=delimiter)
+    # newline="" is required: without it StringIO translates line endings and
+    # csv breaks on fields that legitimately contain a newline, which the
+    # Comptes publics beneficiary table does.
+    reader = csv.DictReader(io.StringIO(text, newline=""), delimiter=delimiter)
     columns = list(reader.fieldnames or [])
     if not columns:
         return []

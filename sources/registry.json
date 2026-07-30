@@ -255,13 +255,16 @@
       "measure": "audited actual expenditures",
       "join_keys": [
         "portefeuille",
-        "fiscal_year"
+        "programme",
+        "element",
+        "supercategorie"
       ],
       "license": "see site terms",
-      "notes": "Published as CSV on Données Québec in two volumes, not PDF-only as previously recorded here. Volume 2 carries expenditure detail — the actuals to set against the Budget de dépenses plan.",
+      "notes": "Ingested from Données Québec Volume 2 as CSV. Actual expenditure by portefeuille/programme/élément, plus transfers by recipient type. 2024-25 actuals $135.1B against $134.8B of credits — the plan/actual pair Quebec previously lacked. File encoding and column names differ by year: 2024-25 is UTF-8 semicolon-delimited with Portefeuille and Type_de_credits; earlier years are UTF-16 comma-delimited with Nom_portefeuille and no credits type.",
       "verified": true,
       "ckan_api": "https://www.donneesquebec.ca/recherche/api/3/action",
-      "discovery_query": "comptes publics du gouvernement"
+      "discovery_query": "comptes publics du gouvernement",
+      "dataset_hint": "Comptes publics du gouvernement – Volume 2"
     },
     {
       "id": "donnees_quebec",
@@ -312,6 +315,16 @@
     }
   ],
   "caveats": [
+    {
+      "id": "qc-investment-2021-22",
+      "severity": "high",
+      "summary": "Comptes publics reports $41.4B of 'Investissements' for 2021-22 against roughly $1B in every other year, with individual rows such as 'Santé et Services sociaux / Fonctions de coordination' at $16.5B that are not plausibly capital. The Repartition vocabulary is identical across years, so this is not a parsing artefact — the 2021-22 file appears to scope investment differently, possibly including the health and education networks. Unresolved: the investment measure should not be charted for 2021-22 until someone confirms what it covers. Expenditure figures for that year look consistent with neighbouring years and are unaffected."
+    },
+    {
+      "id": "qc-comptes-encoding",
+      "severity": "medium",
+      "summary": "Comptes publics CSVs change encoding and column names between years: 2024-25 is UTF-8, semicolon-delimited, with 'Portefeuille' and 'Type_de_credits'; 2021-22 to 2023-24 are UTF-16 with a BOM, comma-delimited, with 'Nom_portefeuille' and no credits type. Decoded as UTF-8 the older files yield column names full of null bytes that match nothing, so the parse returns zero rows without raising. The parser detects the BOM and resolves columns by alias, and raises rather than returning empty when the required columns are absent."
+    },
     {
       "id": "consolidation-level",
       "severity": "critical",

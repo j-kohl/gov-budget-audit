@@ -147,3 +147,29 @@ class TestRobustness:
         data = CSV_2026 + b",,,,,1,0,0,1\n"
         before = len(qc_depenses.parse(CSV_2026, "h"))
         assert len(qc_depenses.parse(data, "h")) == before
+
+
+class TestComptesPublicsWording:
+    """The Comptes publics use different wording for the same dimensions."""
+
+    def test_supercategorie_without_a_code_prefix(self):
+        """Budget de dépenses writes '5 Transfert'; Comptes publics 'Transferts'.
+        Keying only on the code sends every actuals row to 'other' — silently,
+        because 'other' is a valid category."""
+        from govbudget import taxonomy
+
+        assert taxonomy.quebec_economic("Transferts") == "transfers"
+        assert taxonomy.quebec_economic("5 Transfert") == "transfers"
+        assert taxonomy.quebec_economic("Rémunération") == "personnel"
+        assert taxonomy.quebec_economic("Service de la dette") == "debt_service"
+
+    def test_annuels_is_the_comptes_publics_word_for_voted(self):
+        from govbudget import taxonomy
+
+        assert taxonomy.quebec_appropriation("Annuels") == "voted"
+        assert taxonomy.quebec_appropriation("Votés") == "voted"
+
+    def test_spending_needing_no_credits_is_unmapped_not_guessed(self):
+        from govbudget import taxonomy
+
+        assert taxonomy.quebec_appropriation("Ne nécessitant pas de crédits") is None

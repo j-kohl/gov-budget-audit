@@ -165,3 +165,41 @@ class TestTransferPayments:
 
     def test_rows_without_amounts_emit_nothing(self):
         assert not [x for x in self._lines() if x.programme == "No amounts here"]
+
+
+class TestComptesPublicsDecoding:
+    """Encoding and column names drift between publication years."""
+
+    def test_utf16_files_decoded(self):
+        """2021-22 to 2023-24 are UTF-16 with a BOM. Read as UTF-8 the column
+        names come back full of null bytes and match nothing, so the parse
+        returns zero rows without raising."""
+        from govbudget.sources import qc_comptes
+
+        text = "Portefeuille;Montant\nSanté;1 000\n"
+        assert qc_comptes._decode(text.encode("utf-16")).startswith("Portefeuille")
+        assert qc_comptes._decode(text.encode("utf-8")).startswith("Portefeuille")
+
+    def test_column_aliases_across_years(self):
+        from govbudget.sources import qc_comptes
+
+        modern = qc_comptes._resolve(["Portefeuille", "Montant", "Type_de_credits"])
+        legacy = qc_comptes._resolve(["Nom_portefeuille", "Numero_portefeuille", "Montant"])
+        assert modern["portefeuille"] == "Portefeuille"
+        assert legacy["portefeuille"] == "Nom_portefeuille"
+        assert "type_de_credits" not in legacy
+
+    def test_missing_required_columns_raises_rather_than_returning_empty(self):
+        import pytest
+
+        from govbudget.sources import qc_comptes
+
+        data = b"Something;Else\na;b\n"
+        with pytest.raises(ValueError, match="missing"):
+            qc_comptes.parse_expenditures(data, "h", "2024-25")
+
+    def test_fiscal_year_from_resource_title(self):
+        from govbudget.sources import qc_comptes
+
+        assert qc_comptes.fiscal_year_from_name("... général 2024-2025") == "2024-25"
+        assert qc_comptes.fiscal_year_from_name("no year here") is None

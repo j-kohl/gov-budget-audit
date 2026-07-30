@@ -120,7 +120,10 @@ def _rows(data: bytes) -> list[dict[str, str]]:
     text = data.decode("utf-8-sig", errors="replace")
     sample = text[:8000]
     delimiter = ";" if sample.count(";") > sample.count(",") else ","
-    return list(csv.DictReader(io.StringIO(text), delimiter=delimiter))
+    # newline="" is required: without it StringIO translates line endings and
+    # csv breaks on fields that legitimately contain a newline, which the
+    # Comptes publics beneficiary table does.
+    return list(csv.DictReader(io.StringIO(text, newline=""), delimiter=delimiter))
 
 
 def _fiscal_year(value: str | None) -> str:
