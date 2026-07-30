@@ -1,0 +1,33 @@
+{
+  "awards": 732012,
+  "notices": 646609,
+  "suppliers": 153249,
+  "buyers": 2486,
+  "total_cad": 463041554804.68,
+  "median_cad": 74880.0,
+  "first_award": "2009-01-01",
+  "last_award": "2026-07-01",
+  "all_bids": 1219992,
+  "winning_bids": 739997,
+  "excluded_non_dollar": 7985,
+  "overrun_total_cad": 2840014474.42,
+  "data_quality": {
+    "before_2009": 2910,
+    "future_dated": 1,
+    "missing_date": 252
+  },
+  "coverage": [
+    {
+      "format": "ocds-json",
+      "rows": 362764,
+      "from": "2004-06-11",
+      "to": "2026-06-30"
+    },
+    {
+      "format": "seao-xml",
+      "rows": 369248,
+      "from": "2004-06-18",
+      "to": "2021-05-31"
+    }
+  ]
+}

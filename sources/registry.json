@@ -1,7 +1,7 @@
 {
   "$comment": "Registry of Canadian federal and Quebec government spending sources. `access` is the field that matters for build planning: 'ckan' and 'bulk' sources need no scraping, 'pdf' sources need table extraction, 'crawl' sources need an index walk before extraction. Every entry is unverified until scripts probe it from a network that can reach these hosts.",
   "schema_version": "2.0.0",
-  "last_verified": null,
+  "last_verified": "2026-07-30T17:11:11+00:00",
   "jurisdictions": {
     "ca-federal": "Government of Canada",
     "qc": "Gouvernement du Québec"
@@ -17,35 +17,51 @@
       "portal": "https://www.donneesquebec.ca",
       "ckan_api": "https://www.donneesquebec.ca/recherche/api/3/action",
       "discovery_query": "SEAO",
-      "formats": ["xml", "json"],
-      "format_notes": "Yearly XML from 2009. OCDS-based JSON from March 2021. Weekly (hebdo_) and monthly (mensuel_) delta drops.",
+      "formats": [
+        "xml",
+        "json"
+      ],
+      "format_notes": "Yearly XML archives 'Année 2009'-'Année 2020', then monthly XML archives named in French ('Mai 2024'), running to May 2024. OCDS JSON as mensuel_/hebdo_ files from June 2021. Each XML archive is a zip of six files: Avis (notices and all bidders), Contrats (final amounts), Depenses (spending beyond contract), plus a Revisions file for each. The dataset also carries the XML and JSON format specifications as PDFs.",
       "update_cadence": "weekly",
       "history_from": "2009",
       "measure": "contract awards",
-      "join_keys": ["numero_seao", "ocid", "neq", "organisme"],
+      "join_keys": [
+        "numero_seao",
+        "ocid",
+        "neq",
+        "organisme"
+      ],
       "license": "Open Government Licence – Québec",
-      "notes": "Highest-value dataset in the registry and needs no PDF work — the reason it is the first ingester. Two eras with different schemas meeting in March 2021; the overlap window is worth ingesting from both sides once to validate the crosswalk.",
-      "verified": false
+      "notes": "Verified against the live dataset: 418 resources, 12 yearly XML archives, 41 monthly XML archives, 361 OCDS JSON files, 3 PDFs. XML and OCDS overlap from June 2021 to May 2024, so ingesting both double-counts. Depenses is the most audit-relevant file SEAO publishes: supplementary spending above 10% of the contract, with a stated reason.",
+      "verified": true,
+      "dataset_id": "d23b2e02-085d-43e5-9e6e-e1d558ebfdd5"
     },
     {
       "id": "gc_infobase",
       "name": "GC InfoBase",
       "jurisdiction": "ca-federal",
       "tier": 1,
-      "access": "bulk",
+      "access": "ckan",
       "covers": "Federal financial, people, and results data: authorities, expenditures, spending by vote, FTEs, program-level results.",
       "portal": "https://open.canada.ca",
       "ckan_api": "https://open.canada.ca/data/en/api/3/action",
       "dataset_id": "a35cf382-690c-4221-a971-cf0fd189a46f",
-      "formats": ["csv"],
+      "formats": [
+        "csv"
+      ],
       "format_notes": "The named dataset is the index of all InfoBase CSVs. No scraping of the InfoBase UI is needed or wanted.",
       "update_cadence": "with Estimates and Public Accounts cycles",
       "history_from": "roughly 1995 for expenditures",
       "measure": "authorities and expenditures",
-      "join_keys": ["org_id", "vote_number", "program_id", "fiscal_year"],
+      "join_keys": [
+        "org_id",
+        "vote_number",
+        "program_id",
+        "fiscal_year"
+      ],
       "license": "Open Government Licence – Canada",
-      "notes": "The best federal starting point. InfoBase restates historical series to account for organizational mergers and renames, so its adjusted series is more comparable across years than raw Public Accounts.",
-      "verified": false
+      "notes": "Verified: 48 CSV resources, English/French pairs of 24 tables. Expenditures by standard object and authorities/expenditures by vote are ingested. FY2024-25 expenditures $474.4B, of which $297.1B transfer payments. InfoBase restates history for departmental mergers, so its series must not be mixed with unadjusted Public Accounts.",
+      "verified": true
     },
     {
       "id": "open_canada_contracts",
@@ -57,14 +73,20 @@
       "portal": "https://open.canada.ca",
       "ckan_api": "https://open.canada.ca/data/en/api/3/action",
       "discovery_query": "proactive disclosure contracts",
-      "formats": ["csv"],
+      "formats": [
+        "csv"
+      ],
       "update_cadence": "quarterly",
       "history_from": "2008",
       "measure": "contract awards",
-      "join_keys": ["vendor_name", "org_id", "reference_number"],
+      "join_keys": [
+        "vendor_name",
+        "org_id",
+        "reference_number"
+      ],
       "license": "Open Government Licence – Canada",
       "notes": "The federal counterpart to SEAO. Vendor names are free text and not keyed to a business number, so supplier-level joins need fuzzy matching.",
-      "verified": false
+      "verified": true
     },
     {
       "id": "open_canada_grants",
@@ -76,14 +98,20 @@
       "portal": "https://open.canada.ca",
       "ckan_api": "https://open.canada.ca/data/en/api/3/action",
       "discovery_query": "proactive disclosure grants contributions",
-      "formats": ["csv"],
+      "formats": [
+        "csv"
+      ],
       "update_cadence": "quarterly",
       "history_from": "2018 in the current schema",
       "measure": "transfer payments",
-      "join_keys": ["recipient_name", "org_id", "agreement_number"],
+      "join_keys": [
+        "recipient_name",
+        "org_id",
+        "agreement_number"
+      ],
       "license": "Open Government Licence – Canada",
       "notes": "Transfer payments are about 60% of federal spending, so this is where the money actually is — but this dataset covers only the grants and contributions slice, not major statutory transfers like OAS or the Canada Health Transfer, which appear only in Estimates and Public Accounts.",
-      "verified": false
+      "verified": true
     },
     {
       "id": "public_accounts_ca",
@@ -93,14 +121,21 @@
       "access": "pdf",
       "covers": "Audited annual actuals for the Government of Canada.",
       "portal": "https://www.tpsgc-pwgsc.gc.ca/recgen/cpc-pac/index-eng.html",
-      "formats": ["pdf", "csv"],
+      "formats": [
+        "pdf",
+        "csv"
+      ],
       "update_cadence": "annual, typically autumn",
       "history_from": "1995 online",
       "measure": "audited actual expenditures",
-      "join_keys": ["org_id", "vote_number", "fiscal_year"],
+      "join_keys": [
+        "org_id",
+        "vote_number",
+        "fiscal_year"
+      ],
       "license": "Open Government Licence – Canada",
       "notes": "Much of this overlaps the GC InfoBase CSVs — check InfoBase before doing PDF extraction work. Worth hunting for Excel annexes first.",
-      "verified": false
+      "verified": true
     },
     {
       "id": "estimates_ca",
@@ -112,14 +147,21 @@
       "portal": "https://open.canada.ca",
       "ckan_api": "https://open.canada.ca/data/en/api/3/action",
       "discovery_query": "estimates",
-      "formats": ["csv", "pdf"],
+      "formats": [
+        "csv",
+        "pdf"
+      ],
       "update_cadence": "Main in spring, Supplementary A/B/C through the year",
       "history_from": "2011 in machine-readable form",
       "measure": "authorities",
-      "join_keys": ["org_id", "vote_number", "fiscal_year"],
+      "join_keys": [
+        "org_id",
+        "vote_number",
+        "fiscal_year"
+      ],
       "license": "Open Government Licence – Canada",
       "notes": "Authorities, not expenditures — what was approved, not what was spent. Lapsed spending is the difference and is itself worth surfacing.",
-      "verified": false
+      "verified": true
     },
     {
       "id": "pbo",
@@ -129,14 +171,20 @@
       "access": "crawl",
       "covers": "Independent analysis and costing of federal fiscal policy.",
       "portal": "https://www.pbo-dpb.ca",
-      "formats": ["pdf", "csv", "xlsx"],
+      "formats": [
+        "pdf",
+        "csv",
+        "xlsx"
+      ],
       "update_cadence": "continuous",
       "history_from": "2008",
       "measure": "analysis and projections",
-      "join_keys": ["publication_id"],
+      "join_keys": [
+        "publication_id"
+      ],
       "license": "see site terms",
       "notes": "Low volume, easy to crawl: walk the publications index for metadata and attachment links, then extract. Independent of Finance Canada, so the spread between PBO and departmental projections is informative on its own.",
-      "verified": false
+      "verified": true
     },
     {
       "id": "qc_budget",
@@ -146,48 +194,77 @@
       "access": "pdf",
       "covers": "The annual Quebec budget: revenue, expenditure, and fiscal framework.",
       "portal": "https://www.finances.gouv.qc.ca",
-      "formats": ["pdf", "xlsx"],
+      "formats": [
+        "pdf",
+        "xlsx"
+      ],
       "update_cadence": "annual, March",
       "history_from": "1998 online",
       "measure": "budget plan",
-      "join_keys": ["fiscal_year", "portefeuille"],
+      "join_keys": [
+        "fiscal_year",
+        "portefeuille"
+      ],
       "license": "see site terms",
       "notes": "Consistent layout year to year, so table extraction is workable with per-document templates. Check for Excel annexes before writing a PDF parser.",
-      "verified": false
+      "verified": true
     },
     {
       "id": "qc_budget_depenses",
       "name": "Budget de dépenses (Conseil du trésor)",
       "jurisdiction": "qc",
       "tier": 1,
-      "access": "pdf",
+      "access": "ckan",
       "covers": "Quebec expenditure budget broken down by portefeuille ministériel and by programme.",
-      "portal": "https://www.quebec.ca/gouvernement/votre-gouvernement/budget-depenses",
-      "formats": ["pdf", "xlsx"],
+      "portal": "https://www.donneesquebec.ca",
+      "formats": [
+        "csv",
+        "pdf"
+      ],
       "update_cadence": "annual, March",
       "history_from": "2000s online",
       "measure": "program expenditure budget",
-      "join_keys": ["portefeuille", "programme", "fiscal_year"],
+      "join_keys": [
+        "portefeuille",
+        "programme",
+        "element",
+        "supercategorie",
+        "type_de_credits"
+      ],
       "license": "see site terms",
-      "notes": "The Conseil du trésor volumes are laid out consistently across years, which makes templated extraction viable. This is the source for program-level Quebec spending and the natural counterpart to federal InfoBase program data — though the taxonomies do not map onto each other.",
-      "verified": false
+      "notes": "Previously recorded here as PDF-only requiring table extraction — that was wrong. The CSV carries PORTEFEUILLE / PROGRAMME / ELEMENT / SUPERCATEGORIE / TYPE_DE_CREDITS, which is the full expenditure taxonomy. 2026-27: $145.5B of crédits across 25 portefeuilles, 99 programmes and 330 éléments.",
+      "verified": true,
+      "ckan_api": "https://www.donneesquebec.ca/recherche/api/3/action",
+      "discovery_query": "budget de dépenses",
+      "format_notes": "CSV on Données Québec, four tables per year back to 2019-20: budgets et crédits des ministères, crédits de transfert, crédits aux fonds spéciaux, and prévisions des organismes autres que budgétaires. The PDF volumes carry the same figures with commentary."
     },
     {
       "id": "qc_comptes_publics",
       "name": "Comptes publics du Québec",
       "jurisdiction": "qc",
       "tier": 1,
-      "access": "pdf",
+      "access": "ckan",
       "covers": "Audited annual actuals for Quebec.",
-      "portal": "https://www.finances.gouv.qc.ca",
-      "formats": ["pdf"],
+      "portal": "https://www.donneesquebec.ca",
+      "formats": [
+        "csv",
+        "pdf"
+      ],
       "update_cadence": "annual, autumn",
       "history_from": "1990s online",
       "measure": "audited actual expenditures",
-      "join_keys": ["portefeuille", "fiscal_year"],
+      "join_keys": [
+        "portefeuille",
+        "programme",
+        "element",
+        "supercategorie"
+      ],
       "license": "see site terms",
-      "notes": "The actuals to set against the Budget de dépenses plan. Budget-versus-actual variance by portefeuille is one of the more useful views the dashboard can offer.",
-      "verified": false
+      "notes": "Ingested from Données Québec Volume 2 as CSV. Actual expenditure by portefeuille/programme/élément, plus transfers by recipient type. 2024-25 actuals $135.1B against $134.8B of credits — the plan/actual pair Quebec previously lacked. File encoding and column names differ by year: 2024-25 is UTF-8 semicolon-delimited with Portefeuille and Type_de_credits; earlier years are UTF-16 comma-delimited with Nom_portefeuille and no credits type.",
+      "verified": true,
+      "ckan_api": "https://www.donneesquebec.ca/recherche/api/3/action",
+      "discovery_query": "comptes publics du gouvernement",
+      "dataset_hint": "Comptes publics du gouvernement – Volume 2"
     },
     {
       "id": "donnees_quebec",
@@ -198,14 +275,21 @@
       "covers": "Quebec open data portal, including many municipalities. Host for the SEAO release files.",
       "portal": "https://www.donneesquebec.ca",
       "ckan_api": "https://www.donneesquebec.ca/recherche/api/3/action",
-      "formats": ["json", "csv", "xml"],
+      "formats": [
+        "json",
+        "csv",
+        "xml"
+      ],
       "update_cadence": "continuous",
       "history_from": "2016",
       "measure": "varies",
-      "join_keys": ["package_id", "resource_id"],
+      "join_keys": [
+        "package_id",
+        "resource_id"
+      ],
       "license": "varies by publisher, mostly Open Government Licence – Québec",
       "notes": "Same CKAN API shape as open.canada.ca, so one client covers both portals.",
-      "verified": false
+      "verified": true
     },
     {
       "id": "vgq",
@@ -215,17 +299,92 @@
       "access": "crawl",
       "covers": "Audits of Quebec government spending, including findings of mismanagement.",
       "portal": "https://www.vgq.qc.ca",
-      "formats": ["pdf"],
+      "formats": [
+        "pdf"
+      ],
       "update_cadence": "several reports per year",
       "history_from": "1990s",
       "measure": "audit findings",
-      "join_keys": ["publication_id", "portefeuille"],
+      "join_keys": [
+        "publication_id",
+        "portefeuille"
+      ],
       "license": "see site terms",
       "notes": "The qualitative counterpart to the expenditure data — where the money went wrong. Low volume: crawl the publications index, then extract.",
-      "verified": false
+      "verified": true
     }
   ],
   "caveats": [
+    {
+      "id": "qc-investment-2021-22",
+      "severity": "high",
+      "summary": "Comptes publics reports $41.4B of 'Investissements' for 2021-22 against roughly $1B in every other year, with individual rows such as 'Santé et Services sociaux / Fonctions de coordination' at $16.5B that are not plausibly capital. The Repartition vocabulary is identical across years, so this is not a parsing artefact — the 2021-22 file appears to scope investment differently, possibly including the health and education networks. Unresolved: the investment measure should not be charted for 2021-22 until someone confirms what it covers. Expenditure figures for that year look consistent with neighbouring years and are unaffected."
+    },
+    {
+      "id": "qc-comptes-encoding",
+      "severity": "medium",
+      "summary": "Comptes publics CSVs change encoding and column names between years: 2024-25 is UTF-8, semicolon-delimited, with 'Portefeuille' and 'Type_de_credits'; 2021-22 to 2023-24 are UTF-16 with a BOM, comma-delimited, with 'Nom_portefeuille' and no credits type. Decoded as UTF-8 the older files yield column names full of null bytes that match nothing, so the parse returns zero rows without raising. The parser detects the BOM and resolves columns by alias, and raises rather than returning empty when the required columns are absent."
+    },
+    {
+      "id": "consolidation-level",
+      "severity": "critical",
+      "summary": "Federal and Quebec consolidate at different levels, so economic categories that look equivalent are not. Federal Personnel is $65.3B; Quebec Rémunération is $4.9B — because Quebec's public-sector payroll sits inside the $112.1B it books as Transfert to the health and education networks, which employ the staff. Charting 'personnel spending' side by side compares a consolidated figure with an unconsolidated one. govbudget.taxonomy flags this per category: only debt service is freely comparable."
+    },
+    {
+      "id": "qc-sources-are-csv",
+      "severity": "medium",
+      "summary": "The Budget de dépenses and Comptes publics are published as CSV on Données Québec, not only as PDF. This registry previously recorded them as requiring table extraction, which overstated the remaining work substantially — the Quebec expenditure taxonomy is directly machine-readable."
+    },
+    {
+      "id": "seao-cross-era-duplication",
+      "severity": "critical",
+      "summary": "SEAO's two eras overlap in content, not only in file dates. Splitting the backfill at 2021-05 stops the files overlapping, but OCDS releases still republish awards the XML era already carried, under a different award_id — and the NEQ is present in one era and absent in the other, so any key built from those fields changes shape at the boundary and never matches itself. Measured on the full 17-year dataset this double-counted 20.4% of the total: $117.6B of $576.6B. Identity must be resolved economically (notice, supplier, amount, award date), which brings the total to $463.0B."
+    },
+    {
+      "id": "seao-placeholder-amounts",
+      "severity": "high",
+      "summary": "8,432 awards carry an amount of $1 or less and a further 16,000 are under $1,000. These are placeholders for open-ended or unit-price contracts, not real values. Any ratio computed against them — an overrun percentage, a variance — produces figures in the billions of percent. Guard the denominator."
+    },
+    {
+      "id": "seao-implausible-amounts",
+      "severity": "high",
+      "summary": "Some individual awards carry amounts that are clearly source data-entry errors: one municipal waste régie appears at $8.83B, roughly 1.9% of the entire 17-year total, alongside a $4.55M award on the same notice. The top 10 awards are 4.3% of the total, so a single bad row visibly moves headline figures. Outliers should be surfaced, not silently trimmed."
+    },
+    {
+      "id": "nondeterministic-aggregation",
+      "severity": "medium",
+      "summary": "Parallel float summation is not associative, so an unrounded SUM over ~900k rows varies in its last decimals between runs of identical data, and rounding only moves the coin-flip to the half-cent boundary. Money is summed as DECIMAL, and every window function and LIMIT carries a total ordering, so the published aggregates are byte-reproducible."
+    },
+    {
+      "id": "seao-all-bidders",
+      "severity": "critical",
+      "summary": "SEAO's <fournisseurs> block lists every bidder, not just the winner. Only <adjudicataire>1</adjudicataire> is an award. On May 2024 data that is 6,276 winners out of 11,350 bidder rows — treating all rows as awards overstates contract spending by roughly 80%. The OCDS era publishes winners only, so both parsers set is_winner and every total must filter on it."
+    },
+    {
+      "id": "seao-amount-units",
+      "severity": "critical",
+      "summary": "<montantssoumisunite> says what an amount is denominated in: dollars, but also $/km, $/hour, %, points and $US. Summing without filtering adds percentages to dollars. Only units 0 and 1 are plain CAD. Code 0 is absent from the published specification but is the most common value and matches the independently published final amounts at a median ratio of 1.000, so it is treated as dollars."
+    },
+    {
+      "id": "seao-zero-means-na",
+      "severity": "high",
+      "summary": "SEAO writes 0.000000 rather than an empty element for 'not applicable'. <montanttotalcontrat> is usually 0 while <montantcontrat> holds the real figure, so straightforward field-preference ordering silently picks zero."
+    },
+    {
+      "id": "seao-three-facts",
+      "severity": "high",
+      "summary": "Awarded, final and supplementary amounts are three different numbers published in three different files (Avis, Contrats, Depenses), joined on numeroseao. The awarded amount is not what was ultimately paid. Cost overruns are only visible by joining Depenses back to the award."
+    },
+    {
+      "id": "seao-method-labels-differ",
+      "severity": "medium",
+      "summary": "The two eras label procurement methods differently — the XML <type> code table gives 'Contrat octroyé de gré à gré' while OCDS procurementMethodDetails gives 'Contrat de gré à gré'. Grouping by method across eras splits one category in two until a crosswalk is applied."
+    },
+    {
+      "id": "entrust-tls",
+      "severity": "medium",
+      "summary": "Some Government of Canada hosts (tpsgc-pwgsc.gc.ca among them) serve certificates under Entrust roots, which Mozilla distrusted in 2024 and certifi therefore no longer ships. Python clients using certifi cannot reach them even though browsers can. The project defers to the OS trust store via the truststore package rather than weakening verification."
+    },
     {
       "id": "taxonomy-mismatch",
       "severity": "critical",

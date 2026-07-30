@@ -1,0 +1,61 @@
+{
+  "latest_year": {
+    "ca-federal": "2024-25",
+    "qc": "2024-25"
+  },
+  "categories": [
+    {
+      "key": "personnel",
+      "label_en": "Personnel",
+      "label_fr": "Rémunération",
+      "level": "not-comparable",
+      "note": "Federal Personnel is $65.3B, Quebec Rémunération $4.9B. Quebec's public-sector payroll is inside its Transfert line, since the networks employ the staff. The two measure different populations.",
+      "note_fr": "Le poste Personnel fédéral atteint 65,3 G$, la Rémunération québécoise 4,9 G$. La masse salariale publique du Québec est comprise dans les transferts, puisque ce sont les réseaux qui emploient le personnel. Les deux mesures ne portent pas sur la même population."
+    },
+    {
+      "key": "operating",
+      "label_en": "Operating",
+      "label_fr": "Fonctionnement",
+      "level": "not-comparable",
+      "note": "Same consolidation problem as personnel: network operating costs appear as Quebec transfers, not as Quebec operating spending.",
+      "note_fr": "Même problème de consolidation que la rémunération : les frais de fonctionnement des réseaux apparaissent comme des transferts québécois, non comme des dépenses de fonctionnement."
+    },
+    {
+      "key": "transfers",
+      "label_en": "Transfer payments",
+      "label_fr": "Transferts",
+      "level": "caution",
+      "note": "Both are large (federal $270.2B of $474.9B; Quebec $112.1B of $145.5B) but they are not the same thing. Federal transfers go mostly to individuals and provinces; Quebec transfers go mostly to the health and education networks it funds, which then spend on salaries. Summing the two also double-counts the federal transfers Quebec receives as revenue.",
+      "note_fr": "Les deux montants sont importants (fédéral 270,2 G$ sur 474,9 G$ ; Québec 112,1 G$ sur 145,5 G$) mais ne recouvrent pas la même chose. Les transferts fédéraux vont surtout aux particuliers et aux provinces ; les transferts québécois vont surtout aux réseaux de la santé et de l'éducation, qui paient ensuite les salaires. Additionner les deux compterait aussi deux fois les transferts fédéraux versés au Québec."
+    },
+    {
+      "key": "capital",
+      "label_en": "Capital",
+      "label_fr": "Immobilisations",
+      "level": "caution",
+      "note": "Quebec reports investment separately from expenditure credits (BUDGET_INVESTISSEMENT) and splits out information-technology assets; the federal standard objects fold acquisition into expenditure.",
+      "note_fr": "Le Québec présente les investissements séparément des crédits de dépenses (BUDGET_INVESTISSEMENT) et isole les ressources informationnelles ; les objets standards fédéraux intègrent les acquisitions aux dépenses."
+    },
+    {
+      "key": "debt_service",
+      "label_en": "Debt service",
+      "label_fr": "Service de la dette",
+      "level": "comparable",
+      "note": "Both book interest on their own debt at the same consolidation level.",
+      "note_fr": "Les deux ordres de gouvernement inscrivent les intérêts de leur propre dette au même niveau de consolidation."
+    },
+    {
+      "key": "other",
+      "label_en": "Other",
+      "label_fr": "Autres",
+      "level": "not-comparable",
+      "note": "A residual on both sides, holding different things. Never chart it as though it were one category.",
+      "note_fr": "Un poste résiduel des deux côtés, qui ne contient pas les mêmes éléments. À ne jamais présenter comme une catégorie unique."
+    }
+  ],
+  "measures": {
+    "ca-federal": "expenditures",
+    "qc": "expenditures"
+  },
+  "qc_source": "qc_comptes_publics"
+}

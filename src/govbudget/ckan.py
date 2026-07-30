@@ -16,9 +16,10 @@ from typing import Any
 
 import httpx
 
+from .http import build_client
+
 log = logging.getLogger(__name__)
 
-USER_AGENT = "gov-budget-audit (+https://github.com/j-kohl/gov-budget-audit)"
 DEFAULT_TIMEOUT = 60.0
 
 
@@ -77,10 +78,8 @@ class CkanClient:
         client: httpx.Client | None = None,
     ):
         self.base_url = base_url.rstrip("/")
-        self._client = client or httpx.Client(
-            timeout=timeout,
-            follow_redirects=True,
-            headers={"User-Agent": USER_AGENT, "Accept": "application/json"},
+        self._client = client or build_client(
+            timeout=timeout, headers={"Accept": "application/json"}
         )
         self._owns_client = client is None
 
