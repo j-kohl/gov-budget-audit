@@ -1,5 +1,7 @@
 # gov-budget-audit
 
+**Live dashboard: https://j-kohl.github.io/gov-budget-audit/**
+
 A consolidated view of Canadian federal and Quebec government spending, built
 from the public sources it is currently scattered across.
 
@@ -26,6 +28,23 @@ not total public spending** — transfer payments, salaries and debt service are
 all outside it. See the dashboard's *Sources* page.
 
 ## The dashboard
+
+Published to GitHub Pages at **https://j-kohl.github.io/gov-budget-audit/** by
+[`.github/workflows/pages.yml`](.github/workflows/pages.yml) on every push that
+touches `dashboard/`.
+
+CI runs no ingest. `dashboard/src/data` holds 125 KB of deterministic
+aggregates, committed to the repo, so the build needs only Node — no raw store,
+no database. Refreshing the data is a deliberate local step:
+
+```bash
+govbudget dashboard:data && git add dashboard/src/data && git commit
+```
+
+Because the aggregation is byte-reproducible, an empty diff means the source
+genuinely has not changed, and a non-empty one is reviewable.
+
+Locally:
 
 ```bash
 govbudget dashboard:data          # aggregate the staged Parquet
