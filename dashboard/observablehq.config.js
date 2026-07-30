@@ -8,7 +8,7 @@ export default {
   title: "Dépenses publiques — Québec",
   pages: [
     {name: "Vue d'ensemble", path: "/"},
-    {name: "Fédéral et Québec", path: "/budget"},
+    {name: "Où va l'argent", path: "/budget"},
     {name: "Fournisseurs", path: "/suppliers"},
     {name: "Concurrence", path: "/competition"},
     {name: "Dépassements de coûts", path: "/overruns"},

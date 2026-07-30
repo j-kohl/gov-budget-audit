@@ -127,3 +127,41 @@ class TestDelimiterHandling:
     def test_utf8_bom_tolerated(self):
         data = b"\xef\xbb\xbf" + STANDARD_OBJECT_CSV
         assert len(list(infobase.parse_standard_object(data, "h"))) == 4
+
+
+TRANSFERS_CSV = b"""fy_ef,org_id,org_name,type,description,expenditures,authorities
+FY 2024-25,12,Department of Finance,Grant,(S) Canada Health Transfer,52070383303.00,52070383303.00
+FY 2024-25,12,Department of Finance,Contribution,Some contribution programme,1000.00,2000.00
+FY 2024-25,12,Department of Finance,Grant,No amounts here,,
+"""
+
+
+class TestTransferPayments:
+    def _lines(self):
+        return list(infobase.parse_transfer_payments(TRANSFERS_CSV, "h"))
+
+    def test_fy_prefix_stripped_so_years_join_across_tables(self):
+        """This table writes 'FY 2024-25'; every other table writes '2024-25'.
+        Left as-is the same year would not join."""
+        assert {x.fiscal_year for x in self._lines()} == {"2024-25"}
+        assert infobase._fiscal_year("2023-24") == "2023-24"
+
+    def test_named_programme_retained(self):
+        cht = next(x for x in self._lines() if "Canada Health Transfer" in x.programme)
+        assert cht.amount == 52070383303.00 or cht.measure == "authorities"
+
+    def test_category_is_fixed_not_derived(self):
+        """Every row in this table is a transfer by construction."""
+        assert {x.economic_category for x in self._lines()} == {"transfers"}
+
+    def test_grant_and_contribution_distinguished(self):
+        assert {x.dimensions["transfer_type"] for x in self._lines()} == {"Grant", "Contribution"}
+
+    def test_both_measures_emitted(self):
+        contrib = [x for x in self._lines() if x.dimensions["transfer_type"] == "Contribution"]
+        assert {x.measure: x.amount for x in contrib} == {
+            "expenditures": 1000.0, "authorities": 2000.0
+        }
+
+    def test_rows_without_amounts_emit_nothing(self):
+        assert not [x for x in self._lines() if x.programme == "No amounts here"]

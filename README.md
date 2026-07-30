@@ -33,11 +33,18 @@ Published to GitHub Pages at **https://j-kohl.github.io/gov-budget-audit/** by
 [`.github/workflows/pages.yml`](.github/workflows/pages.yml) on every push to the
 default branch that touches `dashboard/`.
 
-Five pages: overview, **Fédéral et Québec**, who gets paid, competition, and cost
-overruns. The federal/Quebec page is generated from the comparability verdicts in
-[`taxonomy.py`](src/govbudget/taxonomy.py) — the verdict decides whether a
-category gets a direct comparison, a caution, or a refusal to chart the two
-together, so the page cannot drift out of step with the crosswalk.
+Six pages. **Où va l'argent** is the spending view: the largest federal
+appropriations and Quebec programmes by name, every federal transfer programme
+individually, spending by organization and by nature, and the gap between what
+Parliament authorized and what was actually spent.
+
+Comparability is a footnote there rather than the organizing principle — the
+verdicts from [`taxonomy.py`](src/govbudget/taxonomy.py) colour the bars and
+close the page, but the question the page answers is where the money went, not
+whether the two governments can be compared.
+
+The other four cover Quebec procurement: overview, who gets paid, competition,
+and cost overruns.
 
 CI runs no ingest. `dashboard/src/data` holds 125 KB of deterministic
 aggregates, committed to the repo, so the build needs only Node — no raw store,

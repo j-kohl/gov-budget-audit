@@ -423,6 +423,52 @@ def build_budget(output_dir: Path | None = None) -> dict[str, int]:
         GROUP BY 1,2,3 ORDER BY 1,2,3
     """)
 
+    # -- where the money actually goes ---------------------------------
+    # The named-programme views. The economic split says a category; these say
+    # which programme inside it, which is the question people arrive with.
+    dump("spending_programmes", """
+        WITH named AS (
+            -- Federal: statutory and voted appropriations carry their own name
+            -- in the vote table, and transfer programmes carry theirs.
+            SELECT 'ca-federal' AS jurisdiction, fiscal_year,
+                   organization, programme,
+                   CASE WHEN dimensions LIKE '%transfer_payments%'
+                        THEN 'transfer' ELSE 'appropriation' END AS kind,
+                   amount
+            FROM budget
+            WHERE jurisdiction = 'ca-federal' AND measure = 'expenditures'
+              AND programme IS NOT NULL
+              AND (dimensions LIKE '%vote%' OR dimensions LIKE '%transfer_payments%')
+            UNION ALL
+            SELECT 'qc', fiscal_year, organization, programme,
+                   'programme', amount
+            FROM budget
+            WHERE jurisdiction = 'qc' AND measure = 'authorities'
+              AND programme IS NOT NULL
+        )
+        SELECT * EXCLUDE (rn) FROM (
+            SELECT jurisdiction, fiscal_year, organization, programme, kind,
+                   CAST(sum(CAST(amount AS DECIMAL(18,2))) AS DOUBLE) AS amount,
+                   row_number() OVER (PARTITION BY jurisdiction, fiscal_year, kind
+                                      ORDER BY sum(amount) DESC, programme) AS rn
+            FROM named GROUP BY 1,2,3,4,5)
+        WHERE rn <= 25 ORDER BY jurisdiction, fiscal_year, kind, rn
+    """)
+
+    # Lapsed spending: approved but not spent. Only meaningful where a source
+    # publishes both measures for the same rows, which the vote table does.
+    dump("spending_lapsed", """
+        SELECT fiscal_year,
+               CAST(sum(CAST(amount AS DECIMAL(18,2)))
+                    FILTER (WHERE measure = 'authorities') AS DOUBLE) AS authorities,
+               CAST(sum(CAST(amount AS DECIMAL(18,2)))
+                    FILTER (WHERE measure = 'expenditures') AS DOUBLE) AS expenditures
+        FROM budget
+        WHERE jurisdiction = 'ca-federal' AND dimensions LIKE '%vote%'
+        GROUP BY 1 HAVING authorities IS NOT NULL AND expenditures IS NOT NULL
+        ORDER BY 1
+    """)
+
     latest = {
         row[0]: row[1] for row in
         con.execute("SELECT jurisdiction, max(fiscal_year) FROM spine GROUP BY 1").fetchall()

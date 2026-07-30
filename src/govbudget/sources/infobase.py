@@ -66,6 +66,11 @@ TABLES: tuple[InfobaseTable, ...] = (
         "Expenditures by economic classification (Personnel, Transfer payments, …)",
     ),
     InfobaseTable(
+        "transfer_payments",
+        "Public Accounts of Canada – Transfer Payments",
+        "Named grant and contribution programs — where transfer money actually goes",
+    ),
+    InfobaseTable(
         "vote",
         "Public Accounts of Canada – Authorities and Expenditures by Vote",
         "Authorities and expenditures by vote, voted and statutory",
@@ -118,6 +123,17 @@ def _rows(data: bytes) -> list[dict[str, str]]:
     return list(csv.DictReader(io.StringIO(text), delimiter=delimiter))
 
 
+def _fiscal_year(value: str | None) -> str:
+    """Normalize the fiscal year.
+
+    Most InfoBase tables publish '2023-24', but the transfer payments table
+    prefixes it: 'FY 2011-12'. Left unnormalized the same year would not join
+    across tables.
+    """
+    text = (value or "").strip()
+    return text[3:].strip() if text.upper().startswith("FY ") else text
+
+
 def _amount(value: str | None) -> float | None:
     if value is None or not str(value).strip():
         return None
@@ -138,7 +154,7 @@ def parse_standard_object(data: bytes, content_hash: str) -> Iterator[BudgetLine
             source_id=SOURCE_ID,
             source_content_hash=content_hash,
             jurisdiction=JURISDICTION,
-            fiscal_year=(row.get("fy_ef") or "").strip(),
+            fiscal_year=_fiscal_year(row.get("fy_ef")),
             organization=(row.get("org_name") or "").strip(),
             organization_id=(row.get("org_id") or "").strip() or None,
             measure="expenditures",
@@ -163,7 +179,7 @@ def parse_vote(data: bytes, content_hash: str) -> Iterator[BudgetLine]:
             source_id=SOURCE_ID,
             source_content_hash=content_hash,
             jurisdiction=JURISDICTION,
-            fiscal_year=(row.get("fy_ef") or "").strip(),
+            fiscal_year=_fiscal_year(row.get("fy_ef")),
             organization=(row.get("org_name") or "").strip(),
             organization_id=(row.get("org_id") or "").strip() or None,
             programme=description or None,
@@ -177,8 +193,41 @@ def parse_vote(data: bytes, content_hash: str) -> Iterator[BudgetLine]:
             yield BudgetLine(**base, measure=measure, amount=amount)
 
 
+def parse_transfer_payments(data: bytes, content_hash: str) -> Iterator[BudgetLine]:
+    """Named transfer programs — grants and contributions, one row per program.
+
+    Transfer payments are roughly 60% of federal spending, and the standard
+    object table reduces all of it to a single 'Transfer payments' line. This is
+    the table that says which programs the money actually went to.
+
+    Every row is a transfer, so the economic category is fixed rather than
+    derived from a standard object.
+    """
+    for row in _rows(data):
+        kind = (row.get("type") or "").strip()
+        description = (row.get("description") or "").strip()
+        base = dict(
+            source_id=SOURCE_ID,
+            source_content_hash=content_hash,
+            jurisdiction=JURISDICTION,
+            fiscal_year=_fiscal_year(row.get("fy_ef")),
+            organization=(row.get("org_name") or "").strip(),
+            organization_id=(row.get("org_id") or "").strip() or None,
+            programme=description or None,
+            economic_category="transfers",
+            economic_source_label=kind or "Transfer payment",
+            dimensions={"table": "transfer_payments", "transfer_type": kind},
+        )
+        for measure in ("authorities", "expenditures"):
+            amount = _amount(row.get(measure))
+            if amount is None:
+                continue
+            yield BudgetLine(**base, measure=measure, amount=amount)
+
+
 PARSERS = {
     "standard_object": parse_standard_object,
+    "transfer_payments": parse_transfer_payments,
     "vote": parse_vote,
 }
 
