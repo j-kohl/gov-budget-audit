@@ -115,6 +115,36 @@ SERVICE_PRECISION: dict[str, str] = {
 }
 
 
+#: Canonical competitiveness, spanning both eras.
+#:
+#: The XML <type> code table and the OCDS `procurementMethod` vocabulary
+#: describe the same thing in different words — grouping by the raw label splits
+#: one category in two at the 2021 boundary. Both are mapped here instead.
+#: 'open' means advertised publicly, 'limited' means selected bidders were
+#: invited, 'direct' means awarded without competition (gré à gré).
+COMPETITIVENESS: dict[str, str] = {
+    # XML <type> codes
+    "3": "open",
+    "9": "direct",
+    "10": "limited",
+    "14": "limited",
+    "16": "other",
+    "17": "open",
+    # OCDS procurementMethod vocabulary
+    "open": "open",
+    "selective": "limited",
+    "limited": "limited",
+    "direct": "direct",
+}
+
+COMPETITIVENESS_LABEL: dict[str, str] = {
+    "open": "Appel d'offres public",
+    "limited": "Sur invitation",
+    "direct": "Gré à gré",
+    "other": "Autre",
+}
+
+
 def label(table: dict[str, str], code: str | None) -> str | None:
     """Look up a code, returning None rather than raising on unknown values."""
     if code is None:

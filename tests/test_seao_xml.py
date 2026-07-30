@@ -274,3 +274,22 @@ class TestInspector:
         report = seao_xml.inspect_structure(xml)
         assert "champmysterieux" in report["unmapped_leaf_tags"]
         assert "numeroseao" not in report["unmapped_leaf_tags"]
+
+
+class TestCompetitivenessHarmonization:
+    """The two eras use different vocabularies for the same concept."""
+
+    def _typed(self, code):
+        return seao_xml.parse(AVIS.replace("<type>3</type>", f"<type>{code}</type>", 1))[0]
+
+    def test_public_tender_is_open(self):
+        assert self._typed("3").competitiveness == "open"
+
+    def test_gre_a_gre_is_direct(self):
+        award = self._typed("9")
+        assert award.competitiveness == "direct"
+        assert award.competitiveness_label == "Gré à gré"
+
+    def test_invitation_is_limited(self):
+        assert self._typed("10").competitiveness == "limited"
+        assert self._typed("14").competitiveness == "limited"

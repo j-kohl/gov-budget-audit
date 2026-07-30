@@ -208,3 +208,29 @@ class TestEdgeCases:
         del party["details"]
         party["identifier"] = {"scheme": "CA-QC-NEQ", "id": "9999999999"}
         assert ocds.parse(package)[0].supplier_neq == "9999999999"
+
+
+class TestCompetitivenessHarmonization:
+    """OCDS `procurementMethod` must land on the same canonical values as the
+    XML <type> codes, or grouping splits one category at the 2021 boundary."""
+
+    def _method(self, value):
+        package = json.loads(json.dumps(RELEASE_PACKAGE))
+        package["releases"][0]["tender"]["procurementMethod"] = value
+        return ocds.parse(package)[0]
+
+    def test_direct_matches_xml_gre_a_gre(self):
+        award = self._method("direct")
+        assert award.competitiveness == "direct"
+        assert award.competitiveness_label == "Gré à gré"
+
+    def test_open_matches_xml_public_tender(self):
+        assert self._method("open").competitiveness == "open"
+
+    def test_selective_is_limited(self):
+        assert self._method("selective").competitiveness == "limited"
+
+    def test_human_label_kept_separately(self):
+        award = self._method("direct")
+        assert award.notice_type_code == "direct"
+        assert award.procurement_method == "Contrat de gré à gré"

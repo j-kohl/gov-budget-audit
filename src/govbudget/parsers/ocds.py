@@ -33,6 +33,7 @@ from collections.abc import Iterator
 from typing import Any
 
 from ..models import ContractAward, ContractFinal
+from ..seao_codes import COMPETITIVENESS, COMPETITIVENESS_LABEL, label
 from ._util import clean_text, parse_amount, parse_date, parse_int
 
 log = logging.getLogger(__name__)
@@ -151,6 +152,15 @@ def _release_records(
         "buyer_city": clean_text(buyer_address.get("locality")),
         "buyer_region": clean_text(buyer_address.get("region")),
         "is_municipal": _detail_flag(buyer_party, "municipal"),
+        # Keep the standard vocabulary in the code field so it harmonizes with
+        # the XML <type> codes; the human label goes in procurement_method.
+        "notice_type_code": clean_text(tender.get("procurementMethod")),
+        "notice_type_label": clean_text(tender.get("procurementMethodDetails")),
+        "competitiveness": label(COMPETITIVENESS, clean_text(tender.get("procurementMethod"))),
+        "competitiveness_label": label(
+            COMPETITIVENESS_LABEL,
+            label(COMPETITIVENESS, clean_text(tender.get("procurementMethod"))),
+        ),
         "procurement_method": clean_text(
             tender.get("procurementMethodDetails") or tender.get("procurementMethod")
         ),

@@ -11,16 +11,34 @@ identifiers with any of them.
 
 ## Status
 
-The **SEAO ingester is built, verified against live data, and working**: Quebec
-public contracts from 2009 to the present, covering both the XML era and the
-OCDS JSON era, discovered through Données Québec.
+The **SEAO pipeline and dashboard are built and running on the full 17-year
+history**: 1.70M staged award rows, resolving to **732,012 awards worth
+$463.0B** across 153,249 suppliers and 2,486 public bodies, plus $2.84B of
+declared cost overruns.
 
 All 12 sources in the [registry](sources/registry.json) have been probed and
-respond. Contract awards, final settled amounts and cost overruns are staged to
-Parquet and queryable through DuckDB.
+respond. The dashboard is a static Observable Framework site under
+[`dashboard/`](dashboard/).
 
 Not yet built: the PDF extractors (Quebec Budget de dépenses, Comptes publics,
-Public Accounts of Canada), the federal ingesters, and the dashboard itself.
+Public Accounts of Canada) and the federal ingesters. **SEAO covers contracts,
+not total public spending** — transfer payments, salaries and debt service are
+all outside it. See the dashboard's *Sources* page.
+
+## The dashboard
+
+```bash
+govbudget dashboard:data          # aggregate the staged Parquet
+cd dashboard && npm install && npm run dev
+```
+
+Four pages: overview, who gets paid, competition (public tender vs gré à gré),
+and cost overruns. It reads precomputed aggregates rather than querying at run
+time, so `npm run build` produces a static site that hosts anywhere.
+
+The aggregates are byte-reproducible: money is summed as `DECIMAL` and every
+window function and `LIMIT` carries a total ordering, so re-running on unchanged
+data produces identical files.
 
 ## Why Python rather than a Node stack
 
@@ -103,6 +121,28 @@ double-counts. Ingest one era at a time.
 - `Depenses_*.xml` — spending beyond the original contract
 - plus a `*Revisions` file for each, skipped by default since they restate
   records already present
+
+## The 20% that was counted twice
+
+The single largest correctness issue found, and it only became visible once the
+whole history was loaded. Keying awards on what each file said — notice, award
+id, supplier — double-counted **20.4% of the total, $117.6B of $576.6B**.
+
+SEAO's two eras overlap in *content*, not just in file dates. Splitting the
+backfill at 2021-05 stops the files overlapping, but OCDS releases still
+republish awards the XML era already carried, under a new `award_id`. Worse, the
+NEQ is present in one era and absent in the other, so a key built from either
+field changes shape at the boundary and never matches itself.
+
+Identity is therefore resolved economically — one notice paying one supplier one
+amount on one date — in the analytical layer, not at ingest. Staging stays
+faithful to what each file said; the resolution can be revised without
+re-parsing 17 years of archives.
+
+That leaves the amount in the key deliberately. Collapsing on notice+supplier+date
+alone would look tidier but erase $23.5B of genuine awards: measurement showed
+10,556 groups where one notice awards the same supplier several distinct lots on
+the same day, each with its own `award_id`.
 
 ## Three ways to get the numbers wrong
 

@@ -67,6 +67,11 @@ class ContractAward:
     #: <type> code — how the contract was awarded. See seao_codes.NOTICE_TYPE.
     notice_type_code: str | None = None
     notice_type_label: str | None = None
+    #: Canonical competitiveness across both eras: open / limited / direct /
+    #: other. Derived from the XML <type> code or the OCDS procurementMethod,
+    #: which describe the same thing in different vocabularies.
+    competitiveness: str | None = None
+    competitiveness_label: str | None = None
     #: <nature> code — what was procured. See seao_codes.NATURE.
     nature_code: str | None = None
     nature_label: str | None = None

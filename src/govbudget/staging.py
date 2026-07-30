@@ -51,6 +51,8 @@ AWARD_SCHEMA: dict[str, pl.DataType] = {
     "description": pl.Utf8,
     "notice_type_code": pl.Utf8,
     "notice_type_label": pl.Utf8,
+    "competitiveness": pl.Utf8,
+    "competitiveness_label": pl.Utf8,
     "nature_code": pl.Utf8,
     "nature_label": pl.Utf8,
     "procurement_method": pl.Utf8,

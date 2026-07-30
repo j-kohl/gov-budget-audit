@@ -305,6 +305,26 @@
   ],
   "caveats": [
     {
+      "id": "seao-cross-era-duplication",
+      "severity": "critical",
+      "summary": "SEAO's two eras overlap in content, not only in file dates. Splitting the backfill at 2021-05 stops the files overlapping, but OCDS releases still republish awards the XML era already carried, under a different award_id — and the NEQ is present in one era and absent in the other, so any key built from those fields changes shape at the boundary and never matches itself. Measured on the full 17-year dataset this double-counted 20.4% of the total: $117.6B of $576.6B. Identity must be resolved economically (notice, supplier, amount, award date), which brings the total to $463.0B."
+    },
+    {
+      "id": "seao-placeholder-amounts",
+      "severity": "high",
+      "summary": "8,432 awards carry an amount of $1 or less and a further 16,000 are under $1,000. These are placeholders for open-ended or unit-price contracts, not real values. Any ratio computed against them — an overrun percentage, a variance — produces figures in the billions of percent. Guard the denominator."
+    },
+    {
+      "id": "seao-implausible-amounts",
+      "severity": "high",
+      "summary": "Some individual awards carry amounts that are clearly source data-entry errors: one municipal waste régie appears at $8.83B, roughly 1.9% of the entire 17-year total, alongside a $4.55M award on the same notice. The top 10 awards are 4.3% of the total, so a single bad row visibly moves headline figures. Outliers should be surfaced, not silently trimmed."
+    },
+    {
+      "id": "nondeterministic-aggregation",
+      "severity": "medium",
+      "summary": "Parallel float summation is not associative, so an unrounded SUM over ~900k rows varies in its last decimals between runs of identical data, and rounding only moves the coin-flip to the half-cent boundary. Money is summed as DECIMAL, and every window function and LIMIT carries a total ordering, so the published aggregates are byte-reproducible."
+    },
+    {
       "id": "seao-all-bidders",
       "severity": "critical",
       "summary": "SEAO's <fournisseurs> block lists every bidder, not just the winner. Only <adjudicataire>1</adjudicataire> is an award. On May 2024 data that is 6,276 winners out of 11,350 bidder rows — treating all rows as awards overstates contract spending by roughly 80%. The OCDS era publishes winners only, so both parsers set is_winner and every total must filter on it."

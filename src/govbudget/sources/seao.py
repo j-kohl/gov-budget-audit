@@ -197,16 +197,36 @@ def _strip_accents(text: str) -> str:
     return "".join(c for c in decomposed if not unicodedata.combining(c))
 
 
+def parse_period(text: str | None) -> tuple[int, int] | None:
+    """Parse a 'YYYY-MM' or 'YYYY' boundary into a comparable (year, month)."""
+    if not text:
+        return None
+    parts = str(text).split("-")
+    year = int(parts[0])
+    month = int(parts[1]) if len(parts) > 1 else 1
+    if not 1 <= month <= 12:
+        raise ValueError(f"month out of range in period {text!r}")
+    return year, month
+
+
 def select(
     resources: list[SeaoResource],
     *,
     era: str | None = None,
     cadence: str | None = None,
     year: int | None = None,
+    since: str | None = None,
+    until: str | None = None,
     limit: int | None = None,
     include_docs: bool = False,
 ) -> list[SeaoResource]:
-    """Filter discovered resources, newest first. Documentation excluded."""
+    """Filter discovered resources, newest first. Documentation excluded.
+
+    `since` and `until` take 'YYYY-MM' and are inclusive. They exist to express
+    the non-overlapping backfill: XML up to 2021-05, OCDS from 2021-06. A yearly
+    archive is treated as month 1 for `since` and month 12 for `until`, so
+    'Année 2020' falls inside `--until 2021-05` as a whole.
+    """
     selected = [r for r in resources if include_docs or r.is_data]
     if era:
         selected = [r for r in selected if r.era == era]
@@ -214,6 +234,16 @@ def select(
         selected = [r for r in selected if r.cadence == cadence]
     if year:
         selected = [r for r in selected if r.year == year]
+
+    lower = parse_period(since)
+    upper = parse_period(until)
+    if lower:
+        # A yearly archive counts as starting in January.
+        selected = [r for r in selected if r.year and (r.year, r.month or 1) >= lower]
+    if upper:
+        # A yearly archive counts as ending in December, so it is included whole.
+        selected = [r for r in selected if r.year and (r.year, r.month or 12) <= upper]
+
     selected = sorted(selected, key=lambda r: (r.year or 0, r.month or 0), reverse=True)
     return selected[:limit] if limit else selected
 

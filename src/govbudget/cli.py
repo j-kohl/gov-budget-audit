@@ -7,6 +7,7 @@
     govbudget seao:inspect FILE       report the structure of a SEAO XML file
     govbudget seao:ingest             fetch, parse and stage SEAO contracts
     govbudget seao:summary            headline figures for what has been staged
+    govbudget dashboard:data          build the aggregates the dashboard reads
 """
 
 from __future__ import annotations
@@ -117,7 +118,8 @@ def cmd_seao_discover(args: argparse.Namespace) -> int:
     package, resources = seao.discover()
     print(f"dataset: {package.title or package.name}  ({len(resources)} resources)\n")
 
-    selected = seao.select(resources, era=args.era, cadence=args.cadence, year=args.year)
+    selected = seao.select(resources, era=args.era, cadence=args.cadence, year=args.year,
+                           since=args.since, until=args.until)
     for item in selected:
         print(f"  {item}")
         if args.urls:
@@ -163,7 +165,8 @@ def cmd_seao_ingest(args: argparse.Namespace) -> int:
 
     package, resources = seao.discover()
     selected = seao.select(
-        resources, era=args.era, cadence=args.cadence, year=args.year, limit=args.limit
+        resources, era=args.era, cadence=args.cadence, year=args.year,
+        since=args.since, until=args.until, limit=args.limit,
     )
     if not selected:
         print("no resources matched the filters", file=sys.stderr)
@@ -226,6 +229,25 @@ def cmd_seao_summary(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_dashboard_data(args: argparse.Namespace) -> int:
+    """Recompute the aggregate files the Observable Framework site reads."""
+    from . import dashboard
+
+    out = Path(args.output) if args.output else None
+    try:
+        written = dashboard.build(out)
+    except Exception as exc:
+        log.error("could not build aggregates: %s", exc)
+        log.error("has anything been staged? try `govbudget seao:ingest`")
+        return 1
+
+    for name, rows in written.items():
+        print(f"  {name:<14} {rows:>8,} rows")
+    target = out or dashboard.DASHBOARD_DATA_DIR
+    print(f"\nwrote {len(written)} file(s) to {target}", file=sys.stderr)
+    return 0
+
+
 # -- wiring ---------------------------------------------------------------
 
 
@@ -252,6 +274,8 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--era", choices=["xml", "ocds"])
     p.add_argument("--cadence", choices=["annuel", "mensuel", "hebdo"])
     p.add_argument("--year", type=int)
+    p.add_argument("--since", help="inclusive lower bound, YYYY-MM")
+    p.add_argument("--until", help="inclusive upper bound, YYYY-MM")
     p.add_argument("--urls", action="store_true", help="print resource URLs")
     p.set_defaults(func=cmd_seao_discover)
 
@@ -265,6 +289,8 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--era", choices=["xml", "ocds"])
     p.add_argument("--cadence", choices=["annuel", "mensuel", "hebdo"])
     p.add_argument("--year", type=int)
+    p.add_argument("--since", help="inclusive lower bound, YYYY-MM")
+    p.add_argument("--until", help="inclusive upper bound, YYYY-MM")
     p.add_argument("--limit", type=int, help="stop after N resources")
     p.add_argument("--force", action="store_true", help="re-download even if unchanged")
     p.add_argument("--dry-run", action="store_true", help="list what would be fetched")
@@ -280,6 +306,10 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--dedupe", action="store_true", default=True)
     p.add_argument("--no-dedupe", dest="dedupe", action="store_false")
     p.set_defaults(func=cmd_seao_summary)
+
+    p = sub.add_parser("dashboard:data", help="build the dashboard's aggregate files")
+    p.add_argument("--output", help="directory to write into (default dashboard/src/data)")
+    p.set_defaults(func=cmd_dashboard_data)
 
     return parser
 

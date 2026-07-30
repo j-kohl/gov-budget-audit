@@ -38,7 +38,15 @@ from typing import Any
 from lxml import etree
 
 from ..models import ContractAward, ContractExpense, ContractFinal
-from ..seao_codes import AMOUNT_UNIT, DELIVERY_REGION, NATURE, NOTICE_TYPE, label
+from ..seao_codes import (
+    AMOUNT_UNIT,
+    COMPETITIVENESS,
+    COMPETITIVENESS_LABEL,
+    DELIVERY_REGION,
+    NATURE,
+    NOTICE_TYPE,
+    label,
+)
 from ._util import clean_text, normalize_tag, parse_amount, parse_date
 
 log = logging.getLogger(__name__)
@@ -255,6 +263,10 @@ def _to_awards(element: etree._Element, source_id: str, content_hash: str) -> li
         "description": notice.get("precision"),
         "notice_type_code": notice_type,
         "notice_type_label": label(NOTICE_TYPE, notice_type),
+        "competitiveness": label(COMPETITIVENESS, notice_type),
+        "competitiveness_label": label(
+            COMPETITIVENESS_LABEL, label(COMPETITIVENESS, notice_type)
+        ),
         "nature_code": nature,
         "nature_label": label(NATURE, nature),
         "procurement_method": label(NOTICE_TYPE, notice_type),
