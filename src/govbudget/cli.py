@@ -364,6 +364,7 @@ def cmd_dashboard_data(args: argparse.Namespace) -> int:
     out = Path(args.output) if args.output else None
     try:
         written = dashboard.build(out)
+        written.update(dashboard.build_budget(out))
     except Exception as exc:
         log.error("could not build aggregates: %s", exc)
         log.error("has anything been staged? try `govbudget seao:ingest`")

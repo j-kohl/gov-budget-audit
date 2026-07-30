@@ -78,6 +78,10 @@ class Comparability:
 
     level: str  # 'comparable' | 'caution' | 'not-comparable'
     note: str
+    #: French rendering, for the dashboard. The data is Quebec-facing and the
+    #: site is French; an English caveat on a French page reads as boilerplate
+    #: and gets skipped, which defeats the point of writing it.
+    note_fr: str = ""
 
 
 #: Per-category verdicts, from the FY2023-24 federal and 2026-27 Quebec figures.
@@ -85,6 +89,10 @@ COMPARABILITY: dict[str, Comparability] = {
     "debt_service": Comparability(
         "comparable",
         "Both book interest on their own debt at the same consolidation level.",
+           note_fr=(
+            "Les deux ordres de gouvernement inscrivent les intérêts de leur propre dette au même "
+            "niveau de consolidation."
+        ),
     ),
     "transfers": Comparability(
         "caution",
@@ -93,28 +101,55 @@ COMPARABILITY: dict[str, Comparability] = {
         "individuals and provinces; Quebec transfers go mostly to the health and "
         "education networks it funds, which then spend on salaries. Summing the "
         "two also double-counts the federal transfers Quebec receives as revenue.",
+           note_fr=(
+            "Les deux montants sont importants (fédéral 270,2 G$ sur 474,9 G$ ; Québec 112,1 G$ sur "
+            "145,5 G$) mais ne recouvrent pas la même chose. Les transferts fédéraux vont surtout "
+            "aux particuliers et aux provinces ; les transferts québécois vont surtout aux réseaux "
+            "de la santé et de l'éducation, qui paient ensuite les salaires. Additionner les deux "
+            "compterait aussi deux fois les transferts fédéraux versés au Québec."
+        ),
     ),
     "personnel": Comparability(
         "not-comparable",
         "Federal Personnel is $65.3B, Quebec Rémunération $4.9B. Quebec's "
         "public-sector payroll is inside its Transfert line, since the networks "
         "employ the staff. The two measure different populations.",
+           note_fr=(
+            "Le poste Personnel fédéral atteint 65,3 G$, la Rémunération québécoise 4,9 G$. La "
+            "masse salariale publique du Québec est comprise dans les transferts, puisque ce sont "
+            "les réseaux qui emploient le personnel. Les deux mesures ne portent pas sur la même "
+            "population."
+        ),
     ),
     "operating": Comparability(
         "not-comparable",
         "Same consolidation problem as personnel: network operating costs appear "
         "as Quebec transfers, not as Quebec operating spending.",
+           note_fr=(
+            "Même problème de consolidation que la rémunération : les frais de fonctionnement des "
+            "réseaux apparaissent comme des transferts québécois, non comme des dépenses de "
+            "fonctionnement."
+        ),
     ),
     "capital": Comparability(
         "caution",
         "Quebec reports investment separately from expenditure credits "
         "(BUDGET_INVESTISSEMENT) and splits out information-technology assets; "
         "the federal standard objects fold acquisition into expenditure.",
+           note_fr=(
+            "Le Québec présente les investissements séparément des crédits de dépenses "
+            "(BUDGET_INVESTISSEMENT) et isole les ressources informationnelles ; les objets "
+            "standards fédéraux intègrent les acquisitions aux dépenses."
+        ),
     ),
     "other": Comparability(
         "not-comparable",
         "A residual on both sides, holding different things. Never chart it as "
         "though it were one category.",
+           note_fr=(
+            "Un poste résiduel des deux côtés, qui ne contient pas les mêmes éléments. À ne jamais "
+            "présenter comme une catégorie unique."
+        ),
     ),
 }
 

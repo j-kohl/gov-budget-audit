@@ -8,6 +8,7 @@ export default {
   title: "Dépenses publiques — Québec",
   pages: [
     {name: "Vue d'ensemble", path: "/"},
+    {name: "Fédéral et Québec", path: "/budget"},
     {name: "Fournisseurs", path: "/suppliers"},
     {name: "Concurrence", path: "/competition"},
     {name: "Dépassements de coûts", path: "/overruns"},
@@ -15,8 +16,10 @@ export default {
   ],
   theme: ["air", "near-midnight"],
   header: "",
-  footer: `Données : <a href="https://www.donneesquebec.ca/recherche/dataset/d23b2e02-085d-43e5-9e6e-e1d558ebfdd5">SEAO via Données Québec</a>,
-    sous <a href="https://www.donneesquebec.ca/licence/">Licence Ouverte du Gouvernement du Québec</a>.
+  footer: `Données : <a href="https://www.donneesquebec.ca/recherche/dataset/d23b2e02-085d-43e5-9e6e-e1d558ebfdd5">SEAO</a>
+    et <a href="https://www.donneesquebec.ca/recherche/dataset/budget-de-depenses">Budget de dépenses</a> via Données Québec,
+    <a href="https://open.canada.ca/data/en/dataset/a35cf382-690c-4221-a971-cf0fd189a46f">GC InfoBase</a> via open.canada.ca.
+    Licences ouvertes du Québec et du Canada.
     Montants en dollars canadiens courants, non ajustés pour l'inflation.`,
   toc: true,
   search: true,

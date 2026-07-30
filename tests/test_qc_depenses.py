@@ -20,7 +20,7 @@ CSV_2026 = (
     "1000000,500000,250000,1750000\n"
     "Finances,0010.01 Dette,0010.01.01 Service,4 Service de la dette,Votés,"
     "0,0,0,0\n"
-).encode("utf-8")
+).encode()
 
 # 2021-22 spellings: SUPER_CATEGORIE, DEPENSES_SANS_CREDIT (singular).
 CSV_2021 = (
@@ -29,7 +29,7 @@ CSV_2021 = (
     "BUDGET_INVESTISSEMENT_21_22,CREDITS_TOTAUX_21_22\n"
     "Éducation,0030.01 Enseignement,0030.01.01 Primaire,2 Fonctionnement,Votés,"
     "500,0,0,500\n"
-).encode("utf-8")
+).encode()
 
 
 class TestFiscalYear:

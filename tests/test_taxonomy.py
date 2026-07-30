@@ -120,3 +120,21 @@ class TestComparability:
 
     def test_unknown_category_is_not_comparable(self):
         assert taxonomy.comparability("invented").level == "not-comparable"
+
+
+class TestFrenchNotes:
+    """The dashboard is French; an English caveat there reads as boilerplate."""
+
+    def test_every_category_has_a_french_note(self):
+        for category in taxonomy.ECONOMIC_CATEGORIES:
+            note = taxonomy.comparability(category).note_fr
+            assert note, category
+            assert len(note) > 60, f"{category}: too short to explain anything"
+
+    def test_french_note_is_not_the_english_one(self):
+        for category in taxonomy.ECONOMIC_CATEGORIES:
+            verdict = taxonomy.comparability(category)
+            assert verdict.note_fr != verdict.note, category
+
+    def test_the_personnel_note_names_the_actual_cause(self):
+        assert "réseaux" in taxonomy.comparability("personnel").note_fr

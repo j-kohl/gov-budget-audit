@@ -18,6 +18,7 @@ from pathlib import Path
 
 import duckdb
 
+from . import taxonomy
 from .staging import STAGING_DIR
 from .storage import REPO_ROOT
 
@@ -332,4 +333,119 @@ def build(output_dir: Path | None = None, *, source_id: str = "seao") -> dict[st
         """)
 
     con.close()
+    return written
+
+
+# -- budget lines: federal vs Quebec --------------------------------------
+
+
+def _budget_parquet(source_id: str) -> str:
+    return str(STAGING_DIR / source_id / "budget_lines" / "*.parquet").replace("\\", "/")
+
+
+def _has_budget(source_id: str) -> bool:
+    return any((STAGING_DIR / source_id / "budget_lines").glob("*.parquet"))
+
+
+def build_budget(output_dir: Path | None = None) -> dict[str, int]:
+    """Aggregate the two budget sources onto the shared spine.
+
+    Federal and Quebec stay in separate rows throughout — never summed, never
+    averaged. The only thing this joins on is the harmonized economic category,
+    and every row carries the comparability verdict so the page can refuse to
+    draw a comparison the taxonomy says is invalid.
+
+    Federal uses `expenditures` (what was spent); Quebec publishes credits, so
+    it uses `authorities` (what was approved). Those are different measures and
+    the page says so — it is the closest honest pairing available until the
+    Comptes publics actuals are ingested.
+    """
+    out = output_dir or DASHBOARD_DATA_DIR
+    out.mkdir(parents=True, exist_ok=True)
+    if not (_has_budget("gc_infobase") and _has_budget("qc_budget_depenses")):
+        log.warning("budget lines missing for one or both jurisdictions; skipping")
+        return {}
+
+    con = duckdb.connect()
+    con.execute(f"""
+        CREATE VIEW budget AS
+        SELECT * FROM read_parquet('{_budget_parquet("gc_infobase")}')
+        UNION ALL BY NAME
+        SELECT * FROM read_parquet('{_budget_parquet("qc_budget_depenses")}')
+    """)
+    # One comparable slice per jurisdiction: federal actual expenditures by
+    # standard object, Quebec total credits. Anything else would mix measures.
+    con.execute("""
+        CREATE VIEW spine AS
+        SELECT jurisdiction, fiscal_year, organization,
+               coalesce(economic_category, 'other') AS economic_category,
+               appropriation,
+               CAST(sum(CAST(amount AS DECIMAL(18,2))) AS DOUBLE) AS amount
+        FROM budget
+        WHERE (jurisdiction = 'ca-federal' AND measure = 'expenditures'
+               AND dimensions LIKE '%standard_object%')
+           OR (jurisdiction = 'qc' AND measure = 'authorities')
+        GROUP BY 1, 2, 3, 4, 5
+    """)
+
+    written: dict[str, int] = {}
+
+    def dump(name: str, sql: str) -> None:
+        path = str(out / f"{name}.csv").replace("\\", "/")
+        con.execute(f"COPY ({sql}) TO '{path}' (HEADER, DELIMITER ',')")
+        written[name] = con.execute(f"SELECT count(*) FROM ({sql})").fetchone()[0]
+
+    dump("budget_categories", """
+        SELECT jurisdiction, fiscal_year, economic_category,
+               CAST(sum(CAST(amount AS DECIMAL(18,2))) AS DOUBLE) AS amount
+        FROM spine GROUP BY 1,2,3 ORDER BY 1,2,3
+    """)
+    dump("budget_organizations", """
+        SELECT * EXCLUDE (rn) FROM (
+            SELECT jurisdiction, fiscal_year, organization,
+                   CAST(sum(CAST(amount AS DECIMAL(18,2))) AS DOUBLE) AS amount,
+                   row_number() OVER (PARTITION BY jurisdiction, fiscal_year
+                                      ORDER BY sum(amount) DESC, organization) AS rn
+            FROM spine GROUP BY 1,2,3)
+        WHERE rn <= 15 ORDER BY jurisdiction, fiscal_year, rn
+    """)
+    # Appropriation comes from a different federal table than the economic
+    # split: standard-object rows carry no voted/statutory flag, the vote table
+    # does. Drawn from whichever table actually has it per jurisdiction.
+    dump("budget_appropriation", """
+        SELECT jurisdiction, fiscal_year, appropriation,
+               CAST(sum(CAST(amount AS DECIMAL(18,2))) AS DOUBLE) AS amount
+        FROM budget
+        WHERE appropriation IS NOT NULL
+          AND ((jurisdiction = 'ca-federal' AND measure = 'expenditures'
+                AND dimensions LIKE '%vote%')
+            OR (jurisdiction = 'qc' AND measure = 'authorities'))
+        GROUP BY 1,2,3 ORDER BY 1,2,3
+    """)
+
+    latest = {
+        row[0]: row[1] for row in
+        con.execute("SELECT jurisdiction, max(fiscal_year) FROM spine GROUP BY 1").fetchall()
+    }
+    payload = {
+        "latest_year": latest,
+        "categories": [
+            {
+                "key": category,
+                "label_en": taxonomy.ECONOMIC_LABELS[category][0],
+                "label_fr": taxonomy.ECONOMIC_LABELS[category][1],
+                "level": taxonomy.comparability(category).level,
+                "note": taxonomy.comparability(category).note,
+                "note_fr": taxonomy.comparability(category).note_fr,
+            }
+            for category in taxonomy.ECONOMIC_CATEGORIES
+        ],
+        "measures": {"ca-federal": "expenditures", "qc": "authorities"},
+    }
+    (out / "comparability.json").write_text(
+        json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8"
+    )
+    written["comparability"] = len(payload["categories"])
+    con.close()
+    log.info("wrote budget aggregates: %s", written)
     return written
