@@ -13,11 +13,7 @@ name: Deploy dashboard to Pages
 
 on:
   push:
-    branches:
-      - claude/government-spending-dashboard-vqdeu5
-      # Temporary: lets the dashboard go live from the open PR before it is
-      # merged. Drop this line once PR #1 lands.
-      - worktree-seao-verify
+    branches: [claude/government-spending-dashboard-vqdeu5]
     paths:
       - "dashboard/**"
       - ".github/workflows/pages.yml"

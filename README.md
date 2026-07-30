@@ -30,8 +30,14 @@ all outside it. See the dashboard's *Sources* page.
 ## The dashboard
 
 Published to GitHub Pages at **https://j-kohl.github.io/gov-budget-audit/** by
-[`.github/workflows/pages.yml`](.github/workflows/pages.yml) on every push that
-touches `dashboard/`.
+[`.github/workflows/pages.yml`](.github/workflows/pages.yml) on every push to the
+default branch that touches `dashboard/`.
+
+Five pages: overview, **Fédéral et Québec**, who gets paid, competition, and cost
+overruns. The federal/Quebec page is generated from the comparability verdicts in
+[`taxonomy.py`](src/govbudget/taxonomy.py) — the verdict decides whether a
+category gets a direct comparison, a caution, or a refusal to chart the two
+together, so the page cannot drift out of step with the crosswalk.
 
 CI runs no ingest. `dashboard/src/data` holds 125 KB of deterministic
 aggregates, committed to the repo, so the build needs only Node — no raw store,
