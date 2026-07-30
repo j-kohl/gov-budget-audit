@@ -7,6 +7,8 @@
     govbudget seao:inspect FILE       report the structure of a SEAO XML file
     govbudget seao:ingest             fetch, parse and stage SEAO contracts
     govbudget seao:summary            headline figures for what has been staged
+    govbudget infobase:ingest         fetch, parse and stage GC InfoBase
+    govbudget infobase:summary        headline federal figures
     govbudget dashboard:data          build the aggregates the dashboard reads
 """
 
@@ -229,6 +231,59 @@ def cmd_seao_summary(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_infobase_ingest(args: argparse.Namespace) -> int:
+    from .sources import infobase
+
+    total = 0
+    written: list[Path] = []
+    with RawStore() as store:
+        for table, entry, lines in infobase.ingest(store=store, force=args.force):
+            total += len(lines)
+            path = staging.write_records(
+                lines, dataset="budget_lines", source_id=infobase.SOURCE_ID,
+                content_hash=entry.content_hash,
+            )
+            if path:
+                written.append(path)
+            print(f"  {table.key:<18} {len(lines):>8,} lines", file=sys.stderr)
+
+    print(f"\n{total:,} budget lines from {len(written)} file(s)", file=sys.stderr)
+    return 0 if total else 1
+
+
+def cmd_infobase_summary(args: argparse.Namespace) -> int:
+    import polars as pl
+
+    from . import taxonomy
+    from .sources import infobase
+
+    frame = staging.load("budget_lines", infobase.SOURCE_ID)
+    if frame.is_empty():
+        print("nothing staged — run `govbudget infobase:ingest`", file=sys.stderr)
+        return 1
+
+    year = args.year or frame.filter(
+        pl.col("measure") == "expenditures"
+    )["fiscal_year"].max()
+    slice_ = frame.filter(
+        (pl.col("fiscal_year") == year)
+        & (pl.col("measure") == "expenditures")
+        & (pl.col("dimensions").str.contains("standard_object"))
+    )
+    print(f"federal expenditures by economic category, {year}:\n")
+    grouped = (
+        slice_.group_by("economic_category")
+        .agg(pl.col("amount").sum().alias("total"))
+        .sort("total", descending=True)
+    )
+    for row in grouped.iter_rows(named=True):
+        verdict = taxonomy.comparability(row["economic_category"] or "other")
+        print(f"  ${row['total']/1e9:>8.1f}B  {row['economic_category']:<13} "
+              f"[{verdict.level}]")
+    print(f"\n  ${grouped['total'].sum()/1e9:>8.1f}B  total", file=sys.stderr)
+    return 0
+
+
 def cmd_dashboard_data(args: argparse.Namespace) -> int:
     """Recompute the aggregate files the Observable Framework site reads."""
     from . import dashboard
@@ -306,6 +361,14 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--dedupe", action="store_true", default=True)
     p.add_argument("--no-dedupe", dest="dedupe", action="store_false")
     p.set_defaults(func=cmd_seao_summary)
+
+    p = sub.add_parser("infobase:ingest", help="fetch and stage GC InfoBase")
+    p.add_argument("--force", action="store_true", help="re-download even if unchanged")
+    p.set_defaults(func=cmd_infobase_ingest)
+
+    p = sub.add_parser("infobase:summary", help="federal spending by economic category")
+    p.add_argument("--year", help="fiscal year, e.g. 2023-24")
+    p.set_defaults(func=cmd_infobase_summary)
 
     p = sub.add_parser("dashboard:data", help="build the dashboard's aggregate files")
     p.add_argument("--output", help="directory to write into (default dashboard/src/data)")

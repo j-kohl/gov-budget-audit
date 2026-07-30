@@ -196,6 +196,41 @@ mirrors Mozilla, so **certifi ships no Entrust roots at all** and Python cannot
 reach these hosts even though browsers can. The project defers to the OS trust
 store via `truststore`. Verification is never disabled.
 
+## The taxonomy decision, settled
+
+**Two parallel fact tables, joined only on fiscal year, appropriation type, and
+a coarse economic category — with the economic join carrying a per-category
+comparability flag.** Encoded in [`taxonomy.py`](src/govbudget/taxonomy.py),
+decided from the published vocabularies rather than in the abstract:
+
+| dimension | federal (GC InfoBase) | Quebec (Budget de dépenses) | joinable |
+| --- | --- | --- | --- |
+| organization | ~130 orgs | 25 portefeuilles | no |
+| programme | 1,496 programs | 99 programmes / 330 éléments | no |
+| economic | 14 standard objects | 10 supercatégories | coarsely |
+| appropriation | voted / statutory | Votés / Permanents | **exactly** |
+| fiscal year | April–March | April–March | **exactly** |
+
+The finding that shapes it: **federal Personnel is $65.3B, Quebec Rémunération
+is $4.9B.** Quebec does not employ a thirteenth as many people — its
+public-sector payroll sits inside the $112.1B it books as *Transfert* to the
+health and education networks, which employ the staff. The two governments
+consolidate at different levels, so categories that look equivalent are not.
+
+Rather than a blanket crosswalk, each harmonized category carries a verdict:
+
+| category | federal | Quebec | verdict |
+| --- | --- | --- | --- |
+| debt_service | $42.7B | $7.2B | comparable |
+| transfers | $270.2B | $112.1B | caution — different meanings, and summing double-counts |
+| capital | $10.3B | $0.7B | caution |
+| personnel | $65.3B | $4.9B | **not comparable** |
+| operating | $40.5B | $8.1B | **not comparable** |
+| other | $45.9B | $12.4B | **not comparable** |
+
+Only debt service is freely comparable. A test asserts that, so widening it has
+to be a deliberate decision rather than a drift.
+
 ## Decisions worth making early
 
 `govbudget caveats` prints all 16 by severity. The one that shapes the schema:

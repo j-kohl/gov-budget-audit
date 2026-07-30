@@ -41,7 +41,7 @@
       "name": "GC InfoBase",
       "jurisdiction": "ca-federal",
       "tier": 1,
-      "access": "bulk",
+      "access": "ckan",
       "covers": "Federal financial, people, and results data: authorities, expenditures, spending by vote, FTEs, program-level results.",
       "portal": "https://open.canada.ca",
       "ckan_api": "https://open.canada.ca/data/en/api/3/action",
@@ -60,7 +60,7 @@
         "fiscal_year"
       ],
       "license": "Open Government Licence – Canada",
-      "notes": "The best federal starting point. InfoBase restates historical series to account for organizational mergers and renames, so its adjusted series is more comparable across years than raw Public Accounts.",
+      "notes": "Verified: 48 CSV resources, English/French pairs of 24 tables. Expenditures by standard object and authorities/expenditures by vote are ingested. FY2024-25 expenditures $474.4B, of which $297.1B transfer payments. InfoBase restates history for departmental mergers, so its series must not be mixed with unadjusted Public Accounts.",
       "verified": true
     },
     {
@@ -214,12 +214,12 @@
       "name": "Budget de dépenses (Conseil du trésor)",
       "jurisdiction": "qc",
       "tier": 1,
-      "access": "pdf",
+      "access": "ckan",
       "covers": "Quebec expenditure budget broken down by portefeuille ministériel and by programme.",
-      "portal": "https://www.quebec.ca/gouvernement/votre-gouvernement/budget-depenses",
+      "portal": "https://www.donneesquebec.ca",
       "formats": [
-        "pdf",
-        "xlsx"
+        "csv",
+        "pdf"
       ],
       "update_cadence": "annual, March",
       "history_from": "2000s online",
@@ -227,21 +227,27 @@
       "join_keys": [
         "portefeuille",
         "programme",
-        "fiscal_year"
+        "element",
+        "supercategorie",
+        "type_de_credits"
       ],
       "license": "see site terms",
-      "notes": "The Conseil du trésor volumes are laid out consistently across years, which makes templated extraction viable. This is the source for program-level Quebec spending and the natural counterpart to federal InfoBase program data — though the taxonomies do not map onto each other.",
-      "verified": true
+      "notes": "Previously recorded here as PDF-only requiring table extraction — that was wrong. The CSV carries PORTEFEUILLE / PROGRAMME / ELEMENT / SUPERCATEGORIE / TYPE_DE_CREDITS, which is the full expenditure taxonomy. 2026-27: $145.5B of crédits across 25 portefeuilles, 99 programmes and 330 éléments.",
+      "verified": true,
+      "ckan_api": "https://www.donneesquebec.ca/recherche/api/3/action",
+      "discovery_query": "budget de dépenses",
+      "format_notes": "CSV on Données Québec, four tables per year back to 2019-20: budgets et crédits des ministères, crédits de transfert, crédits aux fonds spéciaux, and prévisions des organismes autres que budgétaires. The PDF volumes carry the same figures with commentary."
     },
     {
       "id": "qc_comptes_publics",
       "name": "Comptes publics du Québec",
       "jurisdiction": "qc",
       "tier": 1,
-      "access": "pdf",
+      "access": "ckan",
       "covers": "Audited annual actuals for Quebec.",
-      "portal": "https://www.finances.gouv.qc.ca",
+      "portal": "https://www.donneesquebec.ca",
       "formats": [
+        "csv",
         "pdf"
       ],
       "update_cadence": "annual, autumn",
@@ -252,8 +258,10 @@
         "fiscal_year"
       ],
       "license": "see site terms",
-      "notes": "The actuals to set against the Budget de dépenses plan. Budget-versus-actual variance by portefeuille is one of the more useful views the dashboard can offer.",
-      "verified": true
+      "notes": "Published as CSV on Données Québec in two volumes, not PDF-only as previously recorded here. Volume 2 carries expenditure detail — the actuals to set against the Budget de dépenses plan.",
+      "verified": true,
+      "ckan_api": "https://www.donneesquebec.ca/recherche/api/3/action",
+      "discovery_query": "comptes publics du gouvernement"
     },
     {
       "id": "donnees_quebec",
@@ -304,6 +312,16 @@
     }
   ],
   "caveats": [
+    {
+      "id": "consolidation-level",
+      "severity": "critical",
+      "summary": "Federal and Quebec consolidate at different levels, so economic categories that look equivalent are not. Federal Personnel is $65.3B; Quebec Rémunération is $4.9B — because Quebec's public-sector payroll sits inside the $112.1B it books as Transfert to the health and education networks, which employ the staff. Charting 'personnel spending' side by side compares a consolidated figure with an unconsolidated one. govbudget.taxonomy flags this per category: only debt service is freely comparable."
+    },
+    {
+      "id": "qc-sources-are-csv",
+      "severity": "medium",
+      "summary": "The Budget de dépenses and Comptes publics are published as CSV on Données Québec, not only as PDF. This registry previously recorded them as requiring table extraction, which overstated the remaining work substantially — the Quebec expenditure taxonomy is directly machine-readable."
+    },
     {
       "id": "seao-cross-era-duplication",
       "severity": "critical",

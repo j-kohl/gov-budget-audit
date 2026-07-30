@@ -215,23 +215,48 @@ class ContractExpense:
 
 @dataclass
 class BudgetLine:
-    """An appropriation or expenditure against a program.
+    """An appropriation or expenditure against an organization and programme.
 
-    Not yet populated by any parser — defined here so the taxonomy-mismatch
-    decision recorded in the registry has a concrete place to land. The
-    jurisdiction-specific dimensions are held in `dimensions` rather than as
-    columns, because the federal vote/program taxonomy and Quebec's
-    portefeuille/programme taxonomy do not share a shape.
+    One row per (jurisdiction, fiscal year, organization, programme, economic
+    category, measure). Federal and Quebec rows live in the same dataclass but
+    are staged to separate tables and joined only on the dimensions
+    `govbudget.taxonomy` establishes as shared — fiscal year, appropriation
+    type, and a coarse economic category carrying a comparability flag.
+
+    Jurisdiction-specific structure stays in `dimensions` rather than becoming
+    columns, because federal org/vote/program and Quebec
+    portefeuille/programme/élément do not share a shape and pretending they do
+    is how a consolidated dashboard starts lying.
     """
 
     source_id: str
     source_content_hash: str
+    #: 'ca-federal' or 'qc'
     jurisdiction: str
+    #: 'YYYY-YY' as published, e.g. '2023-24'.
     fiscal_year: str
     organization: str
-    #: 'authorities' (approved) or 'expenditures' (spent). Never mix in one chart.
+    #: 'authorities' (approved) or 'expenditures' (spent). Never mix in a chart.
     measure: str
     amount: float
     currency: str = "CAD"
-    program: str | None = None
+
+    organization_id: str | None = None
+    programme: str | None = None
+    programme_id: str | None = None
+
+    #: Harmonized across jurisdictions — see taxonomy.ECONOMIC_CATEGORIES.
+    economic_category: str | None = None
+    #: The publisher's own term, retained verbatim for traceability.
+    economic_source_label: str | None = None
+    #: 'voted' or 'statutory'.
+    appropriation: str | None = None
+
     dimensions: dict[str, str] = field(default_factory=dict)
+
+    def key(self) -> str:
+        return "|".join([
+            self.jurisdiction, self.fiscal_year, self.organization_id or self.organization,
+            self.programme_id or self.programme or "", self.economic_category or "",
+            self.appropriation or "", self.measure,
+        ])

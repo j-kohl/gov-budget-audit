@@ -23,7 +23,7 @@ from pathlib import Path
 
 import polars as pl
 
-from .models import ContractAward, ContractExpense, ContractFinal
+from .models import BudgetLine, ContractAward, ContractExpense, ContractFinal
 from .seao_codes import SUMMABLE_UNITS
 from .storage import DEFAULT_DATA_DIR
 
@@ -120,7 +120,27 @@ EXPENSE_SCHEMA: dict[str, pl.DataType] = {
     "dedupe_key": pl.Utf8,
 }
 
+BUDGET_SCHEMA: dict[str, pl.DataType] = {
+    "source_id": pl.Utf8,
+    "source_content_hash": pl.Utf8,
+    "jurisdiction": pl.Utf8,
+    "fiscal_year": pl.Utf8,
+    "organization": pl.Utf8,
+    "organization_id": pl.Utf8,
+    "programme": pl.Utf8,
+    "programme_id": pl.Utf8,
+    "measure": pl.Utf8,
+    "amount": pl.Float64,
+    "currency": pl.Utf8,
+    "economic_category": pl.Utf8,
+    "economic_source_label": pl.Utf8,
+    "appropriation": pl.Utf8,
+    "dimensions": pl.Utf8,
+    "dedupe_key": pl.Utf8,
+}
+
 DATASETS: dict[str, tuple[type, dict[str, pl.DataType]]] = {
+    "budget_lines": (BudgetLine, BUDGET_SCHEMA),
     "awards": (ContractAward, AWARD_SCHEMA),
     "finals": (ContractFinal, FINAL_SCHEMA),
     "expenses": (ContractExpense, EXPENSE_SCHEMA),
@@ -139,7 +159,9 @@ def to_frame(records: Sequence[object], dataset: str) -> pl.DataFrame:
         row = {k: v for k, v in asdict(record).items() if k in known}
         # `unmapped` holds whatever the parser could not place; keep it as JSON
         # so the column stays scalar and survives a Parquet round trip.
-        row["unmapped"] = json.dumps(row.get("unmapped") or {}, ensure_ascii=False, sort_keys=True)
+        for blob in ("unmapped", "dimensions"):
+            if blob in schema:
+                row[blob] = json.dumps(row.get(blob) or {}, ensure_ascii=False, sort_keys=True)
         row["dedupe_key"] = record.key()
         if dataset == "awards":
             row["is_summable"] = record.is_summable
