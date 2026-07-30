@@ -8,7 +8,9 @@ venv/
 .ruff_cache/
 
 # Ingested data — raw store, Parquet staging, DuckDB. Reproducible from source.
-data/
+# Anchored to the repo root: the dashboard's committed aggregates live in
+# dashboard/src/data and an unanchored 'data/' would swallow them.
+/data/
 
 # Secrets — API keys belong in the environment, never in the repo
 .env

@@ -1,0 +1,101 @@
+notice_number,buyer_name,supplier_name,awarded_cad,final_cad,delta_cad,delta_pct
+1554975,Ville de Lévis.,RÉGIE INTERMUNICIPALE DE GESTION DES DÉCHETS DES CHUTES-DE-LA-CHAUDIÈRE,8831846264.0,4252595.85,-8827593668.15,-100.0
+1471277,Société de transport de Montréal,PRODUCTION ELECTRONIQUE INC.,32328.87,6000012704.0,5999980375.13,18559202.3
+1817031,Ville de Montréal,Brûlé Murray & associés inc.,1070401.73,5549856324.8,5548785923.07,518383.5
+1719347,Ministère des Transports et de la Mobilité durable (Direction générale de la gestion contractuelle),Renouveau La Fontaine inc.,1133380309.63,2333582534.23,1200202224.6,105.9
+1829665,Université du Québec à Montréal,LE CABINET RH INC.,1173696007.0,168036.53,-1173527970.47,-100.0
+1546316,"SQI-Direction immobilière Saguenay-Lac-Saint-Jean, Côte-Nord",GEMEL INC.,1141487083.0,27881.9,-1141459201.1,-100.0
+1351542,Ville de Québec,AGIRO,939442.54,939442054.0,938502611.46,99899.9
+942070,Groupe d'approvisionnement en commun de l'Est du Québec - Section Québec / Chaudière-Appalaches,Mckesson,19645519.0,710891516.7,691245997.7,3518.6
+1290361,SQI-​Direction générale du bureau des projets hospitaliers de Québec-centre,Groupe AXOR Inc.,567900000.0,1066643447.46,498743447.46,87.8
+20068206,Université Laval,CANADIAN RESEARCH KNOWLEDGE NE TWORK,4800000.0,408257592.0,403457592.0,8405.4
+591922,Centre de services partagés du Québec- Direction générale des acquisitions (DGACQ),Cossette Communication Marketing - siège social Québec,450000000.0,127373898.0,-322626102.0,-71.7
+1731996,Ville de Rosemère.,LÉVEILLÉ FORD INC.,319745348.0,318020.85,-319427327.15,-99.9
+1753562,Centre intégré de santé et de services sociaux de Laval,MAISONS DE LA TOURELLE,11144982.0,273031584.0,261886602.0,2349.8
+1332660,Centre d'acquisitions gouvernementales,Synergie Hunt International - Québec,261447655.85,18190461.43,-243257194.42,-93.0
+1717539,Ville de Montréal - Service de la Gestion et de la Planification des Immeubles,LES ENTREPRISES PROTEAU ET GARNEAU INC.,388155.6,209512001.0,209123845.4,53876.3
+1005185,Centre de services partagés du Québec- Direction générale des acquisitions (DGACQ),Motorola Solutions Canada inc.,210524532.19,6756174.73,-203768357.46,-96.8
+1762313,Corporation municipale de Piedmont.,Beneva inc.,196054462.11,113612.88,-195940849.23,-99.9
+1275308,Commission Scolaire des Portages de l'Outaouais,PBS,190010221.0,33500.0,-189976721.0,-100.0
+905460,Centre de services partagés du Québec- Direction générale des acquisitions (DGACQ),Société TELUS Communications,248150000.0,59850001.0,-188299999.0,-75.9
+1273691,Centre de services partagés du Québec- Direction générale des services en gestion contractuelle,Solutions Informatiques Inso inc.,1.0,181904890.21,181904889.21,18190488921.0
+1149867,Centre intégré de santé et de services sociaux (CISSS) des Laurentides,CHSLD de la Villa-de-Val-des-Arbres inc.,165138000.0,1040789.2,-164097210.8,-99.4
+928582,Société de l'assurance automobile du Québec .,Société Conseil Groupe LGS / SAP,458408761.0,612108761.0,153700000.0,33.5
+945108,Groupe d'approvisionnement en commun de l'Est du Québec (GACEQ),Valeant Canada,42006356.91,189593082.94,147586726.03,351.3
+1173708,Réseau de transport de Longueuil.,Michelin Amérique du Nord (Canada) Inc.,798443.89,144130392.0,143331948.11,17951.4
+1448586,SQI-Direction Gestion de projets Ouest 1 (SQI-Gestion de projets Montréal- SSS),Groupe AXOR Inc.,119398000.0,261094119.13,141696119.13,118.7
+1220711,Centre local de développement de Brôme-Missisquoi,La Capitale assureur de l'administration publique inc.,138158794.0,530839.0,-137627955.0,-99.6
+1221067,MRC de Brome-Missisquoi,La Capitale assureur de l'administration publique inc.,138158794.0,831755.14,-137327038.86,-99.4
+1110354,Centre d'acquisitions gouvernementales,"Cossette Média, division de Cossette Communication Inc.",260000000.0,373730076.6,113730076.6,43.7
+20081916,Société de la Place des Arts de Montréal,CIM-Conseil,109244100.0,929678.48,-108314421.52,-99.1
+1043767,SQI-​Direction générale du bureau des projets hospitaliers de Québec-centre,Pomerleau Inc.,296844000.0,396626597.53,99782597.53,33.6
+1069228,SQI-Direction Gestion de projets Ouest SSS,Magil Construction Corporation,102940000.0,202168235.23,99228235.23,96.4
+1330679,Centre de services partagés du Québec- Direction générale des services en gestion contractuelle,VMware International Unlimited Company,65000000.0,162050057.72,97050057.72,149.3
+1203703,Centre de services partagés du Québec- Direction générale des services en gestion contractuelle,TELUS Communications inc.,264000000.0,360913351.52,96913351.52,36.7
+1840991,Parc olympique,FIRSTONSITE RESTORATION LIMITED,5000000.0,99000000.0,94000000.0,1880.0
+981223,Centre de services partagés du Québec- Direction générale des acquisitions (DGACQ),Toshiba du Canada Limitée,1.0,92900826.31,92900825.31,9290082531.0
+1446430,SQI-Direction Gestion de projets Ouest du Québec,Groupe Décarel-Sidcan,215750000.0,308443037.81,92693037.81,43.0
+1497360,Centre d'acquisitions gouvernementales,Cossette Media inc.,154713313.0,244713313.0,90000000.0,58.2
+1314815,Centre de services scolaire des Portages-de-l'Outaouais.,Birtz Bastien Beaudoin Laforest architectes,442463.0,87351395.0,86908932.0,19642.1
+1638683,Collège de Maisonneuve,Isabelle Marier Conseils Inc.,26175.0,83238075.0,83211900.0,317906.0
+916577,Groupe d'approvisionnement en commun de l'Est du Québec - Section Québec / Chaudière-Appalaches,ZIMMER BIOMET CANADA,17092456.0,95300597.35,78208141.35,457.6
+1213814,Groupe d'approvisionnement en commun de l'Est du Québec,HP Canada Cie,34831200.0,106428623.5,71597423.5,205.6
+1166806,Groupe d'approvisionnement en commun de l'OUEST du Québec,Solutions Nugaz Inc,78583549.7,148002150.32,69418600.62,88.3
+1038604,Groupe d'approvisionnement en commun de l'OUEST du Québec,seattle genetics,280965439.98,213898145.65,-67067294.33,-23.9
+1268292,Centre d'acquisitions gouvernementales,Commissionnaires du Québec,34259380.2,101122539.15,66863158.95,195.2
+932808,Centre d'acquisitions gouvernementales,Umano Medical,7387369.24,71122468.73,63735099.49,862.8
+1451207,Ministère des Transports et de la mobilité durable (Direction de l'administration des appels d'offres publics),Construction Interlag Inc.,43727956.9,107240057.57,63512100.67,145.2
+1614171,Centre d'acquisitions gouvernementales - Direction du service à la clientèle et de l'exécution des contrats,Vaisseau Santé inc.,2991.0,58411125.3,58408134.3,1952796.2
+922225,Groupe d'approvisionnement en commun de l'Est du Québec (GACEQ),Stevens,86585890.0,31324723.0,-55261167.0,-63.8
+1504320,Centre de services scolaire des Sommets,Cimaise Inc.,54679063.0,54679.63,-54624383.37,-99.9
+869202,Groupe d'approvisionnement en commun de l'Est du Québec - Section Québec / Chaudière-Appalaches,Hewlett-Packard (Canada) Cie,12798620.83,66830880.0,54032259.17,422.2
+1375322,Centre de services scolaire Marguerite-Bourgeoys,Construction Irénée Paquet & Fils Inc.,49852.5,53852047.84,53802195.34,107922.8
+726064,Société de transport de Montréal,TAXIS HOCHELAGA / BEAUBIEN INC.,98394792.73,44825409.44,-53569383.29,-54.4
+819347,Groupe d'approvisionnement en commun de l'Est du Québec - Section Québec / Chaudière-Appalaches,Johnson & Johnson Compagnies Médicales,51409222.0,1224648.0,-50184574.0,-97.6
+1172848,Groupe d'approvisionnement en commun de l'Est du Québec,Johnson & Johnson Compagnies Médicales,51409222.0,1228648.0,-50180574.0,-97.6
+1393329,SQI-Direction Gestion de projets Ouest du Québec,Pomerleau Inc.,47398000.0,97201749.01,49803749.01,105.1
+1661015,Université de Montréal - DPMI,POMERLEAU INC.,267163983.33,316533251.44,49369268.11,18.5
+726063,Société de transport de Montréal,TAXIS HOCHELAGA / BEAUBIEN INC.,54075328.72,5301376.31,-48773952.41,-90.2
+1479795,Réseau de transport de Longueuil.,2841-8424 Québec Inc. / Calibre Plus Inc.,44395.34,48557044.0,48512648.66,109274.2
+953540,Régie des installations olympiques,Maison Différence,48000.0,48000000.0,47952000.0,99900.0
+1538073,Centre d'acquisitions gouvernementales,HP CANADA CIE,108897942.98,63262761.36,-45635181.62,-41.9
+981211,Centre de services partagés du Québec- Direction générale des acquisitions (DGACQ),Xérox Canada ltée,1.0,45431993.67,45431992.67,4543199267.0
+1371863,Centre d'acquisitions gouvernementales,TELUS Communications inc.,20083224.72,64657678.97,44574454.25,221.9
+1715127,SQI-Direction immobilière Centre-ville de Québec,SOCIÉTÉ DE CONTRÔLE JOHNSON CANADA S.E.C.,44533301.0,37724.5,-44495576.5,-99.9
+1464790,SQI-Direction immobilière Centre-Ville de Montréal,Les Entreprises Électriques L.M.,44518226.0,26219.38,-44492006.62,-99.9
+1439847,SQI-Direction immobilière Centre-ville de Québec,Gémitech Inc.,44521725.0,34999.6,-44486725.4,-99.9
+1526138,SQI-Direction immobilière Sud de Montréal,ASCENSEURS NAGLE INC.,44525595.0,72004.0,-44453591.0,-99.8
+1102061,Centre intégré universitaire de santé et de services sociaux de l'Estrie - Centre Hospitalier Universitaire de Sherbrooke - CHUS,Centre d'hébergement et de soins de longue durée Wales Inc.,112215600.0,68030317.0,-44185283.0,-39.4
+637366,Centre de services partagés du Québec- Direction générale des acquisitions (DGACQ),Xerox,57000000.0,13463526.86,-43536473.14,-76.4
+1363488,Centre d'acquisitions gouvernementales,"Twin Eagle Resource Management Canada, LLC",4965169.83,48076375.0,43111205.17,868.3
+1594547,Centre d'acquisitions gouvernementales - Direction du service à la clientèle et de l'exécution des contrats,MICROSOFT CANADA INC.,149907000.0,106949045.75,-42957954.25,-28.7
+138403,SigmaSanté,Medline Canada,4198632.0,45219225.36,41020593.36,977.0
+734597,Groupe d'approvisionnement de l'Ouest du Québec,Zimmer McCarthy,3.0,40960166.0,40960163.0,1365338766.7
+1328961,Ministère de la Cybersécurité et du Numérique - Direction générale des services contractuels,CONNEX Québec,42438453.03,2829327.25,-39609125.78,-93.3
+1594938,Centre d'acquisitions gouvernementales,SIEMENS SANTÉ LIMITÉE,51466575.0,11885286.67,-39581288.33,-76.9
+900554,Groupe d'approvisionnement en commun de l'Est du Québec - Section Québec / Chaudière-Appalaches,Ricoh Canada,57113441.0,18168553.56,-38944887.44,-68.2
+1155944,CIUSSS du Centre-ouest-de-l'Île-de-Montréal,LES YMCA DU QUEBEC,6500000.0,44544100.34,38044100.34,585.3
+1146661,Centre d'acquisitions gouvernementales,Zimmer Biomet Canada,9500000.0,47018155.93,37518155.93,394.9
+1359963,Centre d'acquisitions gouvernementales,Medtronic,2945870.0,40102415.66,37156545.66,1261.3
+573102,SigmaSanté,Stevens,6595692.81,43561432.04,36965739.23,560.5
+1382611,CIUSSS du Nord-de-l'Île-de-Montréal,Gardium Sécurité,1860000.0,38447930.73,36587930.73,1967.1
+227491,Centre de services partagés du Québec- Direction générale des acquisitions (DGACQ),Bell Canada,76000000.0,39460171.74,-36539828.26,-48.1
+1143498,Commission scolaire de Montréal,Roland Grenier Construction,36816347.25,553442.79,-36262904.46,-98.5
+307885,SigmaSanté,Sysco Québec,213088038.39,249306597.55,36218559.16,17.0
+1557510,Réseau de transport de Longueuil,"PRODUITS SUNCOR ÉNERGIE, S.E.N.C.",21685233.54,57866107.44,36180873.9,166.8
+20022081,"Ministère de l'Environnement, de la Lutte contre les changements climatiques, de la Faune et des Parcs",Payette Englobe,92089758.95,128236987.9,36147228.95,39.3
+877880,Régie des installations olympiques,Verreault Inc.,6342800.0,42320875.23,35978075.23,567.2
+625177,Groupe d'approvisionnement en commun de l'Est du Québec - Section Québec / Chaudière-Appalaches,Teleflex Medical Canada Inc.,3.0,35911898.21,35911895.21,1197063173.7
+1717649,Centre intégré universitaire de santé et de services sociaux de l'Estrie - Centre Hospitalier Universitaire de Sherbrooke - CHUS,RÉSIDENCES LE CHÂTEAU DU BEL ÂGE INC.,18220438.0,51950936.0,33730498.0,185.1
+1368188,"MTQ - Direction de la qualification des produits, de l'approvisionnement et des opérations contractuelles centralisées","Mines Seleine, une division de Sel Windsor Ltée",11846067.7,45576337.3,33730269.6,284.7
+1224752,SQI-Direction Gestion de projets Est 1 (SQI-Gestion de projets Québec CMO),NSW Contrôle inc.,34274600.0,1503824.42,-32770775.58,-95.6
+1855288,Ministère des Transports et de la Mobilité durable (Direction de l'administration des appels d'offres publics),Réfection PIAT s.e.p.,50990301.0,82914769.42,31924468.42,62.6
+880497,SigmaSanté,Trudell Médical Marketing Ltée,1.0,31370664.0,31370663.0,3137066300.0
+476352,SigmaSanté,Novexco Inc.,7642299.0,38674155.0,31031856.0,406.1
+936593,Groupe d'approvisionnement en commun de l'Est du Québec (GACEQ),priMED Medical Products Inc.,19410363.0,50239303.0,30828940.0,158.8
+1047792,Centre de services partagés du Québec- Direction générale des acquisitions (DGACQ),ORACLE CANADA ULC,40000000.0,9429587.31,-30570412.69,-76.4
+1681037,Centre de services scolaire des Appalaches,REVÊTEMENTS MARIO JACQUES INC.,298200.0,30868150.0,30569950.0,10251.5
+679589,"Ministère des Transports, de la Mobilité durable et de l'Électrification des transports (Direction des contrats de construction et de services)",DB-AECON Pont St-Jacques S.E.P,54805386.65,84646468.25,29841081.6,54.4
+1596926,Institut de Cardiologie de Montréal.,SCIENCES DE LA VIE EDWARDS (CANADA) INC.,12917230.0,42431449.2,29514219.2,228.5
+1321733,SQI-Direction Gestion de projets Ouest SSS,Lemay | Leclerc | Leclerc,12082830.0,41522613.05,29439783.05,243.6
+1106258,SigmaSanté,Valeo Pharma Inc,148646001.0,119223296.0,-29422705.0,-19.8

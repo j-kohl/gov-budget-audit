@@ -1,0 +1,69 @@
+# Build the dashboard and publish it to GitHub Pages.
+#
+# The build needs no ingest and no database: `govbudget dashboard:data` writes
+# small deterministic aggregates into dashboard/src/data, and those are
+# committed. So CI only installs Node and runs the static build — no raw store,
+# no 3 GB download, and a data change shows up as a reviewable diff.
+#
+# Refreshing the data is a separate, deliberate step: run the ingest locally and
+# commit the regenerated aggregates. Because the aggregation is byte-reproducible,
+# an empty diff means the source genuinely has not changed.
+
+name: Deploy dashboard to Pages
+
+on:
+  push:
+    branches: [claude/government-spending-dashboard-vqdeu5]
+    paths:
+      - "dashboard/**"
+      - ".github/workflows/pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Let a running deploy finish rather than cancelling it mid-publish.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: dashboard
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: dashboard/package-lock.json
+
+      - run: npm ci
+
+      - name: Fail if the aggregates are missing
+        # A silent build over an empty data directory would publish a dashboard
+        # of empty charts, which is worse than not publishing.
+        run: |
+          test -s src/data/summary.json || { echo "src/data/summary.json missing or empty — run 'govbudget dashboard:data' and commit the result"; exit 1; }
+
+      - run: npm run build
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dashboard/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

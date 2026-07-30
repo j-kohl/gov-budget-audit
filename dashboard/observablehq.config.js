@@ -21,4 +21,8 @@ export default {
   toc: true,
   search: true,
   root: "src",
+  // No `base` is set on purpose. Framework emits relative asset and page links
+  // ("./suppliers", "./_observablehq/..."), so the built site works unchanged at
+  // a domain root or under a repository subpath like /gov-budget-audit/.
+  // Verified by serving dist/ under that prefix.
 };

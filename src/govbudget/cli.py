@@ -9,6 +9,8 @@
     govbudget seao:summary            headline figures for what has been staged
     govbudget infobase:ingest         fetch, parse and stage GC InfoBase
     govbudget infobase:summary        headline federal figures
+    govbudget qc:ingest               fetch, parse and stage the Budget de dépenses
+    govbudget compare                 federal vs Quebec on the shared spine
     govbudget dashboard:data          build the aggregates the dashboard reads
 """
 
@@ -284,6 +286,77 @@ def cmd_infobase_summary(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_qc_ingest(args: argparse.Namespace) -> int:
+    from .sources import qc_depenses
+
+    total = 0
+    written: list[Path] = []
+    with RawStore() as store:
+        for resource, entry, lines in qc_depenses.ingest(
+            store=store, years=args.years, force=args.force
+        ):
+            total += len(lines)
+            path = staging.write_records(
+                lines, dataset="budget_lines", source_id=qc_depenses.SOURCE_ID,
+                content_hash=entry.content_hash,
+            )
+            if path:
+                written.append(path)
+            print(f"  {(resource.name or '')[:46]:<46} {len(lines):>7,} lines", file=sys.stderr)
+
+    print(f"\n{total:,} budget lines from {len(written)} file(s)", file=sys.stderr)
+    return 0 if total else 1
+
+
+def cmd_compare(args: argparse.Namespace) -> int:
+    """Federal vs Quebec on the dimensions the taxonomy says are shared."""
+    import polars as pl
+
+    from . import taxonomy
+
+    fed = staging.load("budget_lines", "gc_infobase")
+    qc = staging.load("budget_lines", "qc_budget_depenses")
+    if fed.is_empty() or qc.is_empty():
+        print("need both: run `govbudget infobase:ingest` and `govbudget qc:ingest`",
+              file=sys.stderr)
+        return 1
+
+    fed_year = args.federal_year or (
+        fed.filter(pl.col("measure") == "expenditures")["fiscal_year"].max()
+    )
+    qc_year = args.quebec_year or qc["fiscal_year"].max()
+
+    f = (
+        fed.filter(
+            (pl.col("fiscal_year") == fed_year)
+            & (pl.col("measure") == "expenditures")
+            & pl.col("dimensions").str.contains("standard_object")
+        )
+        .group_by("economic_category").agg(pl.col("amount").sum())
+    )
+    q = (
+        qc.filter((pl.col("fiscal_year") == qc_year) & (pl.col("measure") == "authorities"))
+        .group_by("economic_category").agg(pl.col("amount").sum())
+    )
+    fmap = {r["economic_category"]: r["amount"] for r in f.iter_rows(named=True)}
+    qmap = {r["economic_category"]: r["amount"] for r in q.iter_rows(named=True)}
+
+    print(f"federal expenditures {fed_year}  vs  Quebec crédits {qc_year}\n")
+    print(f"  {'category':<14}{'federal':>11}{'Quebec':>11}   comparability")
+    for category in taxonomy.ECONOMIC_CATEGORIES:
+        verdict = taxonomy.comparability(category)
+        print(f"  {category:<14}{fmap.get(category, 0)/1e9:>9.1f}B{qmap.get(category, 0)/1e9:>10.1f}B"
+              f"   {verdict.level}")
+    print(f"  {'TOTAL':<14}{sum(fmap.values())/1e9:>9.1f}B{sum(qmap.values())/1e9:>10.1f}B")
+
+    print("\nwhy most of these cannot be placed side by side:", file=sys.stderr)
+    for category in taxonomy.ECONOMIC_CATEGORIES:
+        verdict = taxonomy.comparability(category)
+        if verdict.level != "comparable":
+            print(f"  [{verdict.level}] {category}: {verdict.note}", file=sys.stderr)
+    return 0
+
+
 def cmd_dashboard_data(args: argparse.Namespace) -> int:
     """Recompute the aggregate files the Observable Framework site reads."""
     from . import dashboard
@@ -369,6 +442,16 @@ def build_parser() -> argparse.ArgumentParser:
     p = sub.add_parser("infobase:summary", help="federal spending by economic category")
     p.add_argument("--year", help="fiscal year, e.g. 2023-24")
     p.set_defaults(func=cmd_infobase_summary)
+
+    p = sub.add_parser("qc:ingest", help="fetch and stage the Quebec Budget de dépenses")
+    p.add_argument("--years", type=int, help="only the N most recent years")
+    p.add_argument("--force", action="store_true", help="re-download even if unchanged")
+    p.set_defaults(func=cmd_qc_ingest)
+
+    p = sub.add_parser("compare", help="federal vs Quebec on the shared spine")
+    p.add_argument("--federal-year")
+    p.add_argument("--quebec-year")
+    p.set_defaults(func=cmd_compare)
 
     p = sub.add_parser("dashboard:data", help="build the dashboard's aggregate files")
     p.add_argument("--output", help="directory to write into (default dashboard/src/data)")
