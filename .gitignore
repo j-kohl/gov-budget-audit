@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Secrets — API keys belong in the environment, never in the repo
+.env
+.env.*
+!.env.example
+
+# Local data cache and generated status reports
+data/cache/
+*.csv
+*.xlsx
+!docs/**/*.csv
+
+# Editor / OS
+.DS_Store
+.vscode/
+.idea/
