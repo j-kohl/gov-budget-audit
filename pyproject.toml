@@ -1,0 +1,41 @@
+[project]
+name = "gov-budget-audit"
+version = "0.1.0"
+description = "Consolidated dashboard of Canadian federal and Quebec government spending"
+requires-python = ">=3.11"
+dependencies = [
+    "httpx>=0.28",
+    "polars>=1.17",
+    "pyarrow>=18.0",
+    "duckdb>=1.1",
+    "lxml>=5.3",
+]
+
+[project.optional-dependencies]
+pdf = [
+    "pdfplumber>=0.11",
+]
+dev = [
+    "pytest>=8.3",
+    "ruff>=0.8",
+]
+
+[project.scripts]
+govbudget = "govbudget.cli:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 110
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

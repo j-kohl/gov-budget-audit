@@ -1,91 +1,148 @@
 # gov-budget-audit
 
-A consolidated dashboard for government spending data that is otherwise scattered
-across dozens of unrelated federal, state, and local systems.
+A consolidated view of Canadian federal and Quebec government spending, built
+from the public sources it is currently scattered across.
 
-The problem this addresses is not that the data is secret — nearly all of it is
-public. It is that answering a simple question ("what did this agency actually
-spend, and on what?") means reconciling an award database, a Treasury cash
-statement, a spreadsheet published once a year by OMB, and an audit clearinghouse
-that none of the others link to. Each uses different identifiers, a different
-accounting basis, and a different definition of "spending."
+Nearly all of this data is already public. The problem is that answering a plain
+question — what did this ministry spend, on what, and who got paid — means
+reconciling a contract database, an expenditure budget published as a PDF, an
+audited set of public accounts, and a federal open-data portal that shares no
+identifiers with any of them.
 
 ## Status
 
-Early. This repository currently contains the **source registry** — the inventory
-of every system worth ingesting, with its endpoints, auth requirements, update
-cadence, join keys, and known traps — plus a checker that verifies which sources
-are actually reachable.
+The **SEAO ingester is built and tested**: Quebec public contracts, 2009 to
+present, discovered through Données Québec and parsed from both the legacy XML
+and the post-2021 OCDS JSON.
 
-The registry is deliberately the first deliverable. Every downstream decision
-(schema, refresh cadence, which comparisons are even valid) follows from what
-these sources actually provide, and several of them cannot be joined to each
-other without explicit reconciliation logic.
+Also here: the [source registry](sources/registry.json) covering 12 federal and
+Quebec sources with their access method and known traps, and the raw-store and
+staging layers the remaining ingesters will reuse.
 
-## Layout
+Not yet built: the PDF extractors (Quebec Budget de dépenses, Comptes publics,
+Public Accounts of Canada), the federal ingesters, and the dashboard itself.
 
-```
-sources/registry.json    Machine-readable inventory: 20 sources, 9 cross-cutting caveats
-scripts/check_sources.py Probes every source, reports live/blocked/dead
-docs/SOURCES.md          Narrative guide — what each source is for, and how they fit together
-```
+## Why Python rather than a Node stack
 
-## Checking the sources
+Roughly half the sources are PDFs — the Budget de dépenses, Comptes publics, and
+Public Accounts of Canada — and `pdfplumber`/`Camelot` have no serious JS
+equivalent. Reconciling two incompatible spending taxonomies is also far easier
+in polars than in anything on the JS side.
+
+The storage layer is Parquet plus DuckDB rather than Postgres. These are
+analytical facts, not transactional app data: DuckDB queries the Parquet in
+place, costs nothing to host, and a parser fix means re-running over the raw
+store instead of writing a migration. Nothing here stops the staged output being
+loaded into Postgres later if the dashboard wants it there.
+
+## Setup
 
 ```bash
-python3 scripts/check_sources.py                       # probe everything
-python3 scripts/check_sources.py --tier 1              # just the core sources
-python3 scripts/check_sources.py --write               # record results into the registry
-python3 scripts/check_sources.py --report docs/SOURCE_STATUS.md
+python3 -m venv .venv
+.venv/bin/pip install -e ".[dev,pdf]"
 ```
 
-Standard library only — no install step.
+## Usage
 
-Sources needing an API key are probed regardless; a 401 confirms the endpoint is
-alive and that the key is the only thing missing. To promote those to full checks:
+```bash
+govbudget sources                    # what is in the registry
+govbudget caveats                    # cross-cutting data traps, by severity
+govbudget check-sources --write      # probe reachability, record results
 
-| Variable | Source | Where to get it |
-| --- | --- | --- |
-| `GOVINFO_API_KEY` | GovInfo | api.data.gov — one key covers GovInfo, Congress.gov, and FAC |
-| `CONGRESS_API_KEY` | Congress.gov | api.data.gov |
-| `FAC_API_KEY` | Federal Audit Clearinghouse | api.data.gov |
-| `SAM_API_KEY` | SAM.gov | SAM.gov account; some endpoints need a granted role — request early |
-| `BEA_API_KEY` | BEA | apps.bea.gov registration |
-| `FRED_API_KEY` | FRED | fred.stlouisfed.org registration |
-| `CENSUS_API_KEY` | Census | api.census.gov/data/key_signup.html |
+govbudget seao:discover              # list SEAO files published on Données Québec
+govbudget seao:discover --era ocds --cadence hebdo
+govbudget seao:ingest --era ocds --limit 5
+govbudget seao:ingest --year 2019 --dry-run
+govbudget seao:summary               # headline figures for what has been staged
 
-The four highest-value sources — USAspending, Treasury Fiscal Data, OMB Historical
-Tables, and CBO — need no key at all, so the project can go a long way before any
-registration is required.
+govbudget seao:inspect path/to/file.xml   # report a file's real structure
+```
 
-## The reconciliation problem
+Then query directly:
 
-The single most important thing to get right, and the reason a "consolidated"
-dashboard is harder than it looks: **the major sources measure different things
-and will never agree.**
+```sql
+-- data/govbudget.duckdb
+SELECT supplier_name, sum(amount) AS total, count(*) AS contracts
+FROM seao_awards
+WHERE award_date >= '2023-01-01'
+GROUP BY 1 ORDER BY total DESC LIMIT 20;
+```
 
-- **USAspending** reports *obligations* — money legally committed.
-- **Treasury MTS** reports *outlays* — money that actually left the Treasury.
-- **OMB Historical Tables** report *budget authority and outlays* on the budget basis.
-- **BEA** reports *expenditures* on the national accounts basis.
+## How the pipeline is arranged
 
-A contract obligated in FY2024 may outlay over five subsequent years. Summing
-across these sources, or charting them on a shared axis without labels, produces
-numbers that are simply wrong. The design commitment here is that every figure
-carries its measure and its as-of date, and that the residual between sources is
-displayed rather than hidden — the gap is information, not error.
+```
+Données Québec CKAN  ->  raw store  ->  parsers  ->  Parquet staging  ->  DuckDB
+   (discovery)          (verbatim,      (XML |       (one file per      (views over
+                       content-hash)     OCDS)        source hash)       parquet)
+```
 
-`sources/registry.json` records nine such caveats with severity levels, including
-the DUNS-to-UEI identifier break in April 2022, pass-through double-counting
-between federal and state datasets, and the distinction between improper payments
-and fraud. These are ingest-layer requirements, not footnotes.
+Raw files land verbatim, named by the SHA-256 of their bytes, and are never
+mutated. Fetches are conditional on ETag and Last-Modified, so re-running only
+transfers what changed. Because parsing reads from the raw store rather than the
+network, a parser fix replays over the whole history without re-fetching — which
+matters when a source publishes a decade of files.
 
-## Environment note
+## The unverified parts
 
-This repository was scaffolded in a sandbox whose egress policy denies every
-government data host (`api.usaspending.gov`, `api.fiscaldata.treasury.gov`,
-`api.census.gov`, `apps.bea.gov`, `api.congress.gov`, `api.fac.gov`,
-`catalog.data.gov`, and others). Endpoint details in the registry were written
-from documentation, and **every entry is marked `"verified": false`** until
-`check_sources.py` confirms it from a network that can reach these hosts. Run it
-with `--write` and the registry records what is genuinely live.
+**Every endpoint in this repository is unverified.** The environment this was
+built in denies egress to every Canadian and Quebec government host
+(`open.canada.ca`, `donneesquebec.ca`, `seao.ca`, `tbs-sct.canada.ca`,
+`finances.gouv.qc.ca`, `quebec.ca`, `vgq.qc.ca`, `pbo-dpb.ca` — all 403 at the
+proxy). Nothing was fetched, so nothing could be checked against reality.
+
+What this means in practice:
+
+- **The OCDS parser should be close to right.** It targets a published standard,
+  and is tested against release packages, record packages, bare releases and
+  newline-delimited JSON, including multi-supplier awards and value fallbacks.
+- **The legacy SEAO XML field map is a guess.** SEAO's pre-2021 XML has no
+  published schema. The parser resolves each field against a list of candidate
+  tag spellings after normalizing away namespace, accents, case and punctuation,
+  so correcting it is a one-line change to `FIELD_MAP`. Run
+  `govbudget seao:inspect` on a real file first — it prints the actual element
+  paths with sample values and flags every tag the map does not cover.
+- **Dataset discovery is by search, not by hard-coded ID.** If the CKAN query
+  fails to find SEAO, the error says so and points at the registry rather than
+  failing silently.
+
+Run `govbudget check-sources --write` from an unrestricted network and the
+registry records what is genuinely reachable.
+
+## Decisions worth making early
+
+Recorded in full under `caveats` in the registry; `govbudget caveats` prints
+them by severity. The one that shapes the schema:
+
+**The federal and Quebec spending taxonomies do not map onto each other.** The
+federal standard object / vote / program structure and Quebec's portefeuille /
+mission / programme structure have no crosswalk that survives contact with the
+detail. Either build two parallel fact tables joined only at a coarse function
+level, or accept a lossy mapping into one. This is why `models.BudgetLine` holds
+jurisdiction-specific dimensions in a `dimensions` dict rather than as columns —
+it defers the decision without pretending it has been made.
+
+Contract awards sidestep this entirely, which is the other reason SEAO was a
+good place to start: an award has a supplier and an amount, and needs no
+taxonomy reconciliation to be useful.
+
+Two more worth knowing before charting anything: Estimates report *authorities*
+and Public Accounts report *expenditures* (the gap is lapsed spending, and it is
+real), and federal transfers to Quebec appear as both federal expenditure and
+Quebec revenue, so summing the two levels double-counts the health transfer and
+equalization.
+
+## Licensing
+
+Most of these sources are under the Open Government Licence — Canada or Québec,
+which permits commercial reuse but requires attribution. Anything public-facing
+needs a visible attribution statement per the licence terms.
+
+## Tests
+
+```bash
+.venv/bin/python -m pytest
+```
+
+82 tests covering amount and date normalization across French and English
+formats, both parsers, CKAN response handling, content-addressed storage with
+conditional fetch, and the staging schema.

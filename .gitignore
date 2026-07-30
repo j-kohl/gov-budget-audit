@@ -1,19 +1,19 @@
 # Python
 __pycache__/
 *.py[cod]
+*.egg-info/
 .venv/
 venv/
+.pytest_cache/
+.ruff_cache/
+
+# Ingested data — raw store, Parquet staging, DuckDB. Reproducible from source.
+data/
 
 # Secrets — API keys belong in the environment, never in the repo
 .env
 .env.*
 !.env.example
-
-# Local data cache and generated status reports
-data/cache/
-*.csv
-*.xlsx
-!docs/**/*.csv
 
 # Editor / OS
 .DS_Store
