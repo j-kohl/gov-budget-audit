@@ -203,3 +203,68 @@ class TestComptesPublicsDecoding:
 
         assert qc_comptes.fiscal_year_from_name("... général 2024-2025") == "2024-25"
         assert qc_comptes.fiscal_year_from_name("no year here") is None
+
+
+class TestProgrammeDrilldown:
+    """The dimensional layer: programme x vote x standard object."""
+
+    def test_year_normalized_to_the_shared_fiscal_format(self):
+        """This table writes '2010'; every other InfoBase table 'YYYY-YY'."""
+        from govbudget.sources import infobase_programs as ip
+
+        assert ip.fiscal_year("2010") == "2010-11"
+        assert ip.fiscal_year("2023") == "2023-24"
+        assert ip.fiscal_year("") == ""
+
+    def test_both_fact_tables_are_required(self):
+        """The voted table alone is 55% short — statutory spending, which is
+        the larger half, lives in its own file."""
+        from govbudget.sources import infobase_programs as ip
+
+        assert ip.FACTS_TABLE != ip.STATUTORY_TABLE
+        assert "Statutory" in ip.STATUTORY_TABLE
+
+    def test_standard_object_ids_decoded_to_categories(self):
+        from govbudget.sources import infobase_programs as ip
+
+        lookups = ip.Lookups({"1": "Personnel"}, {"9": "Ready Land Forces"}, {"3": "DND"})
+        data = (
+            b"year,organization_id,dept_code,program_type,program_id,program_code,"
+            b"vote_number,vote_type_id,standard_object_id,expenditure\n"
+            b"2023,3,DND,program,9,ABC,1,1,1,1000.00\n"
+        )
+        line = ip.parse_facts(data, "h", lookups)[0]
+        assert line.economic_source_label == "Personnel"
+        assert line.economic_category == "personnel"
+        assert line.programme == "Ready Land Forces"
+        assert line.organization == "DND"
+        assert line.appropriation == "voted"
+        assert line.fiscal_year == "2023-24"
+
+    def test_statutory_rows_marked_as_such(self):
+        from govbudget.sources import infobase_programs as ip
+
+        lookups = ip.Lookups({"1": "Personnel"}, {}, {})
+        data = (
+            b"year,organization_id,dept_code,program_type,program_id,program_code,"
+            b"statutory_code_id,standard_object_id,expenditure\n"
+            b"2023,3,DND,program,9,ABC,S0020,1,500.00\n"
+        )
+        line = ip.parse_facts(data, "h", lookups, statutory=True)[0]
+        assert line.appropriation == "statutory"
+        assert line.dimensions["statutory_code"] == "S0020"
+        assert line.dimensions["table"] == "programs_statutory"
+
+    def test_missing_columns_raise_rather_than_return_empty(self):
+        import pytest
+
+        from govbudget.sources import infobase_programs as ip
+
+        with pytest.raises(ValueError, match="missing"):
+            ip.parse_facts(b"a,b\n1,2\n", "h", ip.Lookups({}, {}, {}))
+
+    def test_unknown_programme_falls_back_to_its_code(self):
+        from govbudget.sources import infobase_programs as ip
+
+        lookups = ip.Lookups({"1": "Personnel"}, {}, {})
+        assert lookups.program_name("999", "ABH00") == "ABH00"

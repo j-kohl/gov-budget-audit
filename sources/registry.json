@@ -316,6 +316,16 @@
   ],
   "caveats": [
     {
+      "id": "infobase-voted-vs-statutory",
+      "severity": "critical",
+      "summary": "GC InfoBase splits programme-level spending across two files. 'Federal Programs - Spending by Vote' is voted spending only — the file is programs_voted_spending.csv — and 'Federal Programs - Statutory Spending' holds the rest. Statutory is the larger half: for 2023-24 the voted table alone is $214.7B against $474.9B of actual expenditure, so ingesting one without the other understates federal spending by 55%. Together they reconcile to within 0.4% of the flat standard-object table across 2021-22 to 2023-24. The ingester raises if either file is absent."
+    },
+    {
+      "id": "infobase-program-ids",
+      "severity": "medium",
+      "summary": "The programme-level tables publish numeric ids, not names: standard_object_id, program_id, organization_id. They decode via 'Reference Values', 'Federal Programs' and 'Federal Organizations'. Loaded without those lookups every row reads as an integer. Programmes are also versioned by year and can be renamed, so names resolve to the most recent seen for an id and fall back to the programme code."
+    },
+    {
       "id": "qc-investment-2021-22",
       "severity": "high",
       "summary": "Comptes publics reports $41.4B of 'Investissements' for 2021-22 against roughly $1B in every other year, with individual rows such as 'Santé et Services sociaux / Fonctions de coordination' at $16.5B that are not plausibly capital. The Repartition vocabulary is identical across years, so this is not a parsing artefact — the 2021-22 file appears to scope investment differently, possibly including the health and education networks. Unresolved: the investment measure should not be charted for 2021-22 until someone confirms what it covers. Expenditure figures for that year look consistent with neighbouring years and are unaffected."

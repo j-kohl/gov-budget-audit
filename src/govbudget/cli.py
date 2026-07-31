@@ -9,6 +9,7 @@
     govbudget seao:summary            headline figures for what has been staged
     govbudget infobase:ingest         fetch, parse and stage GC InfoBase
     govbudget infobase:summary        headline federal figures
+    govbudget infobase:programs       stage programme-level federal spending
     govbudget qc:ingest               fetch, parse and stage the Budget de dépenses
     govbudget qc:comptes              fetch, parse and stage the Comptes publics
     govbudget compare                 federal vs Quebec on the shared spine
@@ -287,6 +288,22 @@ def cmd_infobase_summary(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_infobase_programs(args: argparse.Namespace) -> int:
+    from .sources import infobase_programs
+
+    total = 0
+    with RawStore() as store:
+        for name, entry, lines in infobase_programs.ingest(store=store, force=args.force):
+            total += len(lines)
+            staging.write_records(
+                lines, dataset="budget_lines", source_id=infobase_programs.SOURCE_ID,
+                content_hash=entry.content_hash,
+            )
+            print(f"  {name[:46]:<46} {len(lines):>7,}", file=sys.stderr)
+    print(f"{total:,} programme-level budget lines", file=sys.stderr)
+    return 0 if total else 1
+
+
 def cmd_qc_ingest(args: argparse.Namespace) -> int:
     from .sources import qc_depenses
 
@@ -466,6 +483,10 @@ def build_parser() -> argparse.ArgumentParser:
     p = sub.add_parser("infobase:summary", help="federal spending by economic category")
     p.add_argument("--year", help="fiscal year, e.g. 2023-24")
     p.set_defaults(func=cmd_infobase_summary)
+
+    p = sub.add_parser("infobase:programs", help="stage programme-level federal spending")
+    p.add_argument("--force", action="store_true")
+    p.set_defaults(func=cmd_infobase_programs)
 
     p = sub.add_parser("qc:ingest", help="fetch and stage the Quebec Budget de dépenses")
     p.add_argument("--years", type=int, help="only the N most recent years")
