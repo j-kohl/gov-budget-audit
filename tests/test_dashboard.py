@@ -214,3 +214,49 @@ class TestDeduplication:
         assert summary["awards"] == 1
         rows = read_csv((tmp_path / "out") / "suppliers.csv")
         assert rows[0]["neq"] == "1143244383"
+
+
+class TestProgrammeDrilldownAggregate:
+    def test_negative_revenue_rows_are_kept(self, tmp_path, monkeypatch):
+        """External and internal revenues are booked as negative standard
+        objects. Dropping them inflated the drill-down total by $16.3B and broke
+        the reconciliation against the flat standard-object table."""
+        import polars as pl
+
+        from govbudget.models import BudgetLine
+
+        monkeypatch.setattr(staging, "STAGING_DIR", tmp_path / "staging")
+        monkeypatch.setattr(dashboard, "STAGING_DIR", tmp_path / "staging")
+
+        def line(label, amount):
+            return BudgetLine(
+                source_id="gc_infobase", source_content_hash="h",
+                jurisdiction="ca-federal", fiscal_year="2024-25",
+                organization="DND", programme="Ready Land Forces",
+                measure="expenditures", amount=amount,
+                economic_category="personnel", economic_source_label=label,
+                dimensions={"table": "programs_by_vote"},
+            )
+
+        staging.write_records(
+            [line("Personnel", 1000.0), line("External revenues", -250.0)],
+            dataset="budget_lines", source_id="gc_infobase", content_hash="h",
+            staging_dir=tmp_path / "staging",
+        )
+        # Quebec side is required for build_budget to run at all.
+        staging.write_records(
+            [BudgetLine(
+                source_id="qc_comptes_publics", source_content_hash="h",
+                jurisdiction="qc", fiscal_year="2024-25", organization="Santé",
+                measure="expenditures", amount=5.0, economic_category="transfers",
+                dimensions={"table": "comptes_publics"},
+            )],
+            dataset="budget_lines", source_id="qc_comptes_publics", content_hash="h",
+            staging_dir=tmp_path / "staging",
+        )
+
+        out = tmp_path / "out"
+        dashboard.build_budget(out)
+        frame = pl.read_csv(out / "program_drilldown.csv")
+        assert frame["amount"].sum() == 750.0, "the negative offset must survive"
+        assert frame.height == 2

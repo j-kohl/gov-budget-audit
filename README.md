@@ -33,6 +33,11 @@ Published to GitHub Pages at **https://j-kohl.github.io/gov-budget-audit/** by
 [`.github/workflows/pages.yml`](.github/workflows/pages.yml) on every push to the
 default branch that touches `dashboard/`.
 
+**Fédéral — par programme** is the drill-down: federal spending crossed by
+ministry × programme × standard object, with linked selectors. It answers what
+the flat tables cannot — which programmes a category like Personnel actually
+funds, and what a single programme spends it on.
+
 **Où va l'argent** is the landing page and the spending view: the largest federal
 appropriations and Quebec programmes by name, every federal transfer programme
 individually, who receives Quebec's transfers, spending by organization and by

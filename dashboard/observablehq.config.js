@@ -8,6 +8,7 @@ export default {
   title: "Dépenses publiques — Canada et Québec",
   pages: [
     {name: "Où va l'argent", path: "/"},
+    {name: "Fédéral — par programme", path: "/programmes"},
     {
       name: "Contrats publics du Québec",
       pages: [

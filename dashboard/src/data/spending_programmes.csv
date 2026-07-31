@@ -1,4 +1,29 @@
 jurisdiction,fiscal_year,programme,kind,amount,organizations,organization
+ca-federal,2010-11,Internal Services,appropriation,8322575554.1,96,Women and Gender Equality Canada
+ca-federal,2010-11,Land Readiness,appropriation,3030823896.49,1,National Defence
+ca-federal,2010-11,Equipment Acquisition and Disposal,appropriation,2745205965.9,1,National Defence
+ca-federal,2010-11,First Nations and Inuit Primary Health Care,appropriation,2368259597.41,1,Health Canada
+ca-federal,2010-11,Compensation and Financial Support,appropriation,2259808598.98,1,Veterans Affairs Canada
+ca-federal,2010-11,Accommodation Management and Real Property Services,appropriation,2214798473.92,1,Public Services and Procurement Canada
+ca-federal,2010-11,"International Peace, Stability and Security",appropriation,2157004168.45,1,National Defence
+ca-federal,2010-11,Joint and Common Readiness,appropriation,2013878769.75,1,National Defence
+ca-federal,2010-11,Skills and Employment,appropriation,1983902390.61,1,Employment and Social Development Canada
+ca-federal,2010-11,Maritime Readiness,appropriation,1974912660.5,1,National Defence
+ca-federal,2010-11,Government-wide Funds and Public Service Employer Payments,appropriation,1962746055.69,1,Treasury Board of Canada Secretariat
+ca-federal,2010-11,Social Development,appropriation,1868774551.71,2,Employment and Social Development Canada
+ca-federal,2010-11,Education,appropriation,1781964879.94,1,Crown-Indigenous Relations and Northern Affairs Canada
+ca-federal,2010-11,Permanent and Flexible Infrastructure Funding,appropriation,1751432370.83,1,"Housing, Infrastructure and Communities Canada"
+ca-federal,2010-11,Aerospace Readiness,appropriation,1638260035.69,1,National Defence
+ca-federal,2010-11,Assisted Housing Programs,appropriation,1564180421.5,1,Canada Mortgage and Housing Corporation
+ca-federal,2010-11,Custody,appropriation,1338516972.61,1,Correctional Service Canada
+ca-federal,2010-11,Clean energy,appropriation,1329537084.29,1,Natural Resources Canada
+ca-federal,2010-11,Infrastructure and Capacity,appropriation,1295160171.25,1,Crown-Indigenous Relations and Northern Affairs Canada
+ca-federal,2010-11,"Diplomacy, Advocacy, and International Agreements",appropriation,1251297396.37,1,Global Affairs Canada
+ca-federal,2010-11,Canadian Broadcasting Corporation,appropriation,1137145060.0,1,Canadian Broadcasting Corporation
+ca-federal,2010-11,Health Care Program and Re-establishment Services,appropriation,1082925388.2,1,Veterans Affairs Canada
+ca-federal,2010-11,Infrastructure Stimulus Fund,appropriation,1016273485.26,1,"Housing, Infrastructure and Communities Canada"
+ca-federal,2010-11,Recruiting of Personnel and Initial Training,appropriation,986094770.73,1,National Defence
+ca-federal,2010-11,Integration Program,appropriation,969272822.51,1,"Immigration, Refugees and Citizenship Canada"
 ca-federal,2011-12,Operating/Program,appropriation,45261517810.0,108,Veterans Review and Appeal Board
 ca-federal,2011-12,Grants & Contributions,appropriation,30062886298.0,33,Social Sciences and Humanities Research Council
 ca-federal,2011-12,Old Age Security payments (Old Age Security Act),appropriation,28868796840.0,1,Department of Employment and Social Development
@@ -7,23 +32,23 @@ ca-federal,2011-12,Canada Health Transfer (Part V.1 - Federal-Provincial Fiscal 
 ca-federal,2011-12,Fiscal Equalization (Part I - Federal-Provincial Fiscal Arrangements Act),appropriation,14658570000.0,1,Department of Finance
 ca-federal,2011-12,Canada Social Transfer (Part V.1 - Federal-Provincial Fiscal Arrangements Act),appropriation,11514064000.0,1,Department of Finance
 ca-federal,2011-12,Guaranteed Income Supplement Payments (Old Age Security Act),appropriation,8638062109.0,1,Department of Employment and Social Development
+ca-federal,2011-12,Internal Services,appropriation,8513838164.57,96,Women and Gender Equality Canada
 ca-federal,2011-12,Payments to Crown Corps,appropriation,6423538084.0,27,VIA Rail Canada Inc.
 ca-federal,2011-12,Capital,appropriation,5456085990.0,21,Shared Services Canada
 ca-federal,2011-12,Contributions to employee benefit plans,appropriation,3479132992.42,105,Veterans Review and Appeal Board
+ca-federal,2011-12,Land Readiness,appropriation,3226418286.01,1,National Defence
 ca-federal,2011-12,Territorial Financing (Part I.1 - Federal-Provincial Fiscal Arrangements Act),appropriation,2876083006.0,1,Department of Finance
 ca-federal,2011-12,Universal Child Care Benefit (Universal Child Care Benefit Act),appropriation,2691016827.0,1,Department of Employment and Social Development
+ca-federal,2011-12,Equipment Acquisition and Disposal,appropriation,2342821411.33,1,National Defence
+ca-federal,2011-12,Compensation and Financial Support,appropriation,2251539530.27,1,Veterans Affairs Canada
+ca-federal,2011-12,Permanent and Flexible Infrastructure Funding,appropriation,2206190164.81,1,"Housing, Infrastructure and Communities Canada"
+ca-federal,2011-12,Government-wide Funds and Public Service Employer Payments,appropriation,2186595248.19,1,Treasury Board of Canada Secretariat
 ca-federal,2011-12,Treasury Board Central,appropriation,2186595248.0,1,Treasury Board Secretariat
-ca-federal,2011-12,"Payments to provinces regarding sales tax harmonization (Part III,I -Federal-Provincial Fiscal Arrangements Act)",appropriation,1560200000.0,1,Department of Finance
-ca-federal,2011-12,Contributions to employee benefit plans (Members of the Military),appropriation,1360948151.0,1,Department of National Defence
-ca-federal,2011-12,Payments to the Newfoundland Offshore Petroleum Resource Revenue Fund,appropriation,1059753176.0,1,Department of Natural Resources
-ca-federal,2011-12,"Additional Fiscal Equalization Payment - Total Transfer Protection (Economic Action Plan 2013 Act, No. 1, Section 111, which amends Part I of the Federal-Provincial Fiscal Arrangements Act)",appropriation,952107000.0,1,Department of Finance
-ca-federal,2011-12,Canada Education Savings grant payments to Registered Educations Savings Plans (RESPs) trustees on behalf of RESP beneficiaries to encourage Canadians to save for post-secondary education for their children,appropriation,691542116.2,1,Department of Employment and Social Development
-ca-federal,2011-12,Canada Student Grants to qualifying full and part-time students pursuant to the Canada Student Financial Assistance Act,appropriation,648936689.6,1,Department of Employment and Social Development
-ca-federal,2011-12,Contribution payments for the AgriInsurance program,appropriation,571643882.9,1,Department of Agriculture and Agri-Food
-ca-federal,2011-12,Allowance payments (Old Age Security Act),appropriation,555962022.2,1,Department of Employment and Social Development
-ca-federal,2011-12,Transitional Payment to Newfoundland and Labrador (Nova Scotia and Newfoundland and Labrador additional fiscal equalization offset payments act),appropriation,536121000.0,1,Department of Finance
-ca-federal,2011-12,Payments related to the direct financing arrangement under the Canada Student Financial Assistance Act,appropriation,493520224.0,1,Department of Employment and Social Development
-ca-federal,2011-12,"Judges' salaries, allowances and annuities, annuities to spouses and children of judges and lump sum payments to spouses of judges who die while in office",appropriation,465527084.75,2,Registrar of the Supreme Court of Canada
+ca-federal,2011-12,Joint and Common Readiness,appropriation,2123261938.29,1,National Defence
+ca-federal,2011-12,Maritime Readiness,appropriation,2079632626.79,1,National Defence
+ca-federal,2011-12,Accommodation Management and Real Property Services,appropriation,1945564841.11,1,Public Services and Procurement Canada
+ca-federal,2011-12,Social Development,appropriation,1844153943.31,2,Employment and Social Development Canada
+ca-federal,2011-12,"International Peace, Stability and Security",appropriation,1806671708.36,1,National Defence
 ca-federal,2011-12,"(S) Old Age Security Payments (R.S.C., 1985, c. O-9)",transfer,28868796840.0,1,Department of Employment and Social Development
 ca-federal,2011-12,(S) Canada Health Transfer (Part V.1—Federal-Provincial Fiscal Arrangements Act),transfer,26941815102.0,1,Department of Finance
 ca-federal,2011-12,(S) Fiscal Equalization (Part I—Federal-Provincial Fiscal Arrangements Act),transfer,14658570000.0,1,Department of Finance
@@ -58,22 +83,22 @@ ca-federal,2012-13,Fiscal Equalization (Part I - Federal-Provincial Fiscal Arran
 ca-federal,2012-13,Canada Social Transfer (Part V.1 - Federal-Provincial Fiscal Arrangements Act),appropriation,11859486000.0,1,Department of Finance
 ca-federal,2012-13,Guaranteed Income Supplement Payments (Old Age Security Act),appropriation,9147435393.0,1,Department of Employment and Social Development
 ca-federal,2012-13,Other Interest Costs,appropriation,9050112469.0,1,Department of Finance
+ca-federal,2012-13,Internal Services,appropriation,7705315618.03,95,Women and Gender Equality Canada
 ca-federal,2012-13,Payments to Crown Corps,appropriation,6104715931.0,27,VIA Rail Canada Inc.
 ca-federal,2012-13,Capital,appropriation,5517373516.0,21,Shared Services Canada
 ca-federal,2012-13,Contributions to employee benefit plans,appropriation,3441530364.0,104,Veterans Review and Appeal Board
+ca-federal,2012-13,Land Readiness,appropriation,3209550161.18,1,National Defence
 ca-federal,2012-13,Territorial Financing (Part I.1 - Federal-Provincial Fiscal Arrangements Act),appropriation,3110679940.0,1,Department of Finance
 ca-federal,2012-13,Universal Child Care Benefit (Universal Child Care Benefit Act),appropriation,2724715150.0,1,Department of Employment and Social Development
+ca-federal,2012-13,Equipment Acquisition and Disposal,appropriation,2209987289.95,1,National Defence
+ca-federal,2012-13,Maritime Readiness,appropriation,2164330155.04,1,National Defence
+ca-federal,2012-13,Disability and Death Compensation,appropriation,2131691497.42,1,Veterans Affairs Canada
+ca-federal,2012-13,Joint and Common Readiness,appropriation,2105494396.14,1,National Defence
 ca-federal,2012-13,Treasury Board Central,appropriation,2057349583.0,1,Treasury Board Secretariat
-ca-federal,2012-13,Contributions to employee benefit plans (Members of the Military),appropriation,1405619169.0,1,Department of National Defence
-ca-federal,2012-13,Canada Education Savings grant payments to Registered Educations Savings Plans (RESPs) trustees on behalf of RESP beneficiaries to encourage Canadians to save for post-secondary education for their children,appropriation,718888870.0,1,Department of Employment and Social Development
-ca-federal,2012-13,Canada Student Grants to qualifying full and part-time students pursuant to the Canada Student Financial Assistance Act,appropriation,680159050.0,1,Department of Employment and Social Development
-ca-federal,2012-13,"Additional Fiscal Equalization Payment - Total Transfer Protection (Economic Action Plan 2013 Act, No. 1, Section 111, which amends Part I of the Federal-Provincial Fiscal Arrangements Act)",appropriation,679660000.0,1,Department of Finance
-ca-federal,2012-13,Contribution payments for the AgriInsurance program,appropriation,677986995.0,1,Department of Agriculture and Agri-Food
-ca-federal,2012-13,Payments to the Newfoundland Offshore Petroleum Resource Revenue Fund,appropriation,566121270.0,1,Department of Natural Resources
-ca-federal,2012-13,Allowance payments (Old Age Security Act),appropriation,554317515.0,1,Department of Employment and Social Development
-ca-federal,2012-13,Payments related to the direct financing arrangement under the Canada Student Financial Assistance Act,appropriation,501324600.0,1,Department of Employment and Social Development
-ca-federal,2012-13,"Judges' salaries, allowances and annuities, annuities to spouses and children of judges and lump sum payments to spouses of judges who die while in office",appropriation,480243203.0,2,Registrar of the Supreme Court of Canada
-ca-federal,2012-13,Employer contributions made under the Public Service Superannuation Act and other retirement acts and the Employment Insurance Act,appropriation,443000000.0,1,Treasury Board Secretariat
+ca-federal,2012-13,Government-wide Funds and Public Service Employer Payments,appropriation,2057349582.81,1,Treasury Board of Canada Secretariat
+ca-federal,2012-13,Accommodation Management and Real Property Services,appropriation,2009528607.11,1,Public Services and Procurement Canada
+ca-federal,2012-13,Social Development,appropriation,1974070475.36,2,Employment and Social Development Canada
+ca-federal,2012-13,Permanent and Flexible Infrastructure Funding,appropriation,1964862561.44,1,"Housing, Infrastructure and Communities Canada"
 ca-federal,2012-13,"(S) Old Age Security Payments (R.S.C., 1985, c. O-9)",transfer,30589905671.0,1,Department of Employment and Social Development
 ca-federal,2012-13,(S) Canada Health Transfer (Part V.1—Federal-Provincial Fiscal Arrangements Act),transfer,28568644223.0,1,Department of Finance
 ca-federal,2012-13,(S) Fiscal Equalization (Part I—Federal-Provincial Fiscal Arrangements Act),transfer,15422503000.0,1,Department of Finance
@@ -108,22 +133,22 @@ ca-federal,2013-14,Fiscal Equalization (Part I - Federal-Provincial Fiscal Arran
 ca-federal,2013-14,Canada Social Transfer (Part V.1 - Federal-Provincial Fiscal Arrangements Act),appropriation,12215271000.0,1,Department of Finance
 ca-federal,2013-14,Guaranteed Income Supplement Payments (Old Age Security Act),appropriation,9372773071.0,1,Department of Employment and Social Development
 ca-federal,2013-14,Other Interest Costs,appropriation,8583878921.0,1,Department of Finance
+ca-federal,2013-14,Internal Services,appropriation,7333508847.3,91,Women and Gender Equality Canada
 ca-federal,2013-14,Payments to Crown Corps,appropriation,6085275113.38,26,VIA Rail Canada Inc.
 ca-federal,2013-14,Capital,appropriation,5435237808.69,21,Shared Services Canada
 ca-federal,2013-14,Contributions to employee benefit plans,appropriation,3432306968.0,100,Veterans Review and Appeal Board
 ca-federal,2013-14,Territorial Financing (Part I.1 - Federal-Provincial Fiscal Arrangements Act),appropriation,3288281700.0,1,Department of Finance
+ca-federal,2013-14,Land Readiness,appropriation,2887518960.74,1,National Defence
 ca-federal,2013-14,Universal Child Care Benefit (Universal Child Care Benefit Act),appropriation,2740095187.0,1,Department of Employment and Social Development
+ca-federal,2013-14,Equipment Acquisition and Disposal,appropriation,2256426438.75,1,National Defence
 ca-federal,2013-14,Treasury Board Central,appropriation,2186132708.0,1,Treasury Board Secretariat
-ca-federal,2013-14,Contributions to employee benefit plans (Members of the Military),appropriation,1407654310.0,1,Department of National Defence
-ca-federal,2013-14,"Payments to provinces regarding sales tax harmonization (Part III,I -Federal-Provincial Fiscal Arrangements Act)",appropriation,1161200000.0,1,Department of Finance
-ca-federal,2013-14,Canada Education Savings grant payments to Registered Educations Savings Plans (RESPs) trustees on behalf of RESP beneficiaries to encourage Canadians to save for post-secondary education for their children,appropriation,760199839.0,1,Department of Employment and Social Development
-ca-federal,2013-14,Contribution payments for the AgriInsurance program,appropriation,750830429.0,1,Department of Agriculture and Agri-Food
-ca-federal,2013-14,Payments to the Newfoundland Offshore Petroleum Resource Revenue Fund,appropriation,731533986.0,1,Department of Natural Resources
-ca-federal,2013-14,Canada Student Grants to qualifying full and part-time students pursuant to the Canada Student Financial Assistance Act,appropriation,725360274.0,1,Department of Employment and Social Development
-ca-federal,2013-14,Payments related to the direct financing arrangement under the Canada Student Financial Assistance Act,appropriation,558049063.0,1,Department of Employment and Social Development
-ca-federal,2013-14,Allowance payments (Old Age Security Act),appropriation,528202660.0,1,Department of Employment and Social Development
-ca-federal,2013-14,"Judges' salaries, allowances and annuities, annuities to spouses and children of judges and lump sum payments to spouses of judges who die while in office",appropriation,496505949.0,2,Registrar of the Supreme Court of Canada
-ca-federal,2013-14,Pensions and other employee benefits - Members of the Force,appropriation,446524247.0,1,Royal Canadian Mounted Police
+ca-federal,2013-14,Government-wide Funds and Public Service Employer Payments,appropriation,2186132707.59,1,Treasury Board of Canada Secretariat
+ca-federal,2013-14,Permanent and Flexible Infrastructure Funding,appropriation,2107629004.86,1,"Housing, Infrastructure and Communities Canada"
+ca-federal,2013-14,Accommodation Management and Real Property Services,appropriation,2096990528.03,1,Public Services and Procurement Canada
+ca-federal,2013-14,Disability and Death Compensation,appropriation,2090984122.36,1,Veterans Affairs Canada
+ca-federal,2013-14,Joint and Common Readiness,appropriation,2027227671.72,1,National Defence
+ca-federal,2013-14,Social Development,appropriation,1965718779.74,2,Employment and Social Development Canada
+ca-federal,2013-14,Maritime Readiness,appropriation,1938812029.13,1,National Defence
 ca-federal,2013-14,"(S) Old Age Security Payments (R.S.C., 1985, c. O-9)",transfer,31911357696.0,1,Department of Employment and Social Development
 ca-federal,2013-14,(S) Canada Health Transfer (Part V.1—Federal-Provincial Fiscal Arrangements Act),transfer,30282900196.0,1,Department of Finance
 ca-federal,2013-14,(S) Fiscal Equalization (Part I—Federal-Provincial Fiscal Arrangements Act),transfer,16105194000.0,1,Department of Finance
@@ -156,24 +181,24 @@ ca-federal,2014-15,Grants & Contributions,appropriation,26184605914.0,31,Social 
 ca-federal,2014-15,Fiscal Equalization (Part I - Federal-Provincial Fiscal Arrangements Act),appropriation,16669278000.0,1,Department of Finance
 ca-federal,2014-15,Interest on Unmatured Debt,appropriation,15351976738.0,1,Department of Finance
 ca-federal,2014-15,Canada Social Transfer (Part V.1 - Federal-Provincial Fiscal Arrangements Act),appropriation,12581729000.0,1,Department of Finance
+ca-federal,2014-15,Defence Capability Element Production,appropriation,11671185254.57,1,National Defence
 ca-federal,2014-15,Guaranteed Income Supplement Payments (Old Age Security Act),appropriation,10066152466.0,1,Department of Employment and Social Development
 ca-federal,2014-15,Other Interest Costs,appropriation,8136044563.0,1,Department of Finance
+ca-federal,2014-15,Internal Services,appropriation,6521701913.68,91,Women and Gender Equality Canada
 ca-federal,2014-15,Capital,appropriation,6351906428.0,21,Shared Services Canada
 ca-federal,2014-15,Payments to Crown Corps,appropriation,5962255339.35,26,Windsor-Detroit Bridge Authority
 ca-federal,2014-15,Territorial Financing (Part I.1 - Federal-Provincial Fiscal Arrangements Act),appropriation,3469215474.0,1,Department of Finance
 ca-federal,2014-15,Contributions to employee benefit plans,appropriation,3287049524.0,100,Veterans Review and Appeal Board
+ca-federal,2014-15,Defence Ready Force Element Production,appropriation,2792141523.67,1,National Defence
 ca-federal,2014-15,Universal Child Care Benefit (Universal Child Care Benefit Act),appropriation,2738493220.0,1,Department of Employment and Social Development
+ca-federal,2014-15,Government-wide Funds and Public Service Employer Payments,appropriation,2454311704.06,1,Treasury Board of Canada Secretariat
 ca-federal,2014-15,Treasury Board Central,appropriation,2454311704.0,1,Treasury Board Secretariat
+ca-federal,2014-15,Disability and Death Compensation,appropriation,2010146898.99,1,Veterans Affairs Canada
+ca-federal,2014-15,Accommodation Management and Real Property Services,appropriation,1997687833.61,1,Public Services and Procurement Canada
 ca-federal,2014-15,Contributions related to the Canada Community-Building Fund (Keeping Canada's Economy and Jobs Growing Act),appropriation,1973269432.0,1,"Department of Housing, Infrastructure and Communities"
-ca-federal,2014-15,Contributions to employee benefit plans (Members of the Military),appropriation,1326612708.0,1,Department of National Defence
-ca-federal,2014-15,Payments to International Development Association,appropriation,883220000.0,1,Department of Finance
-ca-federal,2014-15,Canada Education Savings grant payments to Registered Educations Savings Plans (RESPs) trustees on behalf of RESP beneficiaries to encourage Canadians to save for post-secondary education for their children,appropriation,781081862.0,1,Department of Employment and Social Development
-ca-federal,2014-15,Payments to the Newfoundland Offshore Petroleum Resource Revenue Fund,appropriation,751940157.0,1,Department of Natural Resources
-ca-federal,2014-15,Canada Student Grants to qualifying full and part-time students pursuant to the Canada Student Financial Assistance Act,appropriation,706839634.0,1,Department of Employment and Social Development
-ca-federal,2014-15,Payments related to the direct financing arrangement under the Canada Student Financial Assistance Act,appropriation,630521664.0,1,Department of Employment and Social Development
-ca-federal,2014-15,Contribution payments for the AgriInsurance program,appropriation,610882404.0,1,Department of Agriculture and Agri-Food
-ca-federal,2014-15,Allowance payments (Old Age Security Act),appropriation,531413924.0,1,Department of Employment and Social Development
-ca-federal,2014-15,"Judges' salaries, allowances and annuities, annuities to spouses and children of judges and lump sum payments to spouses of judges who die while in office",appropriation,512255562.0,2,Registrar of the Supreme Court of Canada
+ca-federal,2014-15,Social Development,appropriation,1928451741.5,2,Employment and Social Development Canada
+ca-federal,2014-15,Education,appropriation,1785450456.0,1,Crown-Indigenous Relations and Northern Affairs Canada
+ca-federal,2014-15,Funding Under Long-Term Commitments for Existing Social Housing,appropriation,1646446541.42,1,Canada Mortgage and Housing Corporation
 ca-federal,2014-15,"(S) Old Age Security Payments (R.S.C., 1985, c. O-9)",transfer,33535507278.0,1,Department of Employment and Social Development
 ca-federal,2014-15,(S) Canada Health Transfer (Part V.1—Federal-Provincial Fiscal Arrangements Act),transfer,32114006363.0,1,Department of Finance
 ca-federal,2014-15,(S) Fiscal Equalization (Part I—Federal-Provincial Fiscal Arrangements Act),transfer,16669278000.0,1,Department of Finance
@@ -206,24 +231,24 @@ ca-federal,2015-16,Grants & Contributions,appropriation,26621039443.0,32,Social 
 ca-federal,2015-16,Fiscal Equalization (Part I - Federal-Provincial Fiscal Arrangements Act),appropriation,17341310000.0,1,Department of Finance
 ca-federal,2015-16,Interest on Unmatured Debt,appropriation,15101078440.0,1,Department of Finance
 ca-federal,2015-16,Canada Social Transfer (Part V.1 - Federal-Provincial Fiscal Arrangements Act),appropriation,12959181000.0,1,Department of Finance
+ca-federal,2015-16,Defence Capability Element Production,appropriation,11789355550.97,1,National Defence
 ca-federal,2015-16,Guaranteed Income Supplement Payments (Old Age Security Act),appropriation,9921659952.0,1,Department of Employment and Social Development
 ca-federal,2015-16,Universal Child Care Benefit (Universal Child Care Benefit Act),appropriation,8758825034.0,1,Department of Employment and Social Development
 ca-federal,2015-16,Other Interest Costs,appropriation,7543413434.0,1,Department of Finance
 ca-federal,2015-16,Capital,appropriation,6677963114.0,22,Shared Services Canada
+ca-federal,2015-16,Internal Services,appropriation,6286163206.05,83,Women and Gender Equality Canada
 ca-federal,2015-16,Payments to Crown Corps,appropriation,6284451754.0,25,Windsor-Detroit Bridge Authority
 ca-federal,2015-16,Territorial Financing (Part I.1 - Federal-Provincial Fiscal Arrangements Act),appropriation,3561034002.0,1,Department of Finance
 ca-federal,2015-16,Contributions to employee benefit plans,appropriation,3175820493.0,92,Veterans Review and Appeal Board
+ca-federal,2015-16,Defence Ready Force Element Production,appropriation,2909930085.92,1,National Defence
 ca-federal,2015-16,Treasury Board Central,appropriation,2690624377.0,1,Treasury Board Secretariat
+ca-federal,2015-16,Government-wide Funds and Public Service Employer Payments,appropriation,2690624376.66,1,Treasury Board of Canada Secretariat
+ca-federal,2015-16,International Development,appropriation,2156054871.95,1,Global Affairs Canada
+ca-federal,2015-16,Disability and Death Compensation,appropriation,2135889887.68,1,Veterans Affairs Canada
+ca-federal,2015-16,Accommodation Management and Real Property Services,appropriation,2107596766.64,1,Public Services and Procurement Canada
 ca-federal,2015-16,Contributions related to the Canada Community-Building Fund (Keeping Canada's Economy and Jobs Growing Act),appropriation,1973269432.0,1,"Department of Housing, Infrastructure and Communities"
-ca-federal,2015-16,Contributions to employee benefit plans (Members of the Military),appropriation,1269394356.0,1,Department of National Defence
-ca-federal,2015-16,Employer contributions made under the Public Service Superannuation Act and other retirement acts and the Employment Insurance Act,appropriation,1162000000.0,1,Treasury Board Secretariat
-ca-federal,2015-16,Canada Education Savings grant payments to Registered Educations Savings Plans (RESPs) trustees on behalf of RESP beneficiaries to encourage Canadians to save for post-secondary education for their children,appropriation,820635620.0,1,Department of Employment and Social Development
-ca-federal,2015-16,Canada Student Grants to qualifying full and part-time students pursuant to the Canada Student Financial Assistance Act,appropriation,713927230.0,1,Department of Employment and Social Development
-ca-federal,2015-16,Payments related to the direct financing arrangement under the Canada Student Financial Assistance Act,appropriation,618363897.0,1,Department of Employment and Social Development
-ca-federal,2015-16,Contribution payments for the AgriInsurance program,appropriation,604148826.0,1,Department of Agriculture and Agri-Food
-ca-federal,2015-16,"Judges' salaries, allowances and annuities, annuities to spouses and children of judges and lump sum payments to spouses of judges who die while in office",appropriation,540576857.0,2,Registrar of the Supreme Court of Canada
-ca-federal,2015-16,Allowance payments (Old Age Security Act),appropriation,512566866.0,1,Department of Employment and Social Development
-ca-federal,2015-16,Electoral expenditures,appropriation,450516656.0,2,Office of the Director of Public Prosecutions
+ca-federal,2015-16,Social Development,appropriation,1964250249.7,2,Employment and Social Development Canada
+ca-federal,2015-16,Education,appropriation,1801813581.59,1,Crown-Indigenous Relations and Northern Affairs Canada
 ca-federal,2015-16,"(S) Old Age Security Payments (R.S.C., 1985, c. O-9)",transfer,35050472599.0,1,Department of Employment and Social Development
 ca-federal,2015-16,(S) Canada Health Transfer (Part V.1—Federal-Provincial Fiscal Arrangements Act),transfer,34024617855.0,1,Department of Finance
 ca-federal,2015-16,(S) Fiscal Equalization (Part I—Federal-Provincial Fiscal Arrangements Act),transfer,17341310000.0,1,Department of Finance
@@ -256,24 +281,24 @@ ca-federal,2016-17,Grants & Contributions,appropriation,31034822635.0,30,Social 
 ca-federal,2016-17,Fiscal Equalization (Part I - Federal-Provincial Fiscal Arrangements Act),appropriation,17880415000.0,1,Department of Finance
 ca-federal,2016-17,Interest on Unmatured Debt,appropriation,14138650586.0,1,Department of Finance
 ca-federal,2016-17,Canada Social Transfer (Part V.1 - Federal-Provincial Fiscal Arrangements Act),appropriation,13347956000.0,1,Department of Finance
+ca-federal,2016-17,Defence Capability Element Production,appropriation,11683195786.6,1,National Defence
 ca-federal,2016-17,Guaranteed Income Supplement Payments (Old Age Security Act),appropriation,10922423837.0,1,Department of Employment and Social Development
 ca-federal,2016-17,Payments to Crown Corps,appropriation,7999712056.0,25,Windsor-Detroit Bridge Authority
 ca-federal,2016-17,Other Interest Costs,appropriation,7027348310.0,1,Department of Finance
 ca-federal,2016-17,Capital,appropriation,6828577619.0,23,Shared Services Canada
+ca-federal,2016-17,Internal Services,appropriation,6681023327.84,82,Women and Gender Equality Canada
 ca-federal,2016-17,Territorial Financing (Part I.1 - Federal-Provincial Fiscal Arrangements Act),appropriation,3602979726.0,1,Department of Finance
 ca-federal,2016-17,Contributions to employee benefit plans,appropriation,3114277976.0,91,Veterans Review and Appeal Board
+ca-federal,2016-17,Defence Ready Force Element Production,appropriation,2981299581.27,1,National Defence
+ca-federal,2016-17,Accommodation Management and Real Property Services,appropriation,2446368347.57,1,Public Services and Procurement Canada
+ca-federal,2016-17,Government-wide Funds and Public Service Employer Payments,appropriation,2406697551.07,1,Treasury Board of Canada Secretariat
 ca-federal,2016-17,Treasury Board Central,appropriation,2406697551.0,1,Treasury Board Secretariat
+ca-federal,2016-17,International Development,appropriation,2238575814.64,1,Global Affairs Canada
+ca-federal,2016-17,Education,appropriation,2141964841.44,1,Crown-Indigenous Relations and Northern Affairs Canada
+ca-federal,2016-17,Social Development,appropriation,2138921580.31,2,Employment and Social Development Canada
+ca-federal,2016-17,Disability and Death Compensation,appropriation,2100199639.43,1,Veterans Affairs Canada
 ca-federal,2016-17,Contributions related to the Canada Community-Building Fund (Keeping Canada's Economy and Jobs Growing Act),appropriation,2071932904.0,1,"Department of Housing, Infrastructure and Communities"
 ca-federal,2016-17,Universal Child Care Benefit (Universal Child Care Benefit Act),appropriation,1976071992.0,1,Department of Employment and Social Development
-ca-federal,2016-17,Contributions to employee benefit plans (Members of the Military),appropriation,1216089514.0,1,Department of National Defence
-ca-federal,2016-17,Canada Student Grants to qualifying full and part-time students pursuant to the Canada Student Financial Assistance Act,appropriation,974571302.0,1,Department of Employment and Social Development
-ca-federal,2016-17,Canada Education Savings grant payments to Registered Educations Savings Plans (RESPs) trustees on behalf of RESP beneficiaries to encourage Canadians to save for post-secondary education for their children,appropriation,858638013.0,1,Department of Employment and Social Development
-ca-federal,2016-17,Contribution payments for the AgriInsurance program,appropriation,701496004.0,1,Department of Agriculture and Agri-Food
-ca-federal,2016-17,Payments related to the direct financing arrangement under the Canada Student Financial Assistance Act,appropriation,662379311.0,1,Department of Employment and Social Development
-ca-federal,2016-17,Pensions and other employee benefits - Members of the Force,appropriation,574114273.0,1,Royal Canadian Mounted Police
-ca-federal,2016-17,"Judges' salaries, allowances and annuities, annuities to spouses and children of judges and lump sum payments to spouses of judges who die while in office",appropriation,542459917.0,2,Registrar of the Supreme Court of Canada
-ca-federal,2016-17,Allowance payments (Old Age Security Act),appropriation,530236046.0,1,Department of Employment and Social Development
-ca-federal,2016-17,Payments to the Newfoundland Offshore Petroleum Resource Revenue Fund,appropriation,455431601.0,1,Department of Natural Resources
 ca-federal,2016-17,"(S) Old Age Security Payments (R.S.C., 1985, c. O-9)",transfer,36749167282.0,1,Department of Employment and Social Development
 ca-federal,2016-17,(S) Canada Health Transfer (Part V.1—Federal-Provincial Fiscal Arrangements Act),transfer,36057581263.0,1,Department of Finance
 ca-federal,2016-17,(S) Fiscal Equalization (Part I—Federal-Provincial Fiscal Arrangements Act),transfer,17880415000.0,1,Department of Finance
@@ -306,24 +331,24 @@ ca-federal,2017-18,Grants & Contributions,appropriation,36076599578.0,31,Social 
 ca-federal,2017-18,Fiscal Equalization (Part I - Federal-Provincial Fiscal Arrangements Act),appropriation,18253657000.0,1,Department of Finance
 ca-federal,2017-18,Interest on Unmatured Debt,appropriation,14228824026.09,1,Department of Finance
 ca-federal,2017-18,Canada Social Transfer (Part V.1 - Federal-Provincial Fiscal Arrangements Act),appropriation,13748395000.0,1,Department of Finance
+ca-federal,2017-18,Defence Capability Element Production,appropriation,13358102884.99,1,National Defence
 ca-federal,2017-18,Guaranteed Income Supplement Payments (Old Age Security Act),appropriation,11658538967.84,1,Department of Employment and Social Development
 ca-federal,2017-18,Capital,appropriation,8124734295.0,24,Shared Services Canada
 ca-federal,2017-18,Payments to Crown Corps,appropriation,7554737743.0,24,Windsor-Detroit Bridge Authority
+ca-federal,2017-18,Internal Services,appropriation,7099038947.53,84,Women and Gender Equality Canada
 ca-federal,2017-18,Other Interest Costs,appropriation,6609473703.96,1,Department of Finance
 ca-federal,2017-18,Territorial Financing (Part I.1 - Federal-Provincial Fiscal Arrangements Act),appropriation,3681830727.0,1,Department of Finance
+ca-federal,2017-18,Defence Ready Force Element Production,appropriation,3353549286.12,1,National Defence
 ca-federal,2017-18,Contributions to employee benefit plans,appropriation,3187380559.78,93,Veterans Review and Appeal Board
 ca-federal,2017-18,Treasury Board Central,appropriation,3164665468.0,1,Treasury Board Secretariat
+ca-federal,2017-18,Public Service Employer Payments,appropriation,3164665460.31,1,Treasury Board of Canada Secretariat
 ca-federal,2017-18,Contributions to employee benefit plans (Members of the Military),appropriation,3150988815.97,1,Department of National Defence
-ca-federal,2017-18,Contributions related to the Canada Community-Building Fund (Keeping Canada's Economy and Jobs Growing Act),appropriation,2091451549.6,2,Department of Indigenous Services
-ca-federal,2017-18,Canada Student Grants to qualifying full and part-time students pursuant to the Canada Student Financial Assistance Act,appropriation,1322960042.7,1,Department of Employment and Social Development
-ca-federal,2017-18,Canada Education Savings grant payments to Registered Educations Savings Plans (RESPs) trustees on behalf of RESP beneficiaries to encourage Canadians to save for post-secondary education for their children,appropriation,899290583.66,1,Department of Employment and Social Development
-ca-federal,2017-18,Payments related to the direct financing arrangement under the Canada Student Financial Assistance Act,appropriation,797826409.72,1,Department of Employment and Social Development
-ca-federal,2017-18,Contribution payments for the AgriInsurance program,appropriation,651704357.46,1,Department of Agriculture and Agri-Food
-ca-federal,2017-18,"Judges' salaries, allowances and annuities, annuities to spouses and children of judges and lump sum payments to spouses of judges who die while in office",appropriation,563628147.11,2,Registrar of the Supreme Court of Canada
-ca-federal,2017-18,Allowance payments (Old Age Security Act),appropriation,544791267.99,1,Department of Employment and Social Development
-ca-federal,2017-18,Payments to International Development Association,appropriation,441610000.0,1,Department of Finance
-ca-federal,2017-18,Losses on Foreign Exchange,appropriation,384378364.56,6,National Research Council of Canada
-ca-federal,2017-18,Pensions and other employee benefits - Members of the Force,appropriation,361306004.26,1,Royal Canadian Mounted Police
+ca-federal,2017-18,Disability and Death Compensation,appropriation,2953161015.53,1,Veterans Affairs Canada
+ca-federal,2017-18,Accommodation Management and Real Property Services,appropriation,2721933047.49,1,Public Services and Procurement Canada
+ca-federal,2017-18,Social Development,appropriation,2651745339.42,3,Employment and Social Development Canada
+ca-federal,2017-18,International Development,appropriation,2383668721.33,1,Global Affairs Canada
+ca-federal,2017-18,Education,appropriation,2295244893.22,2,Department of Indigenous Services
+ca-federal,2017-18,Infrastructure and Capacity,appropriation,2163929244.61,2,Department of Indigenous Services
 ca-federal,2017-18,"(S) Old Age Security Payments (R.S.C., 1985, c. O-9)",transfer,38409875247.0,1,Department of Employment and Social Development
 ca-federal,2017-18,(S) Canada Health Transfer (Part V.1—Federal-Provincial Fiscal Arrangements Act),transfer,37123933953.0,1,Department of Finance
 ca-federal,2017-18,(S) Fiscal Equalization (Part I—Federal-Provincial Fiscal Arrangements Act),transfer,18253657000.0,1,Department of Finance
@@ -360,20 +385,20 @@ ca-federal,2018-19,Guaranteed Income Supplement Payments (Old Age Security Act),
 ca-federal,2018-19,Capital,appropriation,8321331807.0,24,Shared Services Canada
 ca-federal,2018-19,Payments to Crown Corps,appropriation,7105719304.0,23,Windsor-Detroit Bridge Authority
 ca-federal,2018-19,Other Interest Costs,appropriation,6306704163.0,1,Department of Finance
+ca-federal,2018-19,Internal Services,appropriation,3911847392.77,73,Women and Gender Equality Canada
 ca-federal,2018-19,Territorial Financing (Part I.1 - Federal-Provincial Fiscal Arrangements Act),appropriation,3785321565.0,1,Department of Finance
 ca-federal,2018-19,Contributions to employee benefit plans,appropriation,3417288569.0,95,Veterans Review and Appeal Board
+ca-federal,2018-19,Equipment Support,appropriation,3164438291.45,1,National Defence
 ca-federal,2018-19,Employer contributions made under the Public Service Superannuation Act and other retirement acts and the Employment Insurance Act,appropriation,3107000000.0,1,Treasury Board Secretariat
 ca-federal,2018-19,Treasury Board Central,appropriation,2739639374.0,1,Treasury Board Secretariat
+ca-federal,2018-19,Public Service Employer Payments,appropriation,2739639373.51,1,Treasury Board of Canada Secretariat
+ca-federal,2018-19,Organize Leaders’ Debates for federal general elections,appropriation,2369822133.05,1,Department of Indigenous Services
 ca-federal,2018-19,Contributions related to the Canada Community-Building Fund (Keeping Canada's Economy and Jobs Growing Act),appropriation,2200000000.0,2,Department of Indigenous Services
-ca-federal,2018-19,Canada Student Grants to qualifying full and part-time students pursuant to the Canada Student Financial Assistance Act,appropriation,1537830720.0,1,Department of Employment and Social Development
-ca-federal,2018-19,Contributions to employee benefit plans (Members of the Military),appropriation,1283660471.0,1,Department of National Defence
-ca-federal,2018-19,Payments related to the direct financing arrangement under the Canada Student Financial Assistance Act,appropriation,964748868.0,1,Department of Employment and Social Development
-ca-federal,2018-19,Canada Education Savings grant payments to Registered Educations Savings Plans (RESPs) trustees on behalf of RESP beneficiaries to encourage Canadians to save for post-secondary education for their children,appropriation,910669269.0,1,Department of Employment and Social Development
-ca-federal,2018-19,Contribution payments for the AgriInsurance program,appropriation,664580115.0,1,Department of Agriculture and Agri-Food
-ca-federal,2018-19,Distribution of fuel charges (Canada Carbon Rebate) under section 165 of the Greenhouse Gas Pollution Pricing Act and section 122.8 of the Income Tax Act,appropriation,663758550.0,1,Canada Revenue Agency
-ca-federal,2018-19,"Judges' salaries, allowances and annuities, annuities to spouses and children of judges and lump sum payments to spouses of judges who die while in office",appropriation,591301586.0,2,Registrar of the Supreme Court of Canada
-ca-federal,2018-19,Allowance payments (Old Age Security Act),appropriation,562520365.0,1,Department of Employment and Social Development
-ca-federal,2018-19,Payment to the Canada Infrastructure Bank,appropriation,552861638.0,1,Department of Finance
+ca-federal,2018-19,Federal Accommodation and Infrastructure,appropriation,2157266797.98,1,Public Services and Procurement Canada
+ca-federal,2018-19,Ready Land Forces,appropriation,2155525865.38,1,National Defence
+ca-federal,2018-19,Assistance for housing needs,appropriation,2028785182.16,2,Global Affairs Canada
+ca-federal,2018-19,Police Operations,appropriation,2028760083.61,1,Royal Canadian Mounted Police
+ca-federal,2018-19,Management of Treaties and Agreements,appropriation,1872138265.15,1,Crown-Indigenous Relations and Northern Affairs Canada
 ca-federal,2018-19,"(S) Old Age Security Payments (R.S.C., 1985, c. O-9)",transfer,40424123826.0,1,Department of Employment and Social Development
 ca-federal,2018-19,(S) Canada Health Transfer (Part V.1—Federal-Provincial Fiscal Arrangements Act),transfer,38567524392.0,1,Department of Finance
 ca-federal,2018-19,(S) Fiscal Equalization (Part I—Federal-Provincial Fiscal Arrangements Act),transfer,18958259000.0,1,Department of Finance
@@ -413,17 +438,17 @@ ca-federal,2019-20,Other Interest Costs,appropriation,5951868513.0,1,Department 
 ca-federal,2019-20,Payments pursuant to the Public Health Events of National Concern Payments Act,appropriation,4755547878.0,1,Department of Employment and Social Development
 ca-federal,2019-20,Contributions related to the Canada Community-Building Fund (Keeping Canada's Economy and Jobs Growing Act),appropriation,4400000335.0,2,Department of Indigenous Services
 ca-federal,2019-20,Territorial Financing (Part I.1 - Federal-Provincial Fiscal Arrangements Act),appropriation,3948402899.0,1,Department of Finance
+ca-federal,2019-20,Internal Services,appropriation,3755200150.53,72,Women and Gender Equality Canada
 ca-federal,2019-20,Contributions to employee benefit plans,appropriation,3561047887.0,96,Veterans Review and Appeal Board
+ca-federal,2019-20,Equipment Support,appropriation,3524542107.55,1,National Defence
+ca-federal,2019-20,Public Service Employer Payments,appropriation,2633550311.06,1,Treasury Board of Canada Secretariat
 ca-federal,2019-20,Treasury Board Central,appropriation,2633550311.0,1,Treasury Board Secretariat
 ca-federal,2019-20,Distribution of fuel charges (Canada Carbon Rebate) under section 165 of the Greenhouse Gas Pollution Pricing Act and section 122.8 of the Income Tax Act,appropriation,2629934241.0,1,Canada Revenue Agency
-ca-federal,2019-20,Canada Student Grants to qualifying full and part-time students pursuant to the Canada Student Financial Assistance Act,appropriation,1583022844.0,1,Department of Employment and Social Development
-ca-federal,2019-20,Contributions to employee benefit plans (Members of the Military),appropriation,1321615141.0,1,Department of National Defence
-ca-federal,2019-20,Pensions and other employee benefits - Members of the Force,appropriation,1302844382.0,1,Royal Canadian Mounted Police
-ca-federal,2019-20,Debt Forgiveness,appropriation,1093150344.0,2,Department of Employment and Social Development
-ca-federal,2019-20,Canada Education Savings grant payments to Registered Educations Savings Plans (RESPs) trustees on behalf of RESP beneficiaries to encourage Canadians to save for post-secondary education for their children,appropriation,969415697.0,1,Department of Employment and Social Development
-ca-federal,2019-20,Contribution to the Federation of Canadian Municipalities for the Green Municipal Fund,appropriation,950000000.0,1,Department of Natural Resources
-ca-federal,2019-20,Payments related to the direct financing arrangement under the Canada Student Financial Assistance Act,appropriation,934933044.0,1,Department of Employment and Social Development
-ca-federal,2019-20,Payment to the Canada Infrastructure Bank,appropriation,759153755.0,1,Department of Finance
+ca-federal,2019-20,Disability Benefits,appropriation,2462088618.16,1,Veterans Affairs Canada
+ca-federal,2019-20,Education,appropriation,2384544425.82,1,Department of Indigenous Services
+ca-federal,2019-20,Federal Accommodation and Infrastructure,appropriation,2074316635.8,1,Public Services and Procurement Canada
+ca-federal,2019-20,Other Claims,appropriation,2059515103.43,1,Crown-Indigenous Relations and Northern Affairs Canada
+ca-federal,2019-20,Assistance for housing needs,appropriation,1963674396.96,2,Global Affairs Canada
 ca-federal,2019-20,"(S) Old Age Security Payments (R.S.C., 1985, c. O-9)",transfer,42706488728.0,1,Department of Employment and Social Development
 ca-federal,2019-20,(S) Canada Health Transfer (Part V.1—Federal-Provincial Fiscal Arrangements Act),transfer,40371762839.0,1,Department of Finance
 ca-federal,2019-20,(S) Fiscal Equalization (Part I—Federal-Provincial Fiscal Arrangements Act),transfer,19837259000.0,1,Department of Finance
@@ -467,13 +492,13 @@ ca-federal,2020-21,Other Interest Costs,appropriation,5329760904.0,1,Department 
 ca-federal,2020-21,Contributions to employee benefit plans,appropriation,4901931874.0,96,Veterans Review and Appeal Board
 ca-federal,2020-21,Distribution of fuel charges (Canada Carbon Rebate) under section 165 of the Greenhouse Gas Pollution Pricing Act and section 122.8 of the Income Tax Act,appropriation,4546974222.0,1,Canada Revenue Agency
 ca-federal,2020-21,Territorial Financing (Part I.1 - Federal-Provincial Fiscal Arrangements Act),appropriation,4180225221.0,1,Department of Finance
+ca-federal,2020-21,Internal Services,appropriation,4056202687.29,72,Women and Gender Equality Canada
 ca-federal,2020-21,Contributions to employee benefit plans (Members of the Military),appropriation,4016577703.0,1,Department of National Defence
+ca-federal,2020-21,Equipment Support,appropriation,3447090968.65,1,National Defence
+ca-federal,2020-21,Fiscal Arrangements with Provinces and Territories,appropriation,3147882076.63,1,Department of Finance Canada
 ca-federal,2020-21,Canada Student Grants to qualifying full and part-time students pursuant to the Canada Student Financial Assistance Act,appropriation,2920803871.0,1,Department of Employment and Social Development
 ca-federal,2020-21,Treasury Board Central,appropriation,2889612806.0,1,Treasury Board Secretariat
-ca-federal,2020-21,Contributions related to the Canada Community-Building Fund (Keeping Canada's Economy and Jobs Growing Act),appropriation,2200000000.0,2,Department of Indigenous Services
-ca-federal,2020-21,Canada Education Savings grant payments to Registered Educations Savings Plans (RESPs) trustees on behalf of RESP beneficiaries to encourage Canadians to save for post-secondary education for their children,appropriation,1016678793.0,1,Department of Employment and Social Development
-ca-federal,2020-21,Payments related to the direct financing arrangement under the Canada Student Financial Assistance Act,appropriation,749443316.0,1,Department of Employment and Social Development
-ca-federal,2020-21,Losses on Foreign Exchange,appropriation,734722812.0,9,National Research Council of Canada
+ca-federal,2020-21,Public Service Employer Payments,appropriation,2886207295.91,1,Treasury Board of Canada Secretariat
 ca-federal,2020-21,"(S) Old Age Security Payments (R.S.C., 1985, c. O-9)",transfer,44382661808.0,1,Department of Employment and Social Development
 ca-federal,2020-21,(S) Canada Health Transfer (Part V.1—Federal-Provincial Fiscal Arrangements Act),transfer,41880173684.0,1,Department of Finance
 ca-federal,2020-21,(S) Payments for the Canada Emergency Response Benefit pursuant to the Public Health Events of National Concern Payments Act,transfer,40563570750.0,1,Department of Employment and Social Development
@@ -515,15 +540,15 @@ ca-federal,2021-22,Other Interest Costs,appropriation,5122310988.0,1,Department 
 ca-federal,2021-22,Contributions related to the Canada Community-Building Fund (Keeping Canada's Economy and Jobs Growing Act),appropriation,4550800002.0,2,Department of Indigenous Services
 ca-federal,2021-22,Territorial Financing (Part I.1 - Federal-Provincial Fiscal Arrangements Act),appropriation,4379878578.0,1,Department of Finance
 ca-federal,2021-22,Contributions to employee benefit plans,appropriation,4219172112.0,98,Veterans Review and Appeal Board
+ca-federal,2021-22,Internal Services,appropriation,4156497988.49,72,Women and Gender Equality Canada
 ca-federal,2021-22,Payments related to Canada health transfer,appropriation,4000000000.0,1,Department of Finance
+ca-federal,2021-22,Allocation-Based and Direct Funding Stewardship,appropriation,3843975248.73,1,"Housing, Infrastructure and Communities Canada"
 ca-federal,2021-22,Distribution of fuel charges (Canada Carbon Rebate) under section 165 of the Greenhouse Gas Pollution Pricing Act and section 122.8 of the Income Tax Act,appropriation,3761940968.0,1,Canada Revenue Agency
+ca-federal,2021-22,Vaccination,appropriation,3587394618.28,1,Public Health Agency of Canada
+ca-federal,2021-22,Assistance for housing needs,appropriation,3578946167.46,2,Global Affairs Canada
+ca-federal,2021-22,Equipment Support,appropriation,3374010673.83,1,National Defence
 ca-federal,2021-22,Canada Student Grants to qualifying full and part-time students pursuant to the Canada Student Financial Assistance Act,appropriation,3154531140.0,1,Department of Employment and Social Development
 ca-federal,2021-22,Treasury Board Central,appropriation,2923781288.0,1,Treasury Board Secretariat
-ca-federal,2021-22,Payments to the provinces for Early Learning and Child Care,appropriation,2648082433.0,1,Department of Employment and Social Development
-ca-federal,2021-22,Transfer Payments in Connection with the Budget Implementation Act,appropriation,1809727560.0,1,Department of Employment and Social Development
-ca-federal,2021-22,Contributions to employee benefit plans (Members of the Military),appropriation,1312114523.0,1,Department of National Defence
-ca-federal,2021-22,Payments related to the direct financing arrangement under the Canada Student Financial Assistance Act,appropriation,1223515704.0,1,Department of Employment and Social Development
-ca-federal,2021-22,Canada Education Savings grant payments to Registered Educations Savings Plans (RESPs) trustees on behalf of RESP beneficiaries to encourage Canadians to save for post-secondary education for their children,appropriation,1089549480.0,1,Department of Employment and Social Development
 ca-federal,2021-22,"(S) Old Age Security Payments (R.S.C., 1985, c. O-9)",transfer,46221407443.0,1,Department of Employment and Social Development
 ca-federal,2021-22,(S) Canada Health Transfer (Part V.1—Federal-Provincial Fiscal Arrangements Act),transfer,43132954822.0,1,Department of Finance
 ca-federal,2021-22,(S) Fiscal Equalization (Part I—Federal-Provincial Fiscal Arrangements Act),transfer,20910789000.0,1,Department of Finance
@@ -561,19 +586,19 @@ ca-federal,2022-23,Payments to Crown Corps,appropriation,10105775842.0,26,Windso
 ca-federal,2022-23,Capital,appropriation,9593031974.0,26,Shared Services Canada
 ca-federal,2022-23,Distribution of fuel charges (Canada Carbon Rebate) under section 165 of the Greenhouse Gas Pollution Pricing Act and section 122.8 of the Income Tax Act,appropriation,6823776253.0,1,Canada Revenue Agency
 ca-federal,2022-23,Other Interest Costs,appropriation,5597929854.0,1,Department of Finance
+ca-federal,2022-23,Appeals,appropriation,5215504362.62,1,Employment and Social Development Canada
+ca-federal,2022-23,Internal Services,appropriation,4898559201.83,72,Women and Gender Equality Canada
 ca-federal,2022-23,Contributions to employee benefit plans,appropriation,4556174472.0,98,Veterans Review and Appeal Board
 ca-federal,2022-23,Territorial Financing (Part I.1 - Federal-Provincial Fiscal Arrangements Act),appropriation,4552785221.0,1,Department of Finance
+ca-federal,2022-23,Allocation-Based and Direct Funding Stewardship,appropriation,3822017967.16,1,"Housing, Infrastructure and Communities Canada"
+ca-federal,2022-23,Equipment Support,appropriation,3763677050.71,1,National Defence
 ca-federal,2022-23,Treasury Board Central,appropriation,3759894377.0,1,Treasury Board Secretariat
+ca-federal,2022-23,Public Service Employer Payments,appropriation,3756367696.71,1,Treasury Board of Canada Secretariat
+ca-federal,2022-23,Specific Claims,appropriation,3601735248.37,1,Crown-Indigenous Relations and Northern Affairs Canada
 ca-federal,2022-23,Canada Student Grants to qualifying full and part-time students pursuant to the Canada Student Financial Assistance Act,appropriation,3367941806.0,1,Department of Employment and Social Development
-ca-federal,2022-23,Contributions related to the Canada Community-Building Fund (Keeping Canada's Economy and Jobs Growing Act),appropriation,2300000000.0,2,Department of Indigenous Services
-ca-federal,2022-23,Payments related to Canada health transfer,appropriation,2000000000.0,1,Department of Finance
-ca-federal,2022-23,Pensions and other employee benefits - Members of the Force,appropriation,1614560617.0,1,Royal Canadian Mounted Police
-ca-federal,2022-23,Contributions to employee benefit plans (Members of the Military),appropriation,1359980598.0,1,Department of National Defence
-ca-federal,2022-23,Forgiveness of non-budgetary loans pursuant to section 23(6) of the Export Development Act,appropriation,1353550947.0,1,Export Development Canada (Canada Account)
-ca-federal,2022-23,Payments related to the direct financing arrangement under the Canada Student Financial Assistance Act,appropriation,1281695138.0,1,Department of Employment and Social Development
-ca-federal,2022-23,Contribution payments for the AgriInsurance program,appropriation,1052520171.0,1,Department of Agriculture and Agri-Food
-ca-federal,2022-23,Canada Education Savings grant payments to Registered Educations Savings Plans (RESPs) trustees on behalf of RESP beneficiaries to encourage Canadians to save for post-secondary education for their children,appropriation,1031795731.0,1,Department of Employment and Social Development
-ca-federal,2022-23,Payments for COVID-19 tests pursuant to An Act respecting certain measures related to COVID-19,appropriation,1000277662.0,1,Department of Health
+ca-federal,2022-23,First Nations Child and Family Services,appropriation,3284606707.04,1,Department of Indigenous Services
+ca-federal,2022-23,Water and Wastewater,appropriation,3145292230.3,1,Department of Indigenous Services
+ca-federal,2022-23,Education,appropriation,3011311747.91,1,Department of Indigenous Services
 ca-federal,2022-23,"(S) Old Age Security Payments (R.S.C., 1985, c. O-9)",transfer,52737283412.0,1,Department of Employment and Social Development
 ca-federal,2022-23,(S) Canada Health Transfer (Part V.1—Federal-Provincial Fiscal Arrangements Act),transfer,45140656521.0,1,Department of Finance
 ca-federal,2022-23,(S) Fiscal Equalization (Part I—Federal-Provincial Fiscal Arrangements Act),transfer,21920222000.0,1,Department of Finance
@@ -604,6 +629,7 @@ ca-federal,2023-24,Grants & Contributions,appropriation,80425503467.8,34,Social 
 ca-federal,2023-24,Old Age Security payments (Old Age Security Act),appropriation,57444856822.3,1,Department of Employment and Social Development
 ca-federal,2023-24,Canada Health Transfer (Part V.1 - Federal-Provincial Fiscal Arrangements Act),appropriation,49431243596.0,1,Department of Finance
 ca-federal,2023-24,Interest on Unmatured Debt,appropriation,36430208410.23,1,Department of Finance
+ca-federal,2023-24,Child and Family Services,appropriation,27327724941.28,1,Department of Indigenous Services
 ca-federal,2023-24,Fiscal Equalization (Part I - Federal-Provincial Fiscal Arrangements Act),appropriation,23963000000.0,1,Department of Finance
 ca-federal,2023-24,Guaranteed Income Supplement Payments (Old Age Security Act),appropriation,18030935781.17,1,Department of Employment and Social Development
 ca-federal,2023-24,Canada Social Transfer (Part V.1 - Federal-Provincial Fiscal Arrangements Act),appropriation,16416302000.0,1,Department of Finance
@@ -611,19 +637,18 @@ ca-federal,2023-24,Payments to Crown Corps,appropriation,13047664831.0,26,Windso
 ca-federal,2023-24,Capital,appropriation,12172778588.2,26,Shared Services Canada
 ca-federal,2023-24,Forgiveness of non-budgetary loans pursuant to section 23(6) of the Export Development Act,appropriation,10306700332.0,1,Export Development Canada (Canada Account)
 ca-federal,2023-24,Distribution of fuel charges (Canada Carbon Rebate) under section 165 of the Greenhouse Gas Pollution Pricing Act and section 122.8 of the Income Tax Act,appropriation,9599733793.87,1,Canada Revenue Agency
+ca-federal,2023-24,Other Claims,appropriation,9314483091.4,1,Crown-Indigenous Relations and Northern Affairs Canada
+ca-federal,2023-24,Appeals,appropriation,6212098200.04,1,Employment and Social Development Canada
 ca-federal,2023-24,Other Interest Costs,appropriation,6043911079.07,1,Department of Finance
+ca-federal,2023-24,Internal Services,appropriation,5673736036.72,73,Women and Gender Equality Canada
 ca-federal,2023-24,Contributions to employee benefit plans,appropriation,5303288076.02,99,Veterans Review and Appeal Board
 ca-federal,2023-24,Contributions to employee benefit plans (Members of the Military),appropriation,4852352717.42,1,Department of National Defence
 ca-federal,2023-24,Territorial Financing (Part I.1 - Federal-Provincial Fiscal Arrangements Act),appropriation,4834417818.0,1,Department of Finance
+ca-federal,2023-24,Responsive Health Care Systems,appropriation,4561315269.27,1,Health Canada
+ca-federal,2023-24,Equipment Support,appropriation,4194444799.58,1,National Defence
+ca-federal,2023-24,Allocation-Based and Direct Funding Stewardship,appropriation,4130867847.72,1,"Housing, Infrastructure and Communities Canada"
 ca-federal,2023-24,Treasury Board Central,appropriation,3853588562.0,1,Treasury Board Secretariat
-ca-federal,2023-24,Canada Student Grants to qualifying full and part-time students pursuant to the Canada Student Financial Assistance Act,appropriation,2674008982.68,1,Department of Employment and Social Development
-ca-federal,2023-24,Contributions related to the Canada Community-Building Fund (Keeping Canada's Economy and Jobs Growing Act),appropriation,2399999998.34,2,Department of Indigenous Services
-ca-federal,2023-24,Payments related to Canada health transfer,appropriation,2000000000.0,1,Department of Finance
-ca-federal,2023-24,Payment to the Canada Infrastructure Bank,appropriation,1477761422.0,1,Department of Finance
-ca-federal,2023-24,Payments related to the direct financing arrangement under the Canada Student Financial Assistance Act,appropriation,1464038733.9,1,Department of Employment and Social Development
-ca-federal,2023-24,Contribution payments for the AgriInsurance program,appropriation,1210265387.51,1,Department of Agriculture and Agri-Food
-ca-federal,2023-24,Canada Education Savings grant payments to Registered Educations Savings Plans (RESPs) trustees on behalf of RESP beneficiaries to encourage Canadians to save for post-secondary education for their children,appropriation,1056760569.44,1,Department of Employment and Social Development
-ca-federal,2023-24,"Judges' salaries, allowances and annuities, annuities to spouses and children of judges and lump sum payments to spouses of judges who die while in office",appropriation,748110098.64,2,Registrar of the Supreme Court of Canada
+ca-federal,2023-24,Public Service Employer Payments,appropriation,3849638267.63,1,Treasury Board of Canada Secretariat
 ca-federal,2023-24,"(S) Old Age Security Payments (R.S.C., 1985, c. O-9)",transfer,57444856822.3,1,Department of Employment and Social Development
 ca-federal,2023-24,(S) Canada Health Transfer (Part V.1—Federal-Provincial Fiscal Arrangements Act),transfer,49431243596.0,1,Department of Finance
 ca-federal,2023-24,(S) Fiscal Equalization (Part I—Federal-Provincial Fiscal Arrangements Act),transfer,24539511311.0,1,Department of Finance
@@ -660,20 +685,20 @@ ca-federal,2024-25,Canada Social Transfer (Part V.1 - Federal-Provincial Fiscal 
 ca-federal,2024-25,Capital,appropriation,15084750466.0,26,Shared Services Canada
 ca-federal,2024-25,Payments to Crown Corps,appropriation,13029293681.0,26,Windsor-Detroit Bridge Authority
 ca-federal,2024-25,Distribution of fuel charges (Canada Carbon Rebate) under section 165 of the Greenhouse Gas Pollution Pricing Act and section 122.8 of the Income Tax Act,appropriation,12664115951.19,1,Canada Revenue Agency
+ca-federal,2024-25,Specific Claims,appropriation,8351211220.62,1,Crown-Indigenous Relations and Northern Affairs Canada
+ca-federal,2024-25,Appeals,appropriation,7253207898.28,1,Employment and Social Development Canada
 ca-federal,2024-25,Employer contributions made under the Public Service Superannuation Act and other retirement acts and the Employment Insurance Act,appropriation,6425000000.02,1,Treasury Board Secretariat
+ca-federal,2024-25,Internal Services,appropriation,6309833095.15,74,Women and Gender Equality Canada
 ca-federal,2024-25,Other Interest Costs,appropriation,5809858768.72,1,Department of Finance
+ca-federal,2024-25,Community Infrastructure,appropriation,5617276600.49,1,Department of Indigenous Services
 ca-federal,2024-25,Contributions to employee benefit plans,appropriation,5371774692.12,100,Veterans Review and Appeal Board
 ca-federal,2024-25,Territorial Financing (Part I.1 - Federal-Provincial Fiscal Arrangements Act),appropriation,5158964752.0,1,Department of Finance
+ca-federal,2024-25,Responsive Health Care Systems,appropriation,5092613917.02,1,Health Canada
+ca-federal,2024-25,Equipment Support,appropriation,4652290987.57,1,National Defence
+ca-federal,2024-25,Child and Family Services,appropriation,4585713115.53,1,Department of Indigenous Services
+ca-federal,2024-25,Allocation-Based and Direct Funding Stewardship,appropriation,4547681151.04,1,"Housing, Infrastructure and Communities Canada"
 ca-federal,2024-25,Treasury Board Central,appropriation,4232621232.0,1,Treasury Board Secretariat
-ca-federal,2024-25,Distribution of fuel charges (to farming businesses) under section 165 of the Greenhouse Gas Pollution Pricing Act and section 127.42 of the Income Tax Act,appropriation,2736245177.39,1,Canada Revenue Agency
-ca-federal,2024-25,Canada Student Grants to qualifying full and part-time students pursuant to the Canada Student Financial Assistance Act,appropriation,2584053454.26,1,Department of Employment and Social Development
-ca-federal,2024-25,Contributions related to the Canada Community-Building Fund (Keeping Canada's Economy and Jobs Growing Act),appropriation,2400000000.0,2,Department of Indigenous Services
-ca-federal,2024-25,Payment to the Canada Infrastructure Bank,appropriation,2363429306.0,1,Department of Finance
-ca-federal,2024-25,Contributions to employee benefit plans (Members of the Military),appropriation,1434415918.27,1,Department of National Defence
-ca-federal,2024-25,Payments related to the direct financing arrangement under the Canada Student Financial Assistance Act,appropriation,1266516087.8,1,Department of Employment and Social Development
-ca-federal,2024-25,Contribution payments for the AgriInsurance program,appropriation,1264457815.95,1,Department of Agriculture and Agri-Food
-ca-federal,2024-25,Canada Education Savings grant payments to Registered Educations Savings Plans (RESPs) trustees on behalf of RESP beneficiaries to encourage Canadians to save for post-secondary education for their children,appropriation,1198830534.49,1,Department of Employment and Social Development
-ca-federal,2024-25,Payments to the Newfoundland Offshore Petroleum Resource Revenue Fund,appropriation,985000117.56,1,Department of Natural Resources
+ca-federal,2024-25,Public Service Employer Payments,appropriation,4228707909.42,1,Treasury Board of Canada Secretariat
 ca-federal,2024-25,"(S) Old Age Security Payments (R.S.C., 1985, c. O-9)",transfer,60648088711.1,1,Department of Employment and Social Development
 ca-federal,2024-25,(S) Canada Health Transfer (Part V.1—Federal-Provincial Fiscal Arrangements Act),transfer,52070383303.0,1,Department of Finance
 ca-federal,2024-25,(S) Fiscal Equalization (Part I—Federal-Provincial Fiscal Arrangements Act),transfer,25252833000.0,1,Department of Finance
