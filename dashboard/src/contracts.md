@@ -6,6 +6,9 @@ publique — voir [Où va l'argent](./) pour les dépenses des deux gouvernement
 
 ```js
 import {money, moneyShort, number, percent, competitionColor} from "./components/format.js";
+import {dateBands, partyLegend} from "./components/politics.js";
+
+const eras = await FileAttachment("data/political_eras.json").json();
 
 const summary = await FileAttachment("data/summary.json").json();
 const monthly = await FileAttachment("data/monthly.csv").csv({typed: true});
@@ -72,8 +75,14 @@ Plot.plot({
   height: 300,
   marginLeft: 60,
   y: {label: "Valeur adjugée", tickFormat: moneyShort, grid: true},
-  x: {label: null},
+  // The bands are emitted unclipped so one payload serves every chart; each
+  // chart clips them by declaring its own domain. Without this the axis
+  // stretches back to 2003 where the earliest term starts and the data does not.
+  x: {label: null, domain: d3.extent(monthlyTotals, (d) => d.month)},
   marks: [
+    // Government of Québec behind the series. SEAO is provincial, so the
+    // relevant bands are the premiers, not the prime ministers.
+    ...dateBands(eras, "qc"),
     Plot.rectY(monthlyTotals, {
       x: "month",
       y: "total_cad",
@@ -88,6 +97,17 @@ Plot.plot({
 
 Les pics correspondent à des contrats d'infrastructure de très grande valeur
 plutôt qu'à une hausse générale de l'activité.
+
+<div class="note">
+
+Les bandes de couleur indiquent le gouvernement du Québec en poste :
+${partyLegend(eras, "qc").map((p) => p.party).join(", ")}. Elles servent de
+repère chronologique — les dépenses d'une année découlent de budgets adoptés
+plus tôt et de contrats signés avant, et ne sont pas attribuables au
+gouvernement en place. Données tenues à jour dans ce dépôt, non publiées par une
+source officielle.
+
+</div>
 
 ## Mode d'adjudication dans le temps
 

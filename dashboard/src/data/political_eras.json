@@ -1,0 +1,396 @@
+{
+  "last_verified": "2026-07-31",
+  "note": "Reference data maintained in this repository, not published by any source. Spending in a year reflects budgets set earlier and statutory programmes running for decades; these bands are context for reading the chart, not an attribution of cause.",
+  "bands": [
+    {
+      "jurisdiction": "ca-federal",
+      "leader": "Paul Martin",
+      "party": "Liberal",
+      "party_short": "Lib",
+      "colour": "#e2a3a3",
+      "start": "2003-12-12",
+      "end": "2006-02-06",
+      "incumbent": false
+    },
+    {
+      "jurisdiction": "ca-federal",
+      "leader": "Stephen Harper",
+      "party": "Conservative",
+      "party_short": "Con",
+      "colour": "#8aa6c8",
+      "start": "2006-02-06",
+      "end": "2015-11-04",
+      "incumbent": false
+    },
+    {
+      "jurisdiction": "ca-federal",
+      "leader": "Justin Trudeau",
+      "party": "Liberal",
+      "party_short": "Lib",
+      "colour": "#e2a3a3",
+      "start": "2015-11-04",
+      "end": "2025-03-14",
+      "incumbent": false
+    },
+    {
+      "jurisdiction": "ca-federal",
+      "leader": "Mark Carney",
+      "party": "Liberal",
+      "party_short": "Lib",
+      "colour": "#e2a3a3",
+      "start": "2025-03-14",
+      "end": "2026-07-31",
+      "incumbent": true
+    },
+    {
+      "jurisdiction": "qc",
+      "leader": "Jean Charest",
+      "party": "Parti libéral du Québec",
+      "party_short": "PLQ",
+      "colour": "#e8b0b0",
+      "start": "2003-04-29",
+      "end": "2012-09-19",
+      "incumbent": false
+    },
+    {
+      "jurisdiction": "qc",
+      "leader": "Pauline Marois",
+      "party": "Parti Québécois",
+      "party_short": "PQ",
+      "colour": "#9fb6d4",
+      "start": "2012-09-19",
+      "end": "2014-04-23",
+      "incumbent": false
+    },
+    {
+      "jurisdiction": "qc",
+      "leader": "Philippe Couillard",
+      "party": "Parti libéral du Québec",
+      "party_short": "PLQ",
+      "colour": "#e8b0b0",
+      "start": "2014-04-23",
+      "end": "2018-10-18",
+      "incumbent": false
+    },
+    {
+      "jurisdiction": "qc",
+      "leader": "François Legault",
+      "party": "Coalition Avenir Québec",
+      "party_short": "CAQ",
+      "colour": "#8fc7e8",
+      "start": "2018-10-18",
+      "end": "2026-07-31",
+      "incumbent": true
+    }
+  ],
+  "years": [
+    {
+      "fiscal_year": "2011-12",
+      "jurisdiction": "ca-federal",
+      "leader": "Stephen Harper",
+      "party": "Conservative",
+      "party_short": "Con",
+      "colour": "#8aa6c8",
+      "share": 1.0,
+      "split": false,
+      "also": ""
+    },
+    {
+      "fiscal_year": "2012-13",
+      "jurisdiction": "ca-federal",
+      "leader": "Stephen Harper",
+      "party": "Conservative",
+      "party_short": "Con",
+      "colour": "#8aa6c8",
+      "share": 1.0,
+      "split": false,
+      "also": ""
+    },
+    {
+      "fiscal_year": "2013-14",
+      "jurisdiction": "ca-federal",
+      "leader": "Stephen Harper",
+      "party": "Conservative",
+      "party_short": "Con",
+      "colour": "#8aa6c8",
+      "share": 1.0,
+      "split": false,
+      "also": ""
+    },
+    {
+      "fiscal_year": "2014-15",
+      "jurisdiction": "ca-federal",
+      "leader": "Stephen Harper",
+      "party": "Conservative",
+      "party_short": "Con",
+      "colour": "#8aa6c8",
+      "share": 1.0,
+      "split": false,
+      "also": ""
+    },
+    {
+      "fiscal_year": "2015-16",
+      "jurisdiction": "ca-federal",
+      "leader": "Stephen Harper",
+      "party": "Conservative",
+      "party_short": "Con",
+      "colour": "#8aa6c8",
+      "share": 0.5929,
+      "split": true,
+      "also": "Justin Trudeau"
+    },
+    {
+      "fiscal_year": "2016-17",
+      "jurisdiction": "ca-federal",
+      "leader": "Justin Trudeau",
+      "party": "Liberal",
+      "party_short": "Lib",
+      "colour": "#e2a3a3",
+      "share": 1.0,
+      "split": false,
+      "also": ""
+    },
+    {
+      "fiscal_year": "2017-18",
+      "jurisdiction": "ca-federal",
+      "leader": "Justin Trudeau",
+      "party": "Liberal",
+      "party_short": "Lib",
+      "colour": "#e2a3a3",
+      "share": 1.0,
+      "split": false,
+      "also": ""
+    },
+    {
+      "fiscal_year": "2018-19",
+      "jurisdiction": "ca-federal",
+      "leader": "Justin Trudeau",
+      "party": "Liberal",
+      "party_short": "Lib",
+      "colour": "#e2a3a3",
+      "share": 1.0,
+      "split": false,
+      "also": ""
+    },
+    {
+      "fiscal_year": "2019-20",
+      "jurisdiction": "ca-federal",
+      "leader": "Justin Trudeau",
+      "party": "Liberal",
+      "party_short": "Lib",
+      "colour": "#e2a3a3",
+      "share": 1.0,
+      "split": false,
+      "also": ""
+    },
+    {
+      "fiscal_year": "2020-21",
+      "jurisdiction": "ca-federal",
+      "leader": "Justin Trudeau",
+      "party": "Liberal",
+      "party_short": "Lib",
+      "colour": "#e2a3a3",
+      "share": 1.0,
+      "split": false,
+      "also": ""
+    },
+    {
+      "fiscal_year": "2021-22",
+      "jurisdiction": "ca-federal",
+      "leader": "Justin Trudeau",
+      "party": "Liberal",
+      "party_short": "Lib",
+      "colour": "#e2a3a3",
+      "share": 1.0,
+      "split": false,
+      "also": ""
+    },
+    {
+      "fiscal_year": "2022-23",
+      "jurisdiction": "ca-federal",
+      "leader": "Justin Trudeau",
+      "party": "Liberal",
+      "party_short": "Lib",
+      "colour": "#e2a3a3",
+      "share": 1.0,
+      "split": false,
+      "also": ""
+    },
+    {
+      "fiscal_year": "2023-24",
+      "jurisdiction": "ca-federal",
+      "leader": "Justin Trudeau",
+      "party": "Liberal",
+      "party_short": "Lib",
+      "colour": "#e2a3a3",
+      "share": 1.0,
+      "split": false,
+      "also": ""
+    },
+    {
+      "fiscal_year": "2024-25",
+      "jurisdiction": "ca-federal",
+      "leader": "Justin Trudeau",
+      "party": "Liberal",
+      "party_short": "Lib",
+      "colour": "#e2a3a3",
+      "share": 0.9507,
+      "split": true,
+      "also": "Mark Carney"
+    },
+    {
+      "fiscal_year": "2011-12",
+      "jurisdiction": "qc",
+      "leader": "Jean Charest",
+      "party": "Parti libéral du Québec",
+      "party_short": "PLQ",
+      "colour": "#e8b0b0",
+      "share": 1.0,
+      "split": false,
+      "also": ""
+    },
+    {
+      "fiscal_year": "2012-13",
+      "jurisdiction": "qc",
+      "leader": "Pauline Marois",
+      "party": "Parti Québécois",
+      "party_short": "PQ",
+      "colour": "#9fb6d4",
+      "share": 0.5315,
+      "split": true,
+      "also": "Jean Charest"
+    },
+    {
+      "fiscal_year": "2013-14",
+      "jurisdiction": "qc",
+      "leader": "Pauline Marois",
+      "party": "Parti Québécois",
+      "party_short": "PQ",
+      "colour": "#9fb6d4",
+      "share": 1.0,
+      "split": false,
+      "also": ""
+    },
+    {
+      "fiscal_year": "2014-15",
+      "jurisdiction": "qc",
+      "leader": "Philippe Couillard",
+      "party": "Parti libéral du Québec",
+      "party_short": "PLQ",
+      "colour": "#e8b0b0",
+      "share": 0.9397,
+      "split": true,
+      "also": "Pauline Marois"
+    },
+    {
+      "fiscal_year": "2015-16",
+      "jurisdiction": "qc",
+      "leader": "Philippe Couillard",
+      "party": "Parti libéral du Québec",
+      "party_short": "PLQ",
+      "colour": "#e8b0b0",
+      "share": 1.0,
+      "split": false,
+      "also": ""
+    },
+    {
+      "fiscal_year": "2016-17",
+      "jurisdiction": "qc",
+      "leader": "Philippe Couillard",
+      "party": "Parti libéral du Québec",
+      "party_short": "PLQ",
+      "colour": "#e8b0b0",
+      "share": 1.0,
+      "split": false,
+      "also": ""
+    },
+    {
+      "fiscal_year": "2017-18",
+      "jurisdiction": "qc",
+      "leader": "Philippe Couillard",
+      "party": "Parti libéral du Québec",
+      "party_short": "PLQ",
+      "colour": "#e8b0b0",
+      "share": 1.0,
+      "split": false,
+      "also": ""
+    },
+    {
+      "fiscal_year": "2018-19",
+      "jurisdiction": "qc",
+      "leader": "Philippe Couillard",
+      "party": "Parti libéral du Québec",
+      "party_short": "PLQ",
+      "colour": "#e8b0b0",
+      "share": 0.5479,
+      "split": true,
+      "also": "François Legault"
+    },
+    {
+      "fiscal_year": "2019-20",
+      "jurisdiction": "qc",
+      "leader": "François Legault",
+      "party": "Coalition Avenir Québec",
+      "party_short": "CAQ",
+      "colour": "#8fc7e8",
+      "share": 1.0,
+      "split": false,
+      "also": ""
+    },
+    {
+      "fiscal_year": "2020-21",
+      "jurisdiction": "qc",
+      "leader": "François Legault",
+      "party": "Coalition Avenir Québec",
+      "party_short": "CAQ",
+      "colour": "#8fc7e8",
+      "share": 1.0,
+      "split": false,
+      "also": ""
+    },
+    {
+      "fiscal_year": "2021-22",
+      "jurisdiction": "qc",
+      "leader": "François Legault",
+      "party": "Coalition Avenir Québec",
+      "party_short": "CAQ",
+      "colour": "#8fc7e8",
+      "share": 1.0,
+      "split": false,
+      "also": ""
+    },
+    {
+      "fiscal_year": "2022-23",
+      "jurisdiction": "qc",
+      "leader": "François Legault",
+      "party": "Coalition Avenir Québec",
+      "party_short": "CAQ",
+      "colour": "#8fc7e8",
+      "share": 1.0,
+      "split": false,
+      "also": ""
+    },
+    {
+      "fiscal_year": "2023-24",
+      "jurisdiction": "qc",
+      "leader": "François Legault",
+      "party": "Coalition Avenir Québec",
+      "party_short": "CAQ",
+      "colour": "#8fc7e8",
+      "share": 1.0,
+      "split": false,
+      "also": ""
+    },
+    {
+      "fiscal_year": "2024-25",
+      "jurisdiction": "qc",
+      "leader": "François Legault",
+      "party": "Coalition Avenir Québec",
+      "party_short": "CAQ",
+      "colour": "#8fc7e8",
+      "share": 1.0,
+      "split": false,
+      "also": ""
+    }
+  ]
+}

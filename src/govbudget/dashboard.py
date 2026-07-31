@@ -18,7 +18,7 @@ from pathlib import Path
 
 import duckdb
 
-from . import taxonomy
+from . import political, taxonomy
 from .staging import STAGING_DIR
 from .storage import REPO_ROOT
 
@@ -525,16 +525,59 @@ def build_budget(output_dir: Path | None = None) -> dict[str, int]:
             -- booked as negative standard objects, so dropping them inflates
             -- the total by $16.3B and breaks the reconciliation against the
             -- flat table. Charts filter them out; the totals must not.
-            ORDER BY amount DESC
+            --
+            -- The trailing keys are a tiebreak, not decoration: amounts collide
+            -- between programmes and an ORDER BY on amount alone lets equal
+            -- rows swap places between runs, which breaks reproducibility.
+            ORDER BY amount DESC, organization, programme,
+                     economic_category, standard_object, appropriation
         """)
         (out / "drilldown_meta.json").write_text(
             json.dumps({"fiscal_year": drill_year}, indent=2), encoding="utf-8"
         )
         written["drilldown_meta"] = 1
 
+    # -- who held office ------------------------------------------------
+    # Hand-maintained, not sourced from any portal. Emitted as date ranges
+    # rather than per-year labels so an election mid-fiscal-year draws as a
+    # boundary partway through the year instead of colouring the whole bar.
+    years = [
+        row[0] for row in
+        con.execute("SELECT DISTINCT fiscal_year FROM spine ORDER BY 1").fetchall()
+        if row[0]
+    ]
+    if years:
+        eras = {
+            "last_verified": political.LAST_VERIFIED.isoformat(),
+            "note": (
+                "Reference data maintained in this repository, not published by "
+                "any source. Spending in a year reflects budgets set earlier and "
+                "statutory programmes running for decades; these bands are "
+                "context for reading the chart, not an attribution of cause."
+            ),
+            # Unclipped date ranges for charts with a continuous x axis; they
+            # clip themselves via their scale domain.
+            "bands": political.all_bands(),
+            # Per-year attribution for charts whose x axis is fiscal-year
+            # categories, where a date rect cannot be positioned.
+            "years": (
+                political.year_attribution(years, "ca-federal")
+                + political.year_attribution(years, "qc")
+            ),
+        }
+        (out / "political_eras.json").write_text(
+            json.dumps(eras, indent=2, ensure_ascii=False), encoding="utf-8"
+        )
+        written["political_eras"] = len(eras["bands"]) + len(eras["years"])
+
     latest = {
         row[0]: row[1] for row in
-        con.execute("SELECT jurisdiction, max(fiscal_year) FROM spine GROUP BY 1").fetchall()
+        con.execute(
+            # ORDER BY, because a bare GROUP BY returns rows in no guaranteed
+            # order and the dict built from it then serializes its keys
+            # differently between runs.
+            "SELECT jurisdiction, max(fiscal_year) FROM spine GROUP BY 1 ORDER BY 1"
+        ).fetchall()
     }
     payload = {
         "latest_year": latest,
@@ -556,7 +599,7 @@ def build_budget(output_dir: Path | None = None) -> dict[str, int]:
         "qc_source": qc_source,
     }
     (out / "comparability.json").write_text(
-        json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8"
+        json.dumps(payload, indent=2, ensure_ascii=False, sort_keys=True), encoding="utf-8"
     )
     written["comparability"] = len(payload["categories"])
     con.close()

@@ -6,6 +6,9 @@ québécois font l'objet d'une [section distincte](./contracts).
 
 ```js
 import {money, moneyShort, number, percent, truncate} from "./components/format.js";
+import {yearStripe, partyLegend} from "./components/politics.js";
+
+const eras = await FileAttachment("data/political_eras.json").json();
 
 const meta = await FileAttachment("data/comparability.json").json();
 
@@ -33,6 +36,10 @@ const progs = (jur, kind) => programmes.filter(
   (d) => d.jurisdiction === jur && d.kind === kind && d.fiscal_year === latest[jur]
 );
 const lastLapsed = lapsed.at(-1);
+const lapsedYears = new Set(lapsed.map((d) => d.fiscal_year));
+const federalYears = eras.years.filter(
+  (d) => d.jurisdiction === "ca-federal" && lapsedYears.has(d.fiscal_year)
+);
 ```
 
 <div class="grid grid-cols-4">
@@ -189,6 +196,9 @@ Le Parlement autorise chaque année plus que ce qui est finalement dépensé.
 L'écart, les **crédits périmés**, revient au Trésor. Il a atteint 56,8 G$ en
 2022-23, soit 12,7 % des montants autorisés.
 
+La bande indique le gouvernement fédéral en poste. Les années hachurées ont été
+partagées entre deux gouvernements : une élection ne tombe pas au 1er avril.
+
 ```js
 Plot.plot({
   width,
@@ -212,11 +222,36 @@ Plot.plot({
 ```
 
 ```js
+// A separate stripe rather than an overlay: the lapse chart has an ordinal
+// fiscal-year axis, so a date-positioned band cannot be placed on it. Each cell
+// is one year, coloured by whoever held office for most of it. Election years
+// are hatched — the year genuinely belonged to two governments and picking one
+// would be a claim the data does not support.
+Plot.plot({
+  width,
+  height: 54,
+  marginLeft: 62,
+  marginTop: 14,
+  marginBottom: 4,
+  x: {label: null, axis: null, domain: lapsed.map((d) => d.fiscal_year)},
+  y: {axis: null},
+  marks: [
+    ...yearStripe(eras, "ca-federal"),
+    Plot.text(
+      federalYears.filter((d, i, a) => i === 0 || d.leader !== a[i - 1].leader),
+      {x: "fiscal_year", text: "leader", frameAnchor: "left", dx: 4,
+       fill: "currentColor", fillOpacity: 0.75, fontSize: 10}
+    )
+  ]
+})
+```
+
+```js
 Plot.plot({
   width,
   height: 220,
   marginLeft: 62,
-  x: {label: null, tickRotate: -40},
+  x: {label: null, tickRotate: -40, domain: lapsed.map((d) => d.fiscal_year)},
   y: {label: "Part des crédits périmés", percent: true, grid: true},
   marks: [
     Plot.lineY(lapsed, {
