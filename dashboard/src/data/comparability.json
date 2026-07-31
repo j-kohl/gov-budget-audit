@@ -1,8 +1,4 @@
 {
-  "latest_year": {
-    "ca-federal": "2024-25",
-    "qc": "2024-25"
-  },
   "categories": [
     {
       "key": "personnel",
@@ -53,6 +49,10 @@
       "note_fr": "Un poste résiduel des deux côtés, qui ne contient pas les mêmes éléments. À ne jamais présenter comme une catégorie unique."
     }
   ],
+  "latest_year": {
+    "ca-federal": "2024-25",
+    "qc": "2024-25"
+  },
   "measures": {
     "ca-federal": "expenditures",
     "qc": "expenditures"

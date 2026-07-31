@@ -316,6 +316,11 @@
   ],
   "caveats": [
     {
+      "id": "political-eras-are-authored",
+      "severity": "medium",
+      "summary": "Which government held office is not published by any portal — it is hand-maintained in src/govbudget/political.py and labelled as authored wherever it reaches the dashboard. Two things it is careful about. A fiscal year is not a political year: both governments run April to March and elections do not, so 2015-16 federally was Harper for 59% of the year and Trudeau for the rest. Terms are stored as exact dates and election years are marked as split rather than assigned to one government. And holding office is not causing the spending — a year's expenditure reflects budgets set earlier and statutory programmes running for decades. The incumbent entries carry no end date and were last verified 2026-07-31."
+    },
+    {
       "id": "infobase-voted-vs-statutory",
       "severity": "critical",
       "summary": "GC InfoBase splits programme-level spending across two files. 'Federal Programs - Spending by Vote' is voted spending only — the file is programs_voted_spending.csv — and 'Federal Programs - Statutory Spending' holds the rest. Statutory is the larger half: for 2023-24 the voted table alone is $214.7B against $474.9B of actual expenditure, so ingesting one without the other understates federal spending by 55%. Together they reconcile to within 0.4% of the flat standard-object table across 2021-22 to 2023-24. The ingester raises if either file is absent."
