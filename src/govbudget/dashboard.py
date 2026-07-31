@@ -464,12 +464,20 @@ def build_budget(output_dir: Path | None = None) -> dict[str, int]:
             WHERE jurisdiction = 'qc' AND dimensions LIKE '%beneficiaires%'
               AND programme IS NOT NULL
         )
+        -- Aggregated across organizations, not per organization. Generic vote
+        -- names — 'Operating/Program', 'Capital', 'Grants & Contributions' —
+        -- exist in every department, so grouping by organization emits the same
+        -- label many times and a bar chart silently stacks them into one
+        -- segmented bar. Summing across departments is also the more useful
+        -- figure: it is what the government spends on that vote in total.
         SELECT * EXCLUDE (rn) FROM (
-            SELECT jurisdiction, fiscal_year, organization, programme, kind,
+            SELECT jurisdiction, fiscal_year, programme, kind,
                    CAST(sum(CAST(amount AS DECIMAL(18,2))) AS DOUBLE) AS amount,
+                   count(DISTINCT organization) AS organizations,
+                   max(organization) AS organization,
                    row_number() OVER (PARTITION BY jurisdiction, fiscal_year, kind
                                       ORDER BY sum(amount) DESC, programme) AS rn
-            FROM named GROUP BY 1,2,3,4,5)
+            FROM named GROUP BY 1,2,3,4)
         WHERE rn <= 25 ORDER BY jurisdiction, fiscal_year, kind, rn
     """)
 
