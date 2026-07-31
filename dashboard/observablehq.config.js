@@ -5,13 +5,18 @@
 // queries a database at run time, so the build output can be hosted anywhere.
 
 export default {
-  title: "Dépenses publiques — Québec",
+  title: "Dépenses publiques — Canada et Québec",
   pages: [
-    {name: "Vue d'ensemble", path: "/"},
-    {name: "Où va l'argent", path: "/budget"},
-    {name: "Fournisseurs", path: "/suppliers"},
-    {name: "Concurrence", path: "/competition"},
-    {name: "Dépassements de coûts", path: "/overruns"},
+    {name: "Où va l'argent", path: "/"},
+    {
+      name: "Contrats publics du Québec",
+      pages: [
+        {name: "Vue d'ensemble", path: "/contracts"},
+        {name: "Fournisseurs", path: "/suppliers"},
+        {name: "Concurrence", path: "/competition"},
+        {name: "Dépassements de coûts", path: "/overruns"},
+      ],
+    },
     {name: "Sources et mises en garde", path: "/sources"},
   ],
   theme: ["air", "near-midnight"],
