@@ -495,6 +495,43 @@ def build_budget(output_dir: Path | None = None) -> dict[str, int]:
         ORDER BY 1
     """)
 
+    # -- programme drill-down ------------------------------------------
+    # org x programme x economic category for the latest year with data. The
+    # voted and statutory tables together reconcile to within 0.4% of the flat
+    # standard-object table, so this is the same money at finer grain — but it
+    # is deliberately NOT part of `spine`, which would double-count it against
+    # the standard-object rows.
+    if con.execute("""
+        SELECT count(*) FROM budget
+        WHERE dimensions LIKE '%programs_by_vote%' OR dimensions LIKE '%programs_statutory%'
+    """).fetchone()[0]:
+        drill_year = con.execute("""
+            SELECT max(fiscal_year) FROM budget
+            WHERE dimensions LIKE '%programs_by_vote%' OR dimensions LIKE '%programs_statutory%'
+        """).fetchone()[0]
+        dump("program_drilldown", f"""
+            SELECT organization, programme,
+                   coalesce(economic_category, 'other') AS economic_category,
+                   coalesce(economic_source_label, 'Non précisé') AS standard_object,
+                   coalesce(appropriation, 'unknown') AS appropriation,
+                   CAST(sum(CAST(amount AS DECIMAL(18,2))) AS DOUBLE) AS amount
+            FROM budget
+            WHERE fiscal_year = '{drill_year}'
+              AND (dimensions LIKE '%programs_by_vote%'
+                OR dimensions LIKE '%programs_statutory%')
+              AND organization IS NOT NULL AND programme IS NOT NULL
+            GROUP BY 1,2,3,4,5
+            -- Negative groups are kept. External and internal revenues are
+            -- booked as negative standard objects, so dropping them inflates
+            -- the total by $16.3B and breaks the reconciliation against the
+            -- flat table. Charts filter them out; the totals must not.
+            ORDER BY amount DESC
+        """)
+        (out / "drilldown_meta.json").write_text(
+            json.dumps({"fiscal_year": drill_year}, indent=2), encoding="utf-8"
+        )
+        written["drilldown_meta"] = 1
+
     latest = {
         row[0]: row[1] for row in
         con.execute("SELECT jurisdiction, max(fiscal_year) FROM spine GROUP BY 1").fetchall()
